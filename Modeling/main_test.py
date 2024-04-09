@@ -25,13 +25,19 @@ xddt = xt.diff(t, 2)
 q = [xt, xdt]
 
 T = 1/2 * m * xdt**2
-U = 1/2 * k * xt**2 + m * g * xt
+U = 1/2 * k * xt**2 - m * g * xt
 
-x = sp.Symbol("x")  # create the symbol for the time
-T = T.subs([(m, 20), (g, 9.81), (k, 10)])
-U = U.subs([(m, 20), (g, 9.81), (k, 10)])
+mass = 0.2
+gravity = 9.81
+spring_constant = 10
+damping = 0.1
 
-L1 = lagrange.Lagrange(q, t, T, U, 0, 0)
+T = T.subs(m, mass)
+U = U.subs([(m, mass), (g, gravity), (k, spring_constant)])
+D = d * xdt
+D = D.subs(d, damping)
+
+L1 = lagrange.Lagrange(q, t, T, U, D, 0)
 
 L_eq = L1.lagrangian()[0]
 pprint(L_eq)
@@ -47,8 +53,8 @@ preview(Eq1a, symbol_names=sn_dict)
 
 # simulation and plot result
 x0 = [0, 0]
-t_span = (0, 100)
-sol = L1.simulate(x0, t_span)
+t_span = (0, 40)
+sol = L1.simulate(x0, t_span, 1001)
 
 plt.plot(sol.t, sol.y[0])
 plt.show()
