@@ -19,9 +19,6 @@ class Lagrange:
     :type F: sympy.Add, sympy.Mul or int/float if the force is constant
     :param k: kinematic (geometric) equation
     :type k: sympy.Add, sympy.Mul
-    :raises Lagrange.InvalidCoordError: If the generalized coordinate is invalid
-    :raises Lagrange.InvalidEnergyError: If the energies is invalid
-    :raises Lagrange.InvalidKinematicError: If the kinematic equation is invalid
     """
 
     def __init__(self, q, t, T, U, F, k):
@@ -67,14 +64,19 @@ class Lagrange:
         :rtype: sympy.Add (symbolic sum --> equation of motion)
         """
         L = self.lagrange_equation()
-        # This function calculates the equation of motion
         L_dq = L.diff(self.q[0])
         L_dqd = L.diff(self.q[1])
         DL_dqd = L_dqd.diff(self.t)
         eq = DL_dqd - L_dq + self.F
+
+        # do some simplifications
         eq = eq.expand()
         eq = trigsimp(eq)
+
+        # Set up the equation according to the pattern: eq = 0
         eq = Eq(eq, 0)
+
+        # return equation rearranged for the second derivative
         return solve(eq, self.q[0].diff(self.t, 2))
 
     def simulate(self, init_cond, t_span, num_points=1001):
@@ -94,12 +96,13 @@ class Lagrange:
         L = self.lagrangian()[0]
 
         # Convert symbolic function to a callable function
-        rhs_func = lambdify((self.t, self.q[0], self.q[1]), L.subs(self.q[0].diff(self.t), self.q[1]))
+        rhs_func = lambdify((self.t, self.q[0], self.q[1]), L)
 
         # function to convert second order system to two first order systems
         def sim_fun(t, y):
             return [y[1], rhs_func(t, y[0], y[1])]
 
+        # return solved/simulated problem (solve problem by inserting numerical values)
         return solve_ivp(sim_fun, t_span, init_cond, t_eval=linspace(t_span[0], t_span[1], num_points))
 
     # TODO:

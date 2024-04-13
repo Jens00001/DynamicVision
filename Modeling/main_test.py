@@ -2,6 +2,9 @@ from sympy import Function, pprint
 import sympy as sp
 import lagrange
 from matplotlib import pyplot as plt
+from simsave import save, load
+import time
+
 
 def preview(expr, **kwargs):
     """
@@ -27,9 +30,9 @@ q = [xt, xdt]
 T = 1/2 * m * xdt**2
 U = 1/2 * k * xt**2 - m * g * xt
 
-mass = 0.2
+mass = 0.1
 gravity = 9.81
-spring_constant = 10
+spring_constant = 5
 damping = 0.1
 
 T = T.subs(m, mass)
@@ -51,11 +54,29 @@ sn_dict = {xd: r"\dot{x}", xdd: r"\ddot{x}"}
 
 preview(Eq1a, symbol_names=sn_dict)
 
-# simulation and plot result
+# simulation
 x0 = [0, 0]
 t_span = (0, 40)
-sol = L1.simulate(x0, t_span, 1001)
 
-plt.plot(sol.t, sol.y[0])
+start = time.time()
+sol = L1.simulate(x0, t_span, 10001)
+end = time.time()
+print("Duration of simulation: ", end - start, "s.")
+
+# save
+save("data/test.hdf5", ["time", "position", "velocity"], [sol.t, sol.y[0], sol.y[1]])
+
+# load
+start = time.time()
+data = load("data/test.hdf5", (0,))
+end = time.time()
+print("Duration of loading data: ", end - start, "s.")
+time = data[1][:]
+position = data[0][:]
+velocity = data[2][:]
+
+# plot
+plt.plot(time, position)
+plt.plot(time, velocity)
+plt.legend(["position", "velocity"])
 plt.show()
-
