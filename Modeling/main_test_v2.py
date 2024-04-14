@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from simsave import save, load
 import time
 import objects
-
+import create_objects
 
 def preview(expr, **kwargs):
     """
@@ -31,8 +31,13 @@ params = sp.symbols("g, d")
 g , d = params
 gravity = 9.81
 
-m1 = objects.Mass(2.0,[0,0])
-s1 = objects.Spring([0,0], 10.0, 15)
+list_of_springs, list_of_mass = create_objects.create_objects("Value") # enter stop as object to stop the creating process
+s1 = list_of_springs[0]
+m1 = list_of_mass[0]
+# print (s1)
+# m1 = objects.Mass(2.0,[0,0])
+# s2 = objects.Spring([0,0], 10.0, 15.0)
+# print(s2)
 T_m1, U_m1 = m1.enery(xt, xdt,g)
 U_s1 = s1.energy(xt)
 
