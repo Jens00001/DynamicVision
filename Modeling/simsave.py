@@ -1,11 +1,10 @@
-from h5py import File
+from netCDF4 import Dataset
 
-
-def save(file_name="data.hdf5", data_names=None, data=None):
+def save(file_name="data.nc", data_names=None, data=None):
     """
     Method for saving the simulated data
 
-    :param file_name: name of the wanted file (with or without .hdf5)
+    :param file_name: name of the wanted file (with or without .nc)
     :type file_name: string
     :param data_names: names of the corresponding data (like keys for python dictionaries)
     :type data_names: list of strings
@@ -13,29 +12,42 @@ def save(file_name="data.hdf5", data_names=None, data=None):
     :type data: list of int or float
     """
 
-    # check if ".hdf5" is already in file name
-    if ".hdf5" in file_name:
+    # check if ".nc" is already in file name
+    if ".nc" in file_name:
         name_str = file_name
     else:
-        name_str = file_name + ".hdf5"
+        name_str = file_name + ".nc"
 
     # open/create file in write mode ("w")
-    data_file = File(name_str, "w")
+    data_file = Dataset(name_str, "w")
+
+    # define data dimensions
+    data_dim = []
+    for i in range(len(data_names)):
+        data_dim.append(data_file.createDimension(data_names[i], size=None))
+
+    # define data variables
+    data_var = []
+    for n, d, di in zip(data_names, data, data_dim):
+        data_var.append(data_file.createVariable(n, datatype=d.dtype, dimensions=(di,)))
 
     # write data to file
-    for i in range(len(data_names)):
-        data_file.create_dataset(data_names[i], data=data[i])
+    for n, d in zip(data_names, data):
+        data_file.variables[n][:] = d[:]
+
+    # close file
+    data_file.close()
 
 
-def load(file_name="data.hdf5", num_data=(0,)):
+def load(file_name="data.nc", num_data=(0,)):
     """
     Method for loading the simulated data in the current workspace
 
-    :param file_name: name of the file you want to load (with or without .hdf5)
+    :param file_name: name of the file you want to load (with or without .nc)
     :type file_name: string
     :param num_data: Which data should be loaded?
                      Default value loads all data inside file.
-                     One Value loads one column: (0). "x" corresponds to the index of the data you want to load.
+                     One Value loads one column: (x,). "x" corresponds to the index of the data you want to load.
                      Two values load data between the values: (x,y).
                         "x" and "y" corresponds to the indices of the data you want to load (and the data between these indices).
     :type num_data: tuple of int
@@ -43,17 +55,19 @@ def load(file_name="data.hdf5", num_data=(0,)):
     :rtype: list of lists (of int or float)
     """
 
-    # check if ".hdf5" is already in file name
-    if ".hdf5" in file_name:
+    # check if ".nc" is already in file name
+    if ".nc" in file_name:
         name_str = file_name
     else:
-        name_str = file_name + ".hdf5"
+        name_str = file_name + ".nc"
 
     # open file in read mode ("r")
-    data_file = File(name_str, 'r')
+    data_file = Dataset(name_str, 'r')
 
-    # save data_keys (name of the saved data) --> like keys for python dictionaries
-    data_keys = list(data_file.keys())
+    # get the dimensions and data_keys (name of the saved data) --> like keys for python dictionaries
+    dim = data_file.dimensions
+    data_keys = data_file.variables.keys()
+
     data = []
 
     '''
@@ -75,7 +89,6 @@ def load(file_name="data.hdf5", num_data=(0,)):
         data = data_keys
 
     # save data regarding the data keys in variable "data_set" and return it as a list of lists
-    len_data = len(data)
-    data_set = [data_file[data[i]] for i in range(len_data)]    # faster than for-loop
+    data_set = [data_file.variables[n] for n in data]  # faster than for-loop
 
     return data_set

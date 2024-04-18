@@ -17,15 +17,12 @@ class Lagrange:
     :type U: sympy.Add or sympy.Mul
     :param F: external force (1-dim linear force) e.g. constant force or damper
     :type F: sympy.Add, sympy.Mul or int/float if the force is constant
-    :param k: kinematic (geometric) equation
-    :type k: sympy.Add, sympy.Mul
     """
 
-    def __init__(self, q, t, T, U, F, k):
+    def __init__(self, q, t, T, U, F):
         self.T = T
         self.U = U
         self.q = q
-        self.k = k
         self.t = t
         self.F = F
 
@@ -42,7 +39,6 @@ class Lagrange:
         assert isinstance(self.U, (Mul, Add))
         assert isinstance(self.q, list)
         assert isinstance(self.t, Symbol)
-        assert isinstance(self.k, (Mul, Add))
         assert isinstance(self.F, (Mul, Add, int, float))
 
     def lagrange_equation(self):
