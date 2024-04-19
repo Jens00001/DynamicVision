@@ -2,7 +2,7 @@ from sympy import Function, pprint
 import sympy as sp
 import lagrange
 from matplotlib import pyplot as plt
-from simsave import save, load
+#from simsave import save, load
 import time
 import objects
 import create_objects
@@ -68,7 +68,7 @@ D = d * xdt
 
 # D = D.subs(d, damping)
 
-L1 = lagrange.Lagrange(q, t, T, U, D, 0)
+L1 = lagrange.Lagrange(q, t, T, U, D)
 
 L_eq = L1.lagrangian()[0]
 pprint(L_eq)
@@ -83,28 +83,28 @@ sn_dict = {xd: r"\dot{x}", xdd: r"\ddot{x}"}
 preview(Eq1a, symbol_names=sn_dict)
 
 # simulation
-x0 = [0, 0]
-t_span = (0, 40)
+# x0 = [0, 0]
+# t_span = (0, 40)
 
-start = time.time()
-sol = L1.simulate(x0, t_span, 10001)
-end = time.time()
-print("Duration of simulation: ", end - start, "s.")
+# start = time.time()
+# sol = L1.simulate(x0, t_span, 10001)
+# end = time.time()
+# print("Duration of simulation: ", end - start, "s.")
 
-# save
-save("data/test.hdf5", ["time", "position", "velocity"], [sol.t, sol.y[0], sol.y[1]])
+# # save
+# save("data/test.hdf5", ["time", "position", "velocity"], [sol.t, sol.y[0], sol.y[1]])
 
-# load
-start = time.time()
-data = load("data/test.hdf5", (0,))
-end = time.time()
-print("Duration of loading data: ", end - start, "s.")
-time = data[1][:]
-position = data[0][:]
-velocity = data[2][:]
+# # load
+# start = time.time()
+# data = load("data/test.hdf5", (0,))
+# end = time.time()
+# print("Duration of loading data: ", end - start, "s.")
+# time = data[1][:]
+# position = data[0][:]
+# velocity = data[2][:]
 
-# plot
-plt.plot(time, position)
-plt.plot(time, velocity)
-plt.legend(["position", "velocity"])
-plt.show()
+# # plot
+# plt.plot(time, position)
+# plt.plot(time, velocity)
+# plt.legend(["position", "velocity"])
+# plt.show()

@@ -44,7 +44,7 @@ class Spring:
             case "linear":
                 self.sym_U = 1/2 * self.sym_stiffness * xt**2
             
-            case "qubic":
+            case "cubic":
                 self.sym_U = self.sym_stiffness * xt**3
         
         return self.sym_U
