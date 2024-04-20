@@ -21,30 +21,25 @@ def preview(expr, **kwargs):
     plt.show()
 
 
-
 t = sp.Symbol("t")  # create the symbol for the time
 xt = Function("x")(t)  # x(t)
 xdt = xt.diff(t)
 xddt = xt.diff(t, 2)
-q = [xt, xdt, xddt]
+q = [[xt, xdt, xddt],]
 
 params = sp.symbols("g, d")
-g , d = params
+g, d = params
 gravity = 9.81
-d = 0.7
+d = 0.2
 
 list_of_springs, list_of_mass = create_objects.create_objects("Value") # enter stop as object to stop the creating process
 s1 = list_of_springs[0]
 m1 = list_of_mass[0]
-# print (s1)
-# m1 = objects.Mass(2.0,[0,0])
-# s2 = objects.Spring([0,0], 10.0, 15.0)
-# print(s2)
-T_m1, U_m1 = m1.enery(xt, xdt,g)
+
+T_m1, U_m1 = m1.enery(xt, xdt, g)
 U_s1 = s1.energy(xt)
 
-
-eq_type = "Values" # Symbols oder Values 
+eq_type = "Values" # Symbols oder Values
 match eq_type:
     case "Symbols":
         pass
@@ -56,24 +51,11 @@ match eq_type:
 
 T = T_m1
 U = U_m1 + U_s1
-D = d * xdt
-# T = 1/2 * m * xdt**2
-# U = 1/2 * k * xt**2 - m * g * xt
+F = [-d * xdt,]
 
-# mass = 0.1
-# gravity = 9.81
-# spring_constant = 5
-# damping = 0.1
+L1 = lagrange.Lagrange(q, t, T, U, F)
 
-# T = T.subs(m, mass)
-# U = U.subs([(m, mass), (g, gravity), (k, spring_constant)])
-
-# D = D.subs(d, damping)
-
-L1 = lagrange.Lagrange(q, t, T, U, D)
-
-L_eq = L1.lagrangian()[0]
-pprint(L_eq)
+L_eq = L1.lagrangian()[q[0][-1]]
 # plot equation
 xdd_expr = L_eq
 x, xd, xdd = sp.symbols("x, xd, xdd")
@@ -93,7 +75,7 @@ sol = L1.simulate(x0, t_span, 10001)
 end = time.time()
 print("Duration of simulation: ", end - start, "s.")
 # save (symbolic data must be converted to a string)
-save("data/test.nc", ["time", "position", "velocity", "Energy and Variables"], [sol.t, sol.y[0], sol.y[1], array([str(q), str(t), str(T), str(U), str(D)])])
+save("data/test.nc", ["time", "position", "velocity", "Energy and Variables"], [sol.t, sol.y[0], sol.y[1], array([str(q), str(t), str(T), str(U), str(F)])])
 
 
 # load
@@ -112,14 +94,14 @@ q_l = sp.sympify(data[3][0])
 t_l = sp.sympify(data[3][1])
 T_l = sp.sympify(data[3][2])
 U_l = sp.sympify(data[3][3])
-D_l = sp.sympify(data[3][4])
-xt = q_l[0]
-xdt = q_l[1]
-xddt = q_l[2]
+F_l = sp.sympify(data[3][4])
+xt = q_l[0][0]
+xdt = q_l[0][1]
+xddt = q_l[0][2]
 
 # construct symbolic equation of motion with loaded data
-L1 = lagrange.Lagrange(q_l, t_l, T_l, U_l, D_l)
-L_eq_l = L1.lagrangian()[0]
+L1 = lagrange.Lagrange(q_l, t_l, T_l, U_l, F_l)
+L_eq_l = L1.lagrangian()[q_l[0][-1]]
 pprint(L_eq_l)
 # plot equation
 xdd_expr = L_eq_l

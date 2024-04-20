@@ -1,4 +1,4 @@
-from sympy import lambdify, Mul, Add, Symbol, trigsimp, Eq, solve
+from sympy import lambdify, Mul, Add, Symbol, trigsimp, Eq, solve, pprint
 from scipy.integrate import solve_ivp
 from numpy import linspace
 
@@ -7,16 +7,16 @@ class Lagrange:
     """
     Class for calculating the equation of motion using Lagrange (symbolic), only second order systems possible
 
-    :param q: generalized coordinate of the system and the derivatives that appear in the equations
-    :type q: list of sympy.Function (q depends on time q(t))
+    :param q: generalized coordinate of the system and the derivatives
+    :type q: list of lists of sympy.Function (q depends on time q(t)) [[q1,dq1,ddq1],[q2,dq2,ddq2],...]
     :param t: time variable
     :type t: sympy.Symbol
     :param T: kinetic energy
     :type T: sympy.Add or sympy.Mul
     :param U: potential energy
     :type U: sympy.Add or sympy.Mul
-    :param F: external force (1-dim linear force) e.g. constant force or damper
-    :type F: sympy.Add, sympy.Mul or int/float if the force is constant
+    :param F: external force (1-dim force) e.g. constant force or damper
+    :type F: list of sympy.Add, sympy.Mul or int/float if the force is constant
     """
 
     def __init__(self, q, t, T, U, F):
@@ -57,23 +57,35 @@ class Lagrange:
         Method for computing the analytical Lagrange equations
 
         :return: right hand side symbolic equation of motion: x'' = a + bx +cx'
-        :rtype: sympy.Add (symbolic sum --> equation of motion)
+        :rtype: dict of sympy.Add with second derivative as key and rhs as value
         """
+        num_q = len(self.q)
+
+        # get second derivatives
+        acc = [self.q[i][-1] for i in range(num_q)]
+
+        # get Lagrange function
         L = self.lagrange_equation()
-        L_dq = L.diff(self.q[0])
-        L_dqd = L.diff(self.q[1])
-        DL_dqd = L_dqd.diff(self.t)
-        eq = DL_dqd - L_dq + self.F
 
-        # do some simplifications
-        eq = eq.expand()
-        eq = trigsimp(eq)
+        # init lists
+        L_dq = []
+        L_dqd = []
+        DL_dqd = []
+        eq = []
+        eq_rhs = []
 
-        # Set up the equation according to the pattern: eq = 0
-        eq = Eq(eq, 0)
+        # compute derivatives of Lagrange function regarding the generalized coordinate
+        for i in range(num_q):
+            L_dq.append(L.diff(self.q[i][0]))
+            L_dqd.append(L.diff(self.q[i][1]))
+            DL_dqd.append(L_dqd[i].diff(self.t))
+            eq.append(DL_dqd[i] - L_dq[i] - self.F[i])
+
+            # Set up the equation according to the pattern: eq = 0
+            eq_rhs.append(Eq(eq[i], 0))
 
         # return equation rearranged for the second derivative
-        return solve(eq, self.q[2])
+        return solve(eq_rhs, acc)
 
     def simulate(self, init_cond, t_span, num_points=1001):
         """
@@ -89,15 +101,43 @@ class Lagrange:
         :rtype: Bunch object
         """
         # get Lagrangian
-        L = self.lagrangian()[0]
+        L = self.lagrangian()
+        num_L = len(L)
 
-        # Convert symbolic function to a callable function
-        rhs_func = lambdify((self.t, self.q[0], self.q[1]), L)
+        # create list with variables that are needed for the lambdify function
+        q_list = [self.t]
+        for i in range(num_L):
+            for j in range(len(self.q[i])-1):
+                if num_L > 1:
+                    q_list.append(self.q[j][i])
+                else:
+                    q_list.append(self.q[i][j])
+
+
+        print(q_list)
+        # Convert symbolic functions to a callable functions
+        rhs_func = [lambdify(q_list, L[self.q[i][2]], 'numpy') for i in range(num_L)]
 
         # function to convert second order system to two first order systems
         def sim_fun(t, y):
-            return [y[1], rhs_func(t, y[0], y[1])]
+            y_len = len(y)
+            y_half_len = int(y_len/2)
+
+            # create list of parameters
+            param_list = [t]
+            param_list.extend(y)
+
+            y_dot = []
+            # construct the derivative of the state vector
+            for i in range(y_len):
+                # the first half are the derivatives
+                if i < y_half_len:
+                    y_dot.append(y[y_half_len + i])
+                # the second half are the second derivatives
+                else:
+                    y_dot.append(rhs_func[i - y_half_len](*param_list))
+            return y_dot
 
         # return solved/simulated problem (solve problem by inserting numerical values)
-        return solve_ivp(sim_fun, t_span, init_cond, t_eval=linspace(t_span[0], t_span[1], num_points))
+        return solve_ivp(sim_fun, t_span, init_cond, t_eval=linspace(t_span[0], t_span[1], num_points), rtol=1e-5)
 
