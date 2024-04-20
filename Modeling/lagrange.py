@@ -73,7 +73,7 @@ class Lagrange:
         eq = Eq(eq, 0)
 
         # return equation rearranged for the second derivative
-        return solve(eq, self.q[0].diff(self.t, 2))
+        return solve(eq, self.q[2])
 
     def simulate(self, init_cond, t_span, num_points=1001):
         """
@@ -101,5 +101,3 @@ class Lagrange:
         # return solved/simulated problem (solve problem by inserting numerical values)
         return solve_ivp(sim_fun, t_span, init_cond, t_eval=linspace(t_span[0], t_span[1], num_points))
 
-    # TODO:
-    # implement the possibility for kinematic equations

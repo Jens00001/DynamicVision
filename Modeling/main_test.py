@@ -34,7 +34,7 @@ U = 1/2 * k * xt**2 - m * g * xt
 mass = 0.1
 gravity = 9.81
 spring_constant = 5
-damping = 0.1
+damping = 0.7
 
 T = T.subs(m, mass)
 U = U.subs([(m, mass), (g, gravity), (k, spring_constant)])

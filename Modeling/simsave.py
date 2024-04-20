@@ -52,7 +52,7 @@ def load(file_name="data.nc", num_data=(0,)):
                         "x" and "y" corresponds to the indices of the data you want to load (and the data between these indices).
     :type num_data: tuple of int
     :return: data loaded from file
-    :rtype: list of lists (of int or float)
+    :rtype: list of lists (of int, float or string)
     """
 
     # check if ".nc" is already in file name
@@ -64,8 +64,7 @@ def load(file_name="data.nc", num_data=(0,)):
     # open file in read mode ("r")
     data_file = Dataset(name_str, 'r')
 
-    # get the dimensions and data_keys (name of the saved data) --> like keys for python dictionaries
-    dim = data_file.dimensions
+    # get data_keys (name of the saved data) --> like keys for python dictionaries
     data_keys = data_file.variables.keys()
 
     data = []
