@@ -2,6 +2,32 @@ import sympy as sp
 import numpy as np
 
 class Spring:
+    """"
+    Class for creating a Spring object
+
+    :param startingpoint: startingpoint of the spring
+    :type startingpoint: list of float numbers with two elements [x,y]
+    :param rest_length: the length of the spring in the rest position 
+    :type rest_length: int or float
+    :param length: the current length of the spring in each position 
+    :type length: int or float
+    :param stiffness: stifness of the spring
+    :type stiffness: int or float
+    :param type: the type of the spring (linear or cubic), default is linear
+    :type type: str
+    :param endpoint: endpoint of the spring
+    :type endpoint: list of float numbers with two elements [x,y]
+    :param color: color of the spring in the visualization, default is black
+    :type color: str
+    :param sym_rest_length: the length of the spring in the rest position 
+    :type sym_rest_length: sympy.Symbol
+    :param sym_length: the current length of the spring in each position  
+    :type sym_length: sympy.Symbol
+    :param sym_stiffness: stifness of the spring
+    :type sym_stiffness: sympy.Symbol
+    :param sym_U: potential energy of the spring
+    :type sym_U: sympy.Add or sympy.Mul
+    """
     def __init__(self, startingpoint, rest_length, stiffness, type = "linear", color="black"):
         self.startingpoint = startingpoint
         self.rest_length = rest_length # in m
@@ -37,7 +63,12 @@ class Spring:
 
     def energy(self, xt):
         """"
-        xt is the symbolic expression for the change from the rest postion
+        Method for computing the energy of the spring in its current position
+
+        :param xt: is the symbolic expression for the change in the y-coordinate of the end point of the spring from the rest position
+        :type xt: sympy.Function 
+        :return: potential energy of the spring
+        :rtype: sympy.Add or sympy.Mul
         """
         # assert isinstance(xt,) TODO
         match self.type:
@@ -51,7 +82,12 @@ class Spring:
     
     def move(self,x):
         """
-        x is the value of the change from the rest positon
+        Method for computing the new lenght and y-coordinate of the end point of the spring by a given change x
+
+        :param x: is the value of the change in the y-coordinate of the end point of the spring from the rest position
+        :type x: int or float
+        :return: current length of the spring and current endpoint of the spring
+        :rtype: tuple 
         """
         self.length += x
         self.endpoint[1] += x
@@ -60,6 +96,22 @@ class Spring:
     
 
 class Mass:
+    """
+    Class for creating a mass object
+
+    :param mass: value of the mass
+    :type mass: int or float
+    :param sym_mass: mass
+    :type sym_mass: sympy.Symbol
+    :param position: position of the mass
+    :type position: list of float numbers with two elements [x,y]
+    :param color: color of the mass in the visualization, default is red
+    :type color: str
+    :param T: kinetic energy
+    :type T: sympy.Add or sympy.Mul
+    :param U: potential energy 
+    :type U: sympy.Add or sympy.Mul
+    """
     def __init__(self, mass, position, color ="red"):
         self.mass = mass
         self.sym_mass = sp.Symbol("m")
@@ -81,9 +133,16 @@ class Mass:
 
     def enery(self,xt,xdt,g):
         """" 
-        xt is the symbolic expression for the change from the rest postion
-        xdt is the symbolic expression for the velocity of the change from the rest position
-        g is the earth gravity
+        Method for computing the energy of the spring in its current position
+
+        :param xt: is the symbolic expression for the change in the y-coordinate of the position of the mass
+        :type xt: sympy.Function
+        :param xdt: is the symbolic expression for the velocity of the change in the y-coordinate of the position of the mass
+        :type xdt: sympy.function.Derivative
+        :param g: earth gravity
+        :type g: sympy.Symbol
+        :return: kinetic energy and potential energy 
+        :rtype: tuple
         """  
         #TODO assert check     
         self.T = 1/2 * self.sym_mass * xdt**2
@@ -93,7 +152,10 @@ class Mass:
     
     def move(self,x):
         """
-        x is the value of the change from the rest positon
+        :param x: is the value of the change in the y-coordinate of the position of the mass
+        :type x: int or float
+        :return: position of the mass
+        :rtype: list[(int,float)]
         """
         self.position[1] += x
 
