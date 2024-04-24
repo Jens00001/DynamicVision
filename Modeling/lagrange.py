@@ -1,4 +1,4 @@
-from sympy import lambdify, Mul, Add, Symbol, trigsimp, Eq, solve, pprint
+from sympy import lambdify, Mul, Add, Symbol, trigsimp, Eq, solve
 from scipy.integrate import solve_ivp
 from numpy import linspace
 
@@ -103,18 +103,12 @@ class Lagrange:
         # get Lagrangian
         L = self.lagrangian()
         num_L = len(L)
-
-        # create list with variables that are needed for the lambdify function
+        # create list with variables that are needed for the lambdify function: [t,q1,q2,...,dq1,dq2,...]
         q_list = [self.t]
-        for i in range(num_L):
-            for j in range(len(self.q[i])-1):
-                if num_L > 1:
-                    q_list.append(self.q[j][i])
-                else:
-                    q_list.append(self.q[i][j])
+        for j in range(len(self.q[0]) - 1):
+            for i in range(num_L):
+                q_list.append(self.q[i][j])
 
-
-        print(q_list)
         # Convert symbolic functions to a callable functions
         rhs_func = [lambdify(q_list, L[self.q[i][2]], 'numpy') for i in range(num_L)]
 
@@ -126,16 +120,16 @@ class Lagrange:
             # create list of parameters
             param_list = [t]
             param_list.extend(y)
-
             y_dot = []
+
             # construct the derivative of the state vector
-            for i in range(y_len):
+            for n in range(y_len):
                 # the first half are the derivatives
-                if i < y_half_len:
-                    y_dot.append(y[y_half_len + i])
+                if n < y_half_len:
+                    y_dot.append(y[y_half_len + n])
                 # the second half are the second derivatives
                 else:
-                    y_dot.append(rhs_func[i - y_half_len](*param_list))
+                    y_dot.append(rhs_func[n - y_half_len](*param_list))
             return y_dot
 
         # return solved/simulated problem (solve problem by inserting numerical values)

@@ -4,7 +4,7 @@ import lagrange
 from matplotlib import pyplot as plt
 from simsave import save, load
 import time
-from numpy import array, linspace
+from numpy import array
 
 
 def preview(expr, **kwargs):
@@ -94,7 +94,6 @@ t_span = (0, 10)
 start = time.time()
 sol = L1.simulate(x0, t_span, 10001)
 end = time.time()
-print(sol)
 print("Duration of simulation: ", end - start, "s.")
 # save (symbolic data must be converted to a string)
 save("data/test.nc", ["time", "position", "angle", "position_velocity", "angular_velocity", "Energy and Variables"], [sol.t, sol.y[0], sol.y[1], sol.y[2], sol.y[3], array([str(q), str(t), str(T), str(U), str(F)])])
@@ -154,7 +153,7 @@ plt.subplot(2, 2, 1)
 plt.plot(time, position)
 plt.xlabel("Time (s)")
 plt.ylabel("Position (m)")
-plt.title("Position")
+plt.title("Position x")
 plt.grid()
 plt.subplot(2, 2, 2)
 plt.plot(time, position_velocity)
