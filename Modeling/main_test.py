@@ -2,7 +2,7 @@ from sympy import Function, pprint
 import sympy as sp
 import lagrange
 from matplotlib import pyplot as plt
-from simsave import save, load
+from simsave import save, load, tex_save
 import time
 from numpy import array
 
@@ -140,12 +140,13 @@ rplmts = [(xddt, xdd), (phiddt, phidd), (xdt, xd), (phidt, phid),
 Eq1a = sp.Eq(xdd, xdd_expr.subs(rplmts))
 Eq2a = sp.Eq(phidd, phidd_expr.subs(rplmts))
 # provide LaTeX notation for the symbols
-# provide LaTeX notation for the symbols
 sn_dict = {phi: r"\varphi", phid: r"\dot{\varphi}",
            xdd: r"\ddot{x}", phidd: r"\ddot{\varphi}"}
 
 preview(Eq1a, symbol_names=sn_dict)
 preview(Eq2a, symbol_names=sn_dict)
+
+tex_save("data/tex_equation", [Eq1a,Eq2a])
 
 # plot
 plt.figure(figsize=(20,12))

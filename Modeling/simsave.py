@@ -1,8 +1,9 @@
 from netCDF4 import Dataset
+from sympy import latex
 
 def save(file_name="data.nc", data_names=None, data=None):
     """
-    Method for saving the simulated data
+    Method for saving the simulated data (and symbolic equation)
 
     :param file_name: name of the wanted file (with or without .nc)
     :type file_name: string
@@ -91,3 +92,33 @@ def load(file_name="data.nc", num_data=(0,)):
     data_set = [data_file.variables[n] for n in data]  # faster than for-loop
 
     return data_set
+
+
+def tex_save(file_name="tex_equation.txt", data=None):
+    """
+    Method for saving the symbolic equation in latex format
+
+    :param file_name: name of the wanted file (with or without .txt)
+    :type file_name: string
+    :param data: data to save (equation)
+    :type data: list of symbolic equations
+    """
+
+    # check if ".txt" is already in file name
+    if ".txt" in file_name:
+        name_str = file_name
+    else:
+        name_str = file_name + ".txt"
+
+    # open and create file
+    file = open(name_str, "w")
+
+    # check for one or more equations
+    if isinstance(data, list):
+        for d in data:
+            file.write(latex(d) + "\n")
+    else:
+        file.write(latex(data))
+
+    # close file
+    file.close()
