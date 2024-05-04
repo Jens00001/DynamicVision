@@ -39,7 +39,7 @@ class Lagrange:
         assert isinstance(self.U, (Mul, Add))
         assert isinstance(self.q, list)
         assert isinstance(self.t, Symbol)
-        assert isinstance(self.F, (Mul, Add, int, float))
+        assert isinstance(self.F, (list, Mul, Add, int, float))
 
     def lagrange_equation(self):
         """
@@ -73,6 +73,9 @@ class Lagrange:
         DL_dqd = []
         eq = []
         eq_rhs = []
+
+        if not isinstance(self.F, list):
+            self.F = [self.F, ]
 
         # compute derivatives of Lagrange function regarding the generalized coordinate
         for i in range(num_q):
