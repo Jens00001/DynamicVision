@@ -1,9 +1,10 @@
 import geometric_relation as gr
 import lagrange
 import sympy as sp
-from sympy import Function, pprint
+from sympy import Function, pprint, sin, cos, atan2, atan
 import time
 from matplotlib import pyplot as plt
+from simsave import tex_save
 
 def preview(expr, **kwargs):
     """
@@ -18,71 +19,101 @@ def preview(expr, **kwargs):
     plt.show()
 
 
-params = sp.symbols("m, g, k, d, l")
-m, g, k, d, l = params
+params = sp.symbols("m, g, k, d, l, y0")
+m, g, k, d, l, y0 = params
+
+mass = 0.05
+gravity = 9.81
+spring_constant = 5
+spring_init_length = 0.03
+damping = 0.1
+length = 0.05
 
 t = sp.Symbol("t")  # create the symbol for the time
 xt = Function("x")(t)  # x(t)
 yt = Function("y")(t)
 ydt = yt.diff(t)
 yddt = yt.diff(t, 2)
-
+xdt = xt.diff(t)
+xddt = xt.diff(t, 2)
 
 y1t = Function("y1")(t)
 x1t = Function("x1")(t)  # x(t)
+x1dt = x1t.diff(t)
 y1dt = y1t.diff(t)
 y1ddt = y1t.diff(t, 2)
 
-q = [[yt, ydt, yddt],]
+y2t = Function("y2")(t)
+x2t = Function("x2")(t)  # x(t)
+x2dt = x2t.diff(t)
+y2dt = y2t.diff(t)
+y2ddt = y2t.diff(t, 2)
 
-T = 1/2 * m * y1dt**2
-U = 1/2 * k * y1t**2 + m * g * y1t
-D = -d * ydt
+q = [[xt, xdt, xddt], [yt, ydt, yddt]]
 
-E = gr.Relation([U, T, D], [0, l], [x1t, y1t], [0, yt])
-# pprint(E.compute_relation())
-pprint(E.compute_energy())
+T = 1/2 * m * (x2dt**2 + y2dt**2)
+U = 1/2 * k * y1t**2 + m * g * y2t
+D = 0 #-d * ydt
 
-U = E.compute_energy()[0]
-T = E.compute_energy()[1]
-D = E.compute_energy()[2]
+E1 = gr.Relation([U, T, D], [0, y0], [x2t, y2t], [x1t, y1t])
+# pprint(E1.compute_relation())
+# pprint(E2.compute_relation())
 
-mass = 0.05
-gravity = 9.81
-spring_constant = 5
-damping = 0.1
-length = 0.03
+U1 = E1.compute_energy()[0]
+T1 = E1.compute_energy()[1]
+D1 = E1.compute_energy()[2]
+# pprint(E1.compute_energy())
 
-T = T.subs(m, mass)
-U = U.subs([(m, mass), (g, gravity), (k, spring_constant), (l, length)])
-D = D.subs(d, damping)
-L1 = lagrange.Lagrange(q, t, T, U, D)
+E2 = gr.Relation([U1, T1, D1], [l * sin(atan2(xt, yt)), l * cos(atan2(xt, yt))], [x1t, y1t], [xt, yt])
+U2 = E2.compute_energy()[0]
+T2 = E2.compute_energy()[1]
+D2 = E2.compute_energy()[2]
+tex_save("data/tex_energy", [U2, T2])
+# pprint(E2.compute_energy())
 
-L_eq = L1.lagrangian()[q[0][-1]]
-pprint(L_eq)
+T = T2.subs([(m, mass), (g, gravity), (k, spring_constant), (y0, spring_init_length), (l, length), (d, damping)])
+U = U2.subs([(m, mass), (g, gravity), (k, spring_constant), (y0, spring_init_length), (l, length), (d, damping)])
+#D = D2.subs([(m, mass), (g, gravity), (k, spring_constant), (l, length), (d, damping)])
+L1 = lagrange.Lagrange(q, t, T, U, [D, D])
+
+L_eq = L1.lagrangian()
+tex_save("data/tex_equation", [L_eq[q[0][-1]], L_eq[q[1][-1]]])
+#pprint(L_eq)
 
 # plot equation
-ydd_expr = L_eq
-y, yd, ydd = sp.symbols("y, yd, ydd")
-rplmts = [(yddt, ydd), (ydt, yd), (yt, y)]
-Eq1a = sp.Eq(ydd, ydd_expr.subs(rplmts))
+xdd_expr = L_eq[q[0][-1]]
+ydd_expr = L_eq[q[1][-1]]
+x, y, xd, yd, xdd, ydd = sp.symbols("x, y, xd, yd, xdd, ydd")
+rplmts = [(xddt, xdd), (yddt, ydd), (xdt, xd), (ydt, yd),(xt, x), (yt, y)]
+Eq1a = sp.Eq(xdd, xdd_expr.subs(rplmts))
+Eq2a = sp.Eq(ydd, ydd_expr.subs(rplmts))
 # provide LaTeX notation for the symbols
-sn_dict = {yd: r"\dot{y}", ydd: r"\ddot{y}"}
+sn_dict = {xd: r"\dot{x}", yd: r"\dot{y}",
+           xdd: r"\ddot{x}", ydd: r"\ddot{y}"}
 
 preview(Eq1a, symbol_names=sn_dict)
+preview(Eq2a, symbol_names=sn_dict)
 
 # simulation
-x0 = [0, 0]
-t_span = (0, 10)
+x0 = [0.035, 0, 0.08, 0]
+t_span = (0, 20)
 
 start = time.time()
-sol = L1.simulate(x0, t_span, 10001)
+sol = L1.simulate(x0, t_span, 20001)
 end = time.time()
 print("Duration of simulation: ", end - start, "s.")
 
 # plot
 plt.figure(figsize=(20,12))
+plt.subplot(1, 2, 1)
 plt.plot(sol.t, sol.y[0])
+plt.xlabel("Time (s)")
+plt.ylabel("Position (m)")
+plt.title("Position x")
+plt.grid()
+
+plt.subplot(1, 2, 2)
+plt.plot(sol.t, sol.y[1])
 plt.xlabel("Time (s)")
 plt.ylabel("Position (m)")
 plt.title("Position y")

@@ -115,7 +115,7 @@ class Lagrange:
         # Convert symbolic functions to a callable functions
         rhs_func = [lambdify(q_list, L[self.q[i][2]], 'numpy') for i in range(num_L)]
 
-        # function to convert second order system to two first order systems
+        # function to convert second order system to first order systems
         def sim_fun(t, y):
             y_len = len(y)
             y_half_len = int(y_len/2)
@@ -135,6 +135,6 @@ class Lagrange:
                     y_dot.append(rhs_func[n - y_half_len](*param_list))
             return y_dot
 
-        # return solved/simulated problem (solve problem by inserting numerical values)
+        # return solved/simulated problem
         return solve_ivp(sim_fun, t_span, init_cond, t_eval=linspace(t_span[0], t_span[1], num_points), rtol=1e-5)
 

@@ -38,13 +38,15 @@ class Relation:
         :return: x
         :rtype: x
         """
-        # construct 2-dimensional translation matrix (T_0,2: translation in x-direction, T_1,2: translation in y-direction)
+        # construct 2-dimensional translation matrix
+        # (T[0,2]: translation in x-direction, T[1,2]: translation in y-direction)
         T = MatrixSymbol('T', 3, 3)
         T = Matrix(T)
         T = T.subs([(T[0, 0], 1), (T[0, 1], 0), (T[1, 0], 0), (T[1, 1], 1), (T[2, 0], 0), (T[2, 1], 0), (T[2, 2], 1)])
 
         # substitute x and y translation
         T = T.subs([(T[0, 2], self.d[0]), (T[1, 2], self.d[1])])
+        # pprint(T)
 
         comp_coord = MatrixSymbol('comp_coord', len(self.c) + 1, 1)
         comp_coord = Matrix(comp_coord)
@@ -65,12 +67,28 @@ class Relation:
         :return: x
         :rtype: x
         """
+        # get geometric relation
         coords = self.compute_relation()
-        t = Symbol("t")  # create the symbol for the time
+        # create the symbol for the time
+        t = Symbol("t")
+        # compute derivative of component coordinates
         dgc = [gc.diff(t) for gc in self.c]
+        # compute derivative of component coordinates depending on generalized coordinates
         dcoord = [co.diff(t) for co in coords]
-        energy_pot = [self.E[0].subs([(self.c[i], coords[i])]) for i in range(len(self.c))]
-        energy_kin = [self.E[1].subs([(dgc[i], dcoord[i])]) for i in range(len(self.c))]
-        ex_force = [self.E[2].subs([(dgc[i], dcoord[i])]) for i in range(len(self.c))]
-        return [energy_pot[1], energy_kin[1], ex_force[1]]
+
+        # potential energy depends always on q only
+        energy_pot = self.E[0].subs([(self.c[0], coords[0]), (self.c[1], coords[1])])
+
+        # kinetic energy can depend on dq and q
+        energy_kin = self.E[1].subs([(dgc[0], dcoord[0]), (dgc[1], dcoord[1]),
+                                     (self.c[0], coords[0]), (self.c[1], coords[1])])
+
+        # generalized force (external force can be an integer or can depend on q and/or dq)
+        if isinstance(self.E[2], int) or isinstance(self.E[2], float):
+            ex_force = self.E[2]
+        else:
+            ex_force = self.E[2].subs([(self.c[0], coords[0]), (self.c[1], coords[1]),
+                                   (dgc[0], dcoord[0]), (dgc[1], dcoord[1])])
+
+        return [energy_pot, energy_kin, ex_force]
 
