@@ -131,7 +131,7 @@ class Mass:
         assert isinstance(self.mass,(int,float))
         assert isinstance(self.color, str)
 
-    def enery(self,xt,xdt,g):
+    def energy(self,xt,xdt,g):
         """" 
         Method for computing the energy of the spring in its current position
 

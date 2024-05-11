@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from simsave import save, load, tex_save
 import time
 from numpy import array
-
+import os
 
 def preview(expr, **kwargs):
     """
@@ -96,11 +96,13 @@ sol = L1.simulate(x0, t_span, 10001)
 end = time.time()
 print("Duration of simulation: ", end - start, "s.")
 # save (symbolic data must be converted to a string)
-save("data/test.nc", ["time", "position", "angle", "position_velocity", "angular_velocity", "Energy and Variables"], [sol.t, sol.y[0], sol.y[1], sol.y[2], sol.y[3], array([str(q), str(t), str(T), str(U), str(F)])])
+#path and name of the saved file
+savepath = os.path.dirname(os.path.realpath(__file__))+"\data\\test.nc"
+save(savepath, ["time", "position", "angle", "position_velocity", "angular_velocity", "Energy and Variables"], [sol.t, sol.y[0], sol.y[1], sol.y[2], sol.y[3], array([str(q), str(t), str(T), str(U), str(F)])])
 
 # load
 start = time.time()
-data = load("data/test.nc")
+data = load(savepath)
 end = time.time()
 print("Duration of loading data: ", end - start, "s.")
 
@@ -146,7 +148,9 @@ sn_dict = {phi: r"\varphi", phid: r"\dot{\varphi}",
 preview(Eq1a, symbol_names=sn_dict)
 preview(Eq2a, symbol_names=sn_dict)
 
-tex_save("data/tex_equation", [Eq1a,Eq2a])
+#path and name of the saved file
+savepath_equation = os.path.dirname(os.path.realpath(__file__))+"\data\\tex_equation"
+tex_save(savepath_equation, [Eq1a,Eq2a])
 
 # plot
 plt.figure(figsize=(20,12))

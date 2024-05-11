@@ -7,6 +7,7 @@ import time
 from numpy import array
 import objects
 import create_objects
+import os
 
 def preview(expr, **kwargs):
     """
@@ -31,13 +32,21 @@ params = sp.symbols("g, d")
 g, d = params
 gravity = 9.81
 d = 0.2
+initializeObjects = "manual" 
+match initializeObjects:
+    case "manual":
+        s1 = objects.Spring([0,0], 15, 10)
+        m1 = objects.Mass(5,[0,15])
+        T_m1, U_m1 = m1.energy(xt, xdt, g)
+        U_s1 = s1.energy(xt)
+    case "with_create_objects":
+        list_of_springs, list_of_mass = create_objects.create_objects("Value") # enter stop as object to stop the creating process
+        s1 = list_of_springs[0]
+        m1 = list_of_mass[0]
 
-list_of_springs, list_of_mass = create_objects.create_objects("Value") # enter stop as object to stop the creating process
-s1 = list_of_springs[0]
-m1 = list_of_mass[0]
-
-T_m1, U_m1 = m1.enery(xt, xdt, g)
-U_s1 = s1.energy(xt)
+        T_m1, U_m1 = m1.energstop
+        y(xt, xdt, g)
+        U_s1 = s1.energy(xt)
 
 eq_type = "Values" # Symbols oder Values
 match eq_type:
@@ -63,7 +72,7 @@ rplmts = [(xddt, xdd), (xdt, xd), (xt, x)]
 Eq1a = sp.Eq(xdd, xdd_expr.subs(rplmts))
 # provide LaTeX notation for the symbols
 sn_dict = {xd: r"\dot{x}", xdd: r"\ddot{x}"}
-
+print(type(os.path.dirname(os.path.realpath(__file__))))
 preview(Eq1a, symbol_names=sn_dict)
 
 # simulation
@@ -75,12 +84,14 @@ sol = L1.simulate(x0, t_span, 10001)
 end = time.time()
 print("Duration of simulation: ", end - start, "s.")
 # save (symbolic data must be converted to a string)
-save("data/test.nc", ["time", "position", "velocity", "Energy and Variables"], [sol.t, sol.y[0], sol.y[1], array([str(q), str(t), str(T), str(U), str(F)])])
+#path and name of the saved file
+savepath = os.path.dirname(os.path.realpath(__file__))+"\data\\test.nc"
+save(savepath, ["time", "position", "velocity", "Energy and Variables"], [sol.t, sol.y[0], sol.y[1], array([str(q), str(t), str(T), str(U), str(F)])])
 
 
 # load
 start = time.time()
-data = load("data/test.nc", (0,))
+data = load(savepath, (0,))
 end = time.time()
 print("Duration of loading data: ", end - start, "s.")
 

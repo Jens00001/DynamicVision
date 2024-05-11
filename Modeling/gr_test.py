@@ -5,6 +5,7 @@ from sympy import Function, pprint, sin, cos, atan2, atan
 import time
 from matplotlib import pyplot as plt
 from simsave import tex_save
+import os
 
 def preview(expr, **kwargs):
     """
@@ -68,7 +69,9 @@ E2 = gr.Relation([U1, T1, D1], [l * sin(atan2(xt, yt)), l * cos(atan2(xt, yt))],
 U2 = E2.compute_energy()[0]
 T2 = E2.compute_energy()[1]
 D2 = E2.compute_energy()[2]
-tex_save("data/tex_energy", [U2, T2])
+#path and name of the saved file
+savepath_energy = os.path.dirname(os.path.realpath(__file__))+"\data\\tex_energy"
+tex_save(savepath_energy, [U2, T2])
 # pprint(E2.compute_energy())
 
 T = T2.subs([(m, mass), (g, gravity), (k, spring_constant), (y0, spring_init_length), (l, length), (d, damping)])
@@ -77,7 +80,9 @@ U = U2.subs([(m, mass), (g, gravity), (k, spring_constant), (y0, spring_init_len
 L1 = lagrange.Lagrange(q, t, T, U, [D, D])
 
 L_eq = L1.lagrangian()
-tex_save("data/tex_equation", [L_eq[q[0][-1]], L_eq[q[1][-1]]])
+#path and name of the saved file
+savepath_equation = os.path.dirname(os.path.realpath(__file__))+"\data\\tex_equation"
+tex_save(savepath_equation, [L_eq[q[0][-1]], L_eq[q[1][-1]]])
 #pprint(L_eq)
 
 # plot equation
