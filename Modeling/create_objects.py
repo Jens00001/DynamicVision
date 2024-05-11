@@ -21,9 +21,9 @@ def create_objects(eq_sytle):
                 list_of_mass = []
                 position = ast.literal_eval(input("Please enter the position of the mass: "))
                 mass = float(input("Please enter weight of the mass: "))
-                list_of_mass.append(objects.Mass(mass, position))
+                list_of_mass.append(objects.Mass(position, mass))
 
             case "stop":
                 break
 
-    return list_of_springs, list_of_mass
+    return [list_of_springs, list_of_mass]

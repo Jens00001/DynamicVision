@@ -28,14 +28,15 @@ class Spring:
     :param sym_U: potential energy of the spring
     :type sym_U: sympy.Add or sympy.Mul
     """
-    def __init__(self, startingpoint, rest_length, stiffness, type = "linear", color="black"):
+    def __init__(self, startingpoint, rest_length, stiffness, type = "linear", color="black", lw=2):
         self.startingpoint = startingpoint
         self.rest_length = rest_length # in m
         self.length = self.rest_length # in m        
         self.stiffness = stiffness
         self.type = type
-        self.endpoint = self.startingpoint + [0,self.length]
+        self.endpoint = [self.startingpoint[0] + 0, self.startingpoint[1] + self.length]
         self.color = color
+        self.lw =lw
         self.sym_rest_length = sp.Symbol("l_0")
         self.sym_length = sp.Symbol("l")
         self.sym_stiffness = sp.Symbol("k")
@@ -112,11 +113,12 @@ class Mass:
     :param U: potential energy 
     :type U: sympy.Add or sympy.Mul
     """
-    def __init__(self, mass, position, color ="red"):
+    def __init__(self, position, mass, diameter= 0.3, color ="red"):
+        self.position = position
         self.mass = mass
         self.sym_mass = sp.Symbol("m")
-        self.position = position
         self.color = color 
+        self.diameter = diameter
         self.sym_T = sp.Symbol("T") # kinetic energy
         self.sym_U = sp.Symbol("U") # potential energy
 
