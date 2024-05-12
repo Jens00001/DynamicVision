@@ -1,16 +1,16 @@
 from netCDF4 import Dataset
 from sympy import latex
 
-def save(file_name="data.nc", data_names=None, data=None):
+def save(file_name="data.nc", data=None, names=None):
     """
     Method for saving the simulated data (and symbolic equation)
 
     :param file_name: name of the wanted file (with or without .nc)
     :type file_name: string
-    :param data_names: names of the corresponding data (like keys for python dictionaries)
-    :type data_names: list of strings
     :param data: data to save
-    :type data: list of int or float
+    :type data: list of int or list of float or list of str
+    :param names: names of the corresponding data (like keys for python dictionaries)
+    :type names: list of strings
     """
 
     # check if ".nc" is already in file name
@@ -18,6 +18,12 @@ def save(file_name="data.nc", data_names=None, data=None):
         name_str = file_name
     else:
         name_str = file_name + ".nc"
+
+    # check if names is empty, if so create default data names
+    if names is None:
+        data_names = [f'{"res"}{i}' for i in range(len(data))]
+    else:
+        data_names = names
 
     # open/create file in write mode ("w")
     data_file = Dataset(name_str, "w")

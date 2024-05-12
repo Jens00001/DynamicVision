@@ -95,11 +95,17 @@ start = time.time()
 sol = L1.simulate(x0, t_span, 10001)
 end = time.time()
 print("Duration of simulation: ", end - start, "s.")
-# save (symbolic data must be converted to a string)
-#path and name of the saved file
-savepath = os.path.dirname(os.path.realpath(__file__))+"\data\\test.nc"
-save(savepath, ["time", "position", "angle", "position_velocity", "angular_velocity", "Energy and Variables"], [sol.t, sol.y[0], sol.y[1], sol.y[2], sol.y[3], array([str(q), str(t), str(T), str(U), str(F)])])
 
+# save time
+save_data = [sol.t]
+# save simulation result
+save_data.extend(sol.y)
+# save (symbolic data must be converted to a string)
+sym_data = array([str(q), str(t), str(T), str(U), str(F)])
+save_data.append(sym_data)
+# path and name of the saved file
+savepath = os.path.dirname(os.path.realpath(__file__))+"\data\\test.nc"
+save(savepath, data=save_data)
 # load
 start = time.time()
 data = load(savepath)

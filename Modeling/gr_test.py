@@ -1,17 +1,17 @@
 import geometric_relation as gr
 import lagrange
 import sympy as sp
-from sympy import Function, pprint, sin, cos, atan2, atan
+from sympy import Function, pprint, sin, cos, atan2, atan, sqrt, trigsimp
 import time
 from matplotlib import pyplot as plt
 from simsave import tex_save
 import os
 
+
 def preview(expr, **kwargs):
     """
     Auxiliary function for "nice" display of extensive expressions (in LaTeX)
     """
-    import matplotlib.pyplot as plt
     latex_str = "$ %s $" % sp.latex(expr, **kwargs)
     latex_str = latex_str.replace("operatorname", "mathrm")
     plt.figure(figsize=(12, 5))  # 12x5 Zoll
@@ -51,31 +51,45 @@ y2dt = y2t.diff(t)
 y2ddt = y2t.diff(t, 2)
 
 q = [[xt, xdt, xddt], [yt, ydt, yddt]]
+# T = 1/2 * m * (x1dt**2 + y1dt**2)
+# U =  - m * g * y1t
+# D = 0 #-d * ydt
+#
+# E2 = gr.Relation([U, T, D], [xt, y0], [x1t, y1t], [xt, yt])
+# pprint(E2.compute_relation())
+# U2 = E2.compute_energy()[0]
+# T2 = E2.compute_energy()[1]
+# D2 = E2.compute_energy()[2]
+# # pprint(E2.compute_energy())
+#
+# T = T2.subs([(m, mass), (g, gravity), (k, spring_constant), (y0, spring_init_length), (l, length), (d, damping)])
+# U = U2.subs([(m, mass), (g, gravity), (k, spring_constant), (y0, spring_init_length), (l, length), (d, damping)])
 
 T = 1/2 * m * (x2dt**2 + y2dt**2)
-U = 1/2 * k * y1t**2 + m * g * y2t
+U = 1/2 * k * y1t**2 - m * g * y2t
 D = 0 #-d * ydt
 
 E1 = gr.Relation([U, T, D], [0, y0], [x2t, y2t], [x1t, y1t])
 # pprint(E1.compute_relation())
-# pprint(E2.compute_relation())
 
 U1 = E1.compute_energy()[0]
 T1 = E1.compute_energy()[1]
 D1 = E1.compute_energy()[2]
 # pprint(E1.compute_energy())
 
-E2 = gr.Relation([U1, T1, D1], [l * sin(atan2(xt, yt)), l * cos(atan2(xt, yt))], [x1t, y1t], [xt, yt])
+E2 = gr.Relation([U1, T1, D1], [xt, yt+l], [x1t, y1t], [xt, yt])
+# pprint(E2.compute_relation())
 U2 = E2.compute_energy()[0]
 T2 = E2.compute_energy()[1]
 D2 = E2.compute_energy()[2]
-#path and name of the saved file
-savepath_energy = os.path.dirname(os.path.realpath(__file__))+"\data\\tex_energy"
-tex_save(savepath_energy, [U2, T2])
 # pprint(E2.compute_energy())
 
-T = T2.subs([(m, mass), (g, gravity), (k, spring_constant), (y0, spring_init_length), (l, length), (d, damping)])
-U = U2.subs([(m, mass), (g, gravity), (k, spring_constant), (y0, spring_init_length), (l, length), (d, damping)])
+T = trigsimp(T2.subs([(m, mass), (g, gravity), (k, spring_constant), (y0, spring_init_length), (l, length), (d, damping)]))
+U = trigsimp(U2.subs([(m, mass), (g, gravity), (k, spring_constant), (y0, spring_init_length), (l, length), (d, damping)]))
+
+#path and name of the saved file
+savepath_energy = os.path.dirname(os.path.realpath(__file__))+"\data\\tex_energy"
+tex_save(savepath_energy, [U, T])
 #D = D2.subs([(m, mass), (g, gravity), (k, spring_constant), (l, length), (d, damping)])
 L1 = lagrange.Lagrange(q, t, T, U, [D, D])
 
@@ -100,7 +114,7 @@ preview(Eq1a, symbol_names=sn_dict)
 preview(Eq2a, symbol_names=sn_dict)
 
 # simulation
-x0 = [0.035, 0, 0.08, 0]
+x0 = [0.015, 0, 0.065, 0]
 t_span = (0, 20)
 
 start = time.time()
@@ -124,3 +138,4 @@ plt.ylabel("Position (m)")
 plt.title("Position y")
 plt.grid()
 plt.show()
+
