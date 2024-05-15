@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 import matplotlib.animation as animation 
 from matplotlib.figure import Figure
+import os
 
 # Define the Start Menu with Header, Pictures and Buttons to Switch to Create Model, Open Model, Documentation and Exit the App 
 class StartMenu(wx.Panel):
@@ -12,8 +13,8 @@ class StartMenu(wx.Panel):
         self.SetBackgroundColour(wx.Colour(255,255,255,0))
 
         # Create Images from the Univeristy Logo and the Logo of Systems Engineering 
-        image_left = wx.Image("Image_uni.png",wx.BITMAP_TYPE_ANY)   # Load the Image of the Uni Logo
-        image_right = wx.Image("Image_se.png",wx.BITMAP_TYPE_ANY)   # Load the Image of Systems Engineering
+        image_left = wx.Image(os.path.dirname(os.path.realpath(__file__))+"\Image_uni.png",wx.BITMAP_TYPE_ANY)   # Load the Image of the Uni Logo
+        image_right = wx.Image(os.path.dirname(os.path.realpath(__file__))+"\Image_se.png",wx.BITMAP_TYPE_ANY)   # Load the Image of Systems Engineering
         image_left = image_left.ConvertToBitmap()
         image_right = image_right.ConvertToBitmap()
         self.bitmap_left = wx.StaticBitmap(self,bitmap=image_left,pos=(10,10))
