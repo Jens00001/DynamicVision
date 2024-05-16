@@ -98,17 +98,25 @@ class mechanics:
         # Convert symbolic functions to a callable functions
         rhs_func = [lambdify(var_list, func[acc[i]], 'numpy') for i in range(num_eom)]
 
-        # Lambdify the accelerations
-        # accelerations = [lambdify((t, x1, x2, v1, v2), a, modules='numpy') for a in [a1, a2]]
-
 
         # function to convert second order system to first order systems
         def sim_fun(t, y):
             pos = y[::2]
             velocity = y[1::2]
             # Compute accelerations
-            a = [accel(*y) for accel in rhs_func]
+            # a = [accel(*y) for accel in rhs_func]
+            a = [func[acc[i]] for i in range(num_eom)]
 
+            # replace coordinates with numeric values
+            for i in range(num_eom):
+                for j in range(num_eom):
+                    a[i] = a[i].subs([(coord[j], pos[j])])
+                    a[i] = a[i].subs([(dcoord[j], velocity[j])])
+
+            # accel.append(a[0].subs([(coord[i], pos[i]) for i in range(num_eom)]))
+            # accel.append(a[1].subs([(coord[0], pos[0]), (coord[1], pos[1])]))
+            # pprint(pos)
+            # pprint(accel)
             # Initialize state
             y_dot = zeros_like(y)
             y_dot[::2] = velocity

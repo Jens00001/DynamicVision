@@ -26,9 +26,9 @@ m1, m2, g, k1, k2, l1, l2 = params
 # Define constants
 k_1 = 1.0  # spring constant for the first spring (N/m)
 k_2 = 1.0  # spring constant for the second spring (N/m)
-m_1 = 1.0  # mass of the first object (kg)
-m_2 = 1.0  # mass of the second object (kg)
-gravity = 9.81
+m_1 = 1  # mass of the first object (kg)
+m_2 = 1  # mass of the second object (kg)
+gravity = 0 #9.81
 
 t = sp.Symbol("t")  # create the symbol for the time
 y1t = Function("y1")(t)  # x(t)
@@ -73,12 +73,12 @@ preview(Eq1a, symbol_names=sn_dict)
 preview(Eq2a, symbol_names=sn_dict)
 
 # simulation
-y1_0 = 1.0      # initial position of the first object (m)
+y1_0 = 1      # initial position of the first object (m)
 v1_0 = 0.0      # initial velocity of the first object (m/s)
-y2_0 = 2.0     # initial position of the second object (m)
+y2_0 = 1     # initial position of the second object (m)
 v2_0 = 0.0      # initial velocity of the second object (m/s)
 y0 = [y1_0, v1_0, y2_0, v2_0]
-t_span = (0, 10)
+t_span = (0, 100)
 
 start = time.time()
 res = newton.simulate(Eq, y0, t_span, 100001)
