@@ -1,12 +1,11 @@
-import newton as n
-from sympy import Function, pprint
+import newton as newton
+from numpy import array
 import sympy as sp
-import lagrange
 from matplotlib import pyplot as plt
 from simsave import save, load, tex_save
 import time
-from numpy import array
 import os
+
 
 def preview(expr, **kwargs):
     """
@@ -20,81 +19,150 @@ def preview(expr, **kwargs):
     plt.axis("off")
     plt.show()
 
-params = sp.symbols("m1, m2, g, k1, k2, l1, l2")
-m1, m2, g, k1, k2, l1, l2 = params
 
-# Define constants
-k_1 = 1.0  # spring constant for the first spring (N/m)
-k_2 = 1.0  # spring constant for the second spring (N/m)
-m_1 = 1  # mass of the first object (kg)
-m_2 = 1  # mass of the second object (kg)
-gravity = 0 #9.81
+# Setup system with new mechanics
+system = newton.Mechanics()
 
-t = sp.Symbol("t")  # create the symbol for the time
-y1t = Function("y1")(t)  # x(t)
-y2t = Function("y2")(t)  # x(t)
-y1dt = y1t.diff(t)
-y2dt = y2t.diff(t)
-y1ddt = y1t.diff(t, 2)
-y2ddt = y2t.diff(t, 2)
+# add masses
+system.add_mass('m1', mass=sp.symbols('m1'))
+system.add_mass('m2', mass=sp.symbols('m2'))
 
-F1_1 = m1*g
-F1_2 = k2*(y2t-y1t)
-F1_3 = -k1*y1t
-F2_1 = m2*g
-F2_2 = -k2*(y2t-y1t)
+# define symbols
+k1, k2, m1, m2, g, l1, l2 = sp.symbols('k1 k2 m1 m2 g l1 l2')
 
-# init class
-newton = n.mechanics([[F1_1, F1_2, F1_3], [F2_1, F2_2]], [m1, m2], [y1t, y2t], [[0], [0]])
+# get coordinates for masses
+x1 = system.coordinates['m1']['x']
+y1 = system.coordinates['m1']['y']
+x2 = system.coordinates['m2']['x']
+y2 = system.coordinates['m2']['y']
 
-# get sum of forces per mass
-F_sum = newton.sum_of_force()
+# forces on m1
+F_1 = -k1 * (x1 - l1)
+F_2 = k2 * (x2 - x1 - l2)
+F_1G = m1 * g
 
-# get equation of motion
-Eq = newton.equation_of_motion()
-# print(Eq)
+# force in x direction
+F_x_m1 = F_1 + F_2 + F_1G
+system.add_force('m1', (F_x_m1, 'x'))
 
-# take equation of motion and substitute parameters
-Eq = [Eq[i].subs([(m1, m_1), (m2, m_2), (k1, k_1), (k2, k_2), (g, gravity)]) for i in range(len(Eq))]
-Eq_ = newton.get_eom(Eq)
-# plot equation
-xdd_expr1 = Eq_[y1ddt]
-xdd_expr2 = Eq_[y2ddt]
-y1, y2, y1d, y2d, y1dd, y2dd = sp.symbols("y1, y2, y1d, y2d, y1dd, y2dd")
+# force in y direction
+F_y_m1 = 0
+system.add_force('m1', (F_y_m1, 'y'))
 
-rplmts = [(y1ddt, y1dd), (y2ddt, y2dd), (y1dt, y1d), (y2dt, y2d), (y1t, y1), (y2t, y2)]
-Eq1a = sp.Eq(y1dd, xdd_expr1.subs(rplmts))
-Eq2a = sp.Eq(y2dd, xdd_expr2.subs(rplmts))
-# provide LaTey notation for the symbols
-sn_dict = {y1dd: r"\ddot{y1}", y1d: r"\dot{\y1}",
-           y2dd: r"\ddot{y2}", y2d: r"\dot{\y2}"}
+# forces on m2
+F_3 = -k2 * (x2 - x1 - l2)
+F_2G = m2 * g
 
-preview(Eq1a, symbol_names=sn_dict)
-preview(Eq2a, symbol_names=sn_dict)
+# force in x direction
+F_x_m2 = F_3 + F_2G
+system.add_force('m2', (F_x_m2, 'x'))
 
-# simulation
-y1_0 = 1      # initial position of the first object (m)
-v1_0 = 0.0      # initial velocity of the first object (m/s)
-y2_0 = 1     # initial position of the second object (m)
-v2_0 = 0.0      # initial velocity of the second object (m/s)
-y0 = [y1_0, v1_0, y2_0, v2_0]
-t_span = (0, 100)
+# force in y direction
+F_y_m2 = 0
+system.add_force('m2', (F_y_m2, 'y'))
+
+# get equation of motion (only required for displaying purposes)
+equations = system.generate_equations()
+param_values = {m1: 1, m2: 2, k1: 100, k2: 150, g: 9.81, l1: 0.5, l2: 0.4}
+
+# get substituted equations (only required for displaying purposes)
+sub_equations = system.substitute_parameters(equations, param_values)
+rhs_eq = system.rhs_of_equation(sub_equations)
+# print(rhs_eq)
+
+z0 = [1, 0, 2, 0, 0, 0, 0, 0]  # [x1, y1, x2, y2, x1_dot, y1_dot, x2_dot, y2_dot]
+t_span = (0, 10)
 
 start = time.time()
-res = newton.simulate(Eq, y0, t_span, 100001)
+res = system.simulate(param_values, z0, t_span, 100001)
 end = time.time()
 print("Duration of simulation: ", end - start, "s.")
 
-t_values = res.t
-x1_values = res.y[0]
-x2_values = res.y[2]
+print("Saving data ...")
+# save (symbolic data must be converted to a string)
+names = ["m1", "m2"]
+forces = [system.forces.get(name, []) for name in names]
+sym_data = array([str(param_values), str(system.coordinates), str(system.velocities), str(system.accelerations), str(forces)])
+# save time
+save_data = [res.t]
+# save simulation result
+save_data.extend(res.y)
+save_data.append(sym_data)
+# save (symbolic data must be converted to a string)
+#path and name of the saved file
+savepath = os.path.dirname(os.path.realpath(__file__))+"\data\\test.nc"
+save(savepath, data=save_data)
+print("Data saved.")
+
+print("Loading data ...")
+start = time.time()
+data = load(savepath, (0,))
+end = time.time()
+print("Duration of loading data: ", end - start, "s.")
+
+# load simulation data
+time = data[0][:]
+x1_val = data[1][:]
+x2_val = data[3][:]
+
+# construct equations of motion with saved data
+param_val = data[9][0]
+force_m1_x = sp.sympify(data[9][4])[0][0][0]
+force_m1_y = sp.sympify(data[9][4])[0][1][0]
+force_m2_x = sp.sympify(data[9][4])[1][0][0]
+force_m2_y = sp.sympify(data[9][4])[1][1][0]
+
+# set up system with loaded data
+loaded_system = newton.Mechanics()
+loaded_system.add_mass('m1', mass=sp.symbols('m1'))
+loaded_system.add_mass('m2', mass=sp.symbols('m2'))
+k1, k2, m1, m2 = sp.symbols('k1 k2 m1 m2')
+x1 = loaded_system.coordinates['m1']['x']
+y1 = loaded_system.coordinates['m1']['y']
+x2 = loaded_system.coordinates['m2']['x']
+y2 = loaded_system.coordinates['m2']['y']
+loaded_system.add_force('m1', (force_m1_x, 'x'))
+loaded_system.add_force('m1', (force_m1_y, 'y'))
+loaded_system.add_force('m2', (force_m2_x, 'x'))
+loaded_system.add_force('m2', (force_m2_y, 'y'))
+equ = loaded_system.generate_equations()
+
+sub_eq = loaded_system.substitute_parameters(equ, sp.sympify(param_val))
+eq_rhs = loaded_system.rhs_of_equation(sub_eq)
 
 # Plot results
-plt.plot(t_values, x1_values, label='Position of Mass 1 (m)')
-plt.plot(t_values, x2_values, label='Position of Mass 2 (m)')
+plt.plot(time, x1_val, label='Position of Mass 1 (m)')
+plt.plot(time, x2_val, label='Position of Mass 2 (m)')
 plt.xlabel('Time (s)')
 plt.ylabel('Position (m)')
 plt.title('Double Mass Oscillator')
 plt.legend()
 plt.grid(True)
 plt.show()
+
+# plot equation
+xdd_expr1 = eq_rhs[0]
+xdd_expr2 = eq_rhs[2]
+
+x1t = sp.sympify(data[9][1])['m1']['x']
+x1dt = sp.sympify(data[9][2])['m1']['x']
+x1ddt = sp.sympify(data[9][3])['m1']['x']
+x2t = sp.sympify(data[9][1])['m2']['x']
+x2dt = sp.sympify(data[9][2])['m2']['x']
+x2ddt = sp.sympify(data[9][3])['m2']['x']
+
+x1, x2, x1d, x2d, x1dd, x2dd = sp.symbols("x1, x2, x1d, x2d, x1dd, x2dd")
+
+rplmts = [(x1ddt, x1dd), (x2ddt, x2dd), (x1dt, x1d), (x2dt, x2d), (x1t, x1), (x2t, x2)]
+Eq1a = sp.Eq(x1dd, xdd_expr1.subs(rplmts))
+Eq2a = sp.Eq(x2dd, xdd_expr2.subs(rplmts))
+# provide LaTey notation for the symbols
+sn_dict = {x1dd: r"\ddot{x1}", x1d: r"\dot{\x1}",
+           x2dd: r"\ddot{x2}", x2d: r"\dot{\x2}"}
+
+preview(Eq1a, symbol_names=sn_dict)
+preview(Eq2a, symbol_names=sn_dict)
+
+#path and name of the saved file
+savepath_equation = os.path.dirname(os.path.realpath(__file__))+"\data\\tex_equation"
+tex_save(savepath_equation, [Eq1a, Eq2a])

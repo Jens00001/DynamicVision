@@ -1,80 +1,165 @@
-from sympy import lambdify, Mul, Add, Symbol, trigsimp, solve, pprint
+from sympy import Function, Eq, symbols, lambdify
 from scipy.integrate import solve_ivp
-from numpy import linspace, zeros_like
+from numpy import linspace, concatenate
+from re import search
 
-class mechanics:
+
+class Mechanics:
     """
-    Class for calculating the equation of motion using Newton (symbolic) in 2 dimensions
+    Class for calculating the equation of motion using Newton in 2 dimensions
 
-    :param force: forces resulting from the current free-body principle/principle of intersection at every mass
-    :type force: list of lists of sp.Mul
-    :param mass: masses of the corresponding forces
-    :type mass: list of sp.Symbols
-    :param coordinate: coordinate direction of the corresponding forces
-    :type coordinate: list of coordinate direction in which the force acts
-    :param angle: angle between the force and the y coordinates
-    :type angle: list of lists of integers or list of lists of floats
+    :param parameters: store mass parameter needed for free-body principle/principle of intersection
+    :type parameters: dictionary
+    :param coordinates: coordinate of every mass
+    :type coordinates: dictionary
+    :param velocities: velocities of every mass
+    :type velocities: dictionary
+    :param accelerations: accelerations of every mass
+    :type accelerations: dictionary
+    :param forces: sum of force at every mass resulting the free-body principle/principle of intersection
+    :type forces: dictionary
+    :param t: time variable
+    :type t: sympy.Symbols
     """
 
-    def __init__(self, force, mass, coordinate, angle):
-        self.force = force
-        self.mass = mass
-        self.coordinate = coordinate
-        self.angle = angle
+    def __init__(self):
+        self.parameters = {}
+        self.coordinates = {}
+        self.velocities = {}
+        self.accelerations = {}
+        self.forces = {}
+        self.t = symbols("t")
 
-    def check_attributes(self):
+    def add_mass(self, name, mass):
         """
-        Method for checking the type of input variable
+        Method for adding masses and computing their corresponding coordinates, velocities and accelerations
 
-        :raises AssertionError: if the type of the input variable is wrong
+        :param name: name of the mass. Eg: m1, m2, m3,...
+        :type name: string
+        :param mass: symbol of the mass. Eg: m1, m2, m3,...
+        :type mass: sympy.symbols()
         """
-        assert isinstance(self.force, list)
-        assert isinstance(self.coordinate, list)
-        assert isinstance(self.angle, list)
 
-    def sum_of_force(self):
+        # define mass
+        self.parameters[name] = {'mass': mass}
+
+        # regular expression to find the integer at the end (number of the mass)
+        integer = search(r'\d+', name)
+        name_int = int(integer.group())
+
+        # define coordinates and their derivatives for x and y directions (2-dimensional)
+        x = Function(f'x{name_int}')(self.t)
+        y = Function(f'y{name_int}')(self.t)
+        xdot = x.diff(self.t)
+        ydot = y.diff(self.t)
+        xddot = x.diff(self.t, 2)
+        yddot = y.diff(self.t, 2)
+
+        # save coordinates and derivatives in dictionary
+        self.coordinates[name] = {'x': x, 'y': y}
+        self.velocities[name] = {'x': xdot, 'y': ydot}
+        self.accelerations[name] = {'x': xddot, 'y': yddot}
+
+    def add_force(self, mass, force):
+        """
+        Method for adding forces that act on the corresponding mass
+
+        :param mass: Mass on which the forces act
+        :type mass: string
+        :param force: forces that act on the corresponding mass
+        :type force: sympy.Add()
+        """
+
+        # for first mass added to the system we need to initialize the list
+        if mass not in self.forces:
+            self.forces[mass] = []
+        self.forces[mass].append(force)
+
+
+    def sum_of_force(self, name, dir):
         """
         Method for computing the sum of the forces regarding the directions x and y
 
-        :return: symbolic sum of forces regarding F_sum = 0
-        :rtype: sympy.Add
+        :param name: Mass on which the forces act
+        :type name: string
+        :param dir: direction of the sum of forces acting on the corresponding mass
+        :type dir: sympy.Add()
+        :return: symbolic sum of forces
+        :rtype: sympy.Add()
         """
-        sum_of_force_x = []
-        for i in range(len(self.force)):
-            sum_of_force_x.append(sum(self.force[i]))
+        # list of (force, direction) tuples
+        forces_with_directions = self.forces.get(name, [])
 
-        return sum_of_force_x
+        total_force = 0
+        # loop through each (force, direction) tuple
+        for force, direction in forces_with_directions:
+            # sum up the force if the direction matches accordingly
+            if direction == dir:
+                total_force += force
 
-    def equation_of_motion(self):
-        t = Symbol("t")
+        return total_force
 
-        # right hand side of the equation of motion (multiplied by the corresponding mass)
-        rhs = self.sum_of_force()
-        num_eq = len(rhs)
+    def generate_equations(self):
+        """
+        Method for computing the equations of motion for every mass and direction
 
-        # acceleration
-        acc = [self.coordinate[i].diff(t, 2) for i in range(num_eq)]
+        :return: symbolic equations of motion
+        :rtype: list of sympy.Add()
+        """
 
-        # left hand side of the equation of motion (mass * acceleration)
-        lhs = [self.mass[i] * acc[i] for i in range(num_eq)]
+        equations = []
+        for name in self.parameters:
+            # current mass
+            m = self.parameters[name]['mass']
 
-        # equation of motion:  acceleration * mass - sum of forces = 0
-        eom = [lhs[i] - rhs[i] for i in range(num_eq)]
+            # accelerations for x and y directions
+            xddot = self.accelerations[name]['x']
+            yddot = self.accelerations[name]['y']
 
-        return eom
+            # sum of forces in x and y directions (sum of all applied forces)
+            F_sum_x = self.sum_of_force(name, 'x')
+            F_sum_y = self.sum_of_force(name, 'y')
 
-    def get_eom(self, eom):
-        t = Symbol("t")
-        # acceleration
-        acc = [self.coordinate[i].diff(t, 2) for i in range(len(eom))]
-        return solve(eom, acc)
+            # Newton's second law: F=ma <=> a=F/m
+            eq_x = Eq(xddot, F_sum_x / m)
+            eq_y = Eq(yddot, F_sum_y / m)
 
-    def simulate(self, eom, init_cond, t_span, num_points=1001):
+            # alternately append equations regarding x and y direction
+            equations.append(eq_x)
+            equations.append(eq_y)
+
+        return equations
+
+    def substitute_parameters(self, equations, param):
+        """
+        Method for substituting the parameters of the system (masses, spring constants, etc.)
+
+        :param equations: Equations in which the parameters are substituted (list of equations)
+        :type equations: list of sympy.Add()
+        :param param: Parameter values. The keys are the name of the parameters.
+        :type param: dictionary
+        :return: equations with substituted parameters
+        :rtype: list of sympy.Add()
+        """
+        return [eq.subs(param) for eq in equations]
+
+    def rhs_of_equation(self, equations):
+        """
+        Method for computing the right hand side of the equations
+
+        :param equations: (Substituted) equations of motion
+        :type equations: list of sympy.Add()
+        :return: right hand side of the equations
+        :rtype: list of sympy.Add()
+        """
+        return [eq.rhs for eq in equations]
+
+    def simulate(self, param_values, init_cond, t_span, num_points=1001):
         """
         Method to simulate (integrate) the given system
 
-        :param eom: equation of motion with substituted parameters
-        :type eom: list of sympy.Add
+        :param param_values: parameter of the given system. For example masses, spring constants,...)
+        :type param_values: dictionary
         :param init_cond: initial conditions regarding the system (Initial state)
         :type init_cond: list of int/float
         :param t_span: Interval of integration (start time and end time)
@@ -84,44 +169,40 @@ class mechanics:
         :return: See documentation of solve_ivp()
         :rtype: Bunch object
         """
+        # get the equations of motion, substitute the parameters and store the right hand side of the equation
+        eq = self.generate_equations()
+        sub_equations = self.substitute_parameters(eq, param_values)
+        eq_rhs = self.rhs_of_equation(sub_equations)
 
-        # get equation of motion
-        func = self.get_eom(eom)
-        num_eom = len(func)
+        # init lists for coordinates and velocities
+        coord = []
+        vel = []
 
-        # create list with variables that are needed for the lambdify function: [q1,q2,...,dq1,dq2,...]
-        t = Symbol("t")
-        acc = [self.coordinate[i].diff(t, 2) for i in range(num_eom)]
-        coord = self.coordinate
-        dcoord = [self.coordinate[i].diff(t) for i in range(num_eom)]
-        var_list = coord + dcoord
-        # Convert symbolic functions to a callable functions
-        rhs_func = [lambdify(var_list, func[acc[i]], 'numpy') for i in range(num_eom)]
+        # construct lists of coordinates and velocities that are needed for the lambdify function
+        for name in self.parameters:
+            x = self.coordinates[name]['x']
+            y = self.coordinates[name]['y']
+            xdot = self.velocities[name]['x']
+            ydot = self.velocities[name]['y']
+            coord.extend([x, y])
+            vel.extend([xdot, ydot])
 
+        # Lambdify: transform the symbolic equation of motion to numeric equation of motion
+        rhs_funcs = [lambdify(coord + vel, rhs) for rhs in eq_rhs]
 
-        # function to convert second order system to first order systems
-        def sim_fun(t, y):
-            pos = y[::2]
-            velocity = y[1::2]
-            # Compute accelerations
-            # a = [accel(*y) for accel in rhs_func]
-            a = [func[acc[i]] for i in range(num_eom)]
+        # function to convert a second order system to a first order system
+        def sim_fun(t, z):
+            half = len(z) // 2
+            positions = z[:half]
+            velocities = z[half:]
 
-            # replace coordinates with numeric values
-            for i in range(num_eom):
-                for j in range(num_eom):
-                    a[i] = a[i].subs([(coord[j], pos[j])])
-                    a[i] = a[i].subs([(dcoord[j], velocity[j])])
+            # evaluate the lambdified function at the current position and velocity ("*" unpacks lists into positional arguments)
+            rhs_evals = [f(*positions, *velocities) for f in rhs_funcs]
 
-            # accel.append(a[0].subs([(coord[i], pos[i]) for i in range(num_eom)]))
-            # accel.append(a[1].subs([(coord[0], pos[0]), (coord[1], pos[1])]))
-            # pprint(pos)
-            # pprint(accel)
-            # Initialize state
-            y_dot = zeros_like(y)
-            y_dot[::2] = velocity
-            y_dot[1::2] = a
-            return y_dot
+            # return state vector
+            return concatenate((velocities, rhs_evals))
 
-        # return solved/simulated problem
-        return solve_ivp(sim_fun, t_span, init_cond, t_eval=linspace(t_span[0], t_span[1], num_points), rtol=1e-6)
+        # define the time points where the solution is computed
+        t_eval = linspace(t_span[0], t_span[1], num_points)
+
+        return solve_ivp(sim_fun, t_span, init_cond, t_eval=t_eval, rtol=1e-6)
