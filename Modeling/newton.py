@@ -1,4 +1,4 @@
-from sympy import Function, Eq, symbols, lambdify
+from sympy import Function, Eq, symbols, lambdify, pprint
 from scipy.integrate import solve_ivp
 from numpy import linspace, concatenate
 from re import search
@@ -28,6 +28,7 @@ class Mechanics:
         self.velocities = {}
         self.accelerations = {}
         self.forces = {}
+        self.constraints = {}
         self.t = symbols("t")
 
     def add_mass(self, name, mass):
@@ -98,6 +99,43 @@ class Mechanics:
                 total_force += force
 
         return total_force
+
+    def generate_constraint(self, constraint_type, start_point, end_point, dimension):
+        """
+        Method for generating geometric relationships between two points/masses
+
+        :param constraint_type: type of constraint. Eg. "link"
+        :type constraint_type: string
+        :param start_point: starting point to define constraint. Eg. mass1.
+        :type start_point: string
+        :param end_point: ending point to define constraint. Eg. mass2.
+            If start = end: The function computes relationship between end_point and coordinate origin.
+        :type end_point: string
+        :param dimension: For link type: distance between start and end point
+        :type dimension: sympy.Symbols
+        """
+
+        '''
+        TODO:
+            Only two kinds of constraints exit for a 2-dimensional system. "Links" (eg. spring) and "angles" (eg. pendulum).
+            --> "angle" constraint type will be implemented at a later time.
+        '''
+        if constraint_type == "link":
+            # check if user wants to generate geometric relationship between mass and coordinate origin
+            if start_point == end_point:
+                link_from_x = 0
+                link_from_y = 0
+            else:
+                link_from_x = self.coordinates[start_point]['x']
+                link_from_y = self.coordinates[start_point]['y']
+
+            link_to_x = self.coordinates[end_point]['x']
+            link_to_y = self.coordinates[end_point]['y']
+            link_length = dimension
+
+            # define link constraint
+            constraint_expr = Eq((link_to_x - link_from_x) ** 2 + (link_to_y - link_from_y) ** 2, link_length ** 2)
+            self.constraints[start_point + '->' + end_point] = {"constraint type": constraint_type, "constraint": constraint_expr}
 
     def generate_equations(self):
         """

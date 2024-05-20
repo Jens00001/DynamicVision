@@ -1,7 +1,9 @@
 from sympy import MatrixSymbol, Matrix, Symbol, pprint, Derivative
 import numpy
 
-
+'''
+!!!!!!!!!!!!!!!!!!Obsolete. Please do not use anymore.!!!!!!!!!!!!!!!!!!!!!!!
+'''
 class Relation:
     """
     Class for calculating the geometric relationship between the component and the generalized coordinates

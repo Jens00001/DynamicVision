@@ -47,7 +47,7 @@ match initializeObjects:
         s1 = list_of_springs[0]
         m1 = list_of_mass[0]
 
-# coordinate direction of the corresponding forces (not needed, class newton.Mechanics generates coordinates )
+# coordinate direction of the corresponding forces (not needed, class newton.Mechanics generates coordinates)
 yt = [mass.yt for mass in list_of_mass]
 # print(yt)
 
@@ -78,7 +78,7 @@ for mass in list_of_mass:
                 list_of_force.append(-list_of_springs[j].force(list_of_springs[j-1].xt))
                 
     list_of_forces_all.append(list_of_force) # write the list of forces attached to each mass in the list of all forces
-# print(list_of_forces_all)
+print(list_of_forces_all)
 
 # eq_type = "Values" # Symbols oder Values
 # match eq_type:
@@ -111,6 +111,13 @@ system.add_force(str(sym_mass_list[1]), (F_x_m2, 'x'))
 F_y_m2 = 0
 system.add_force(str(sym_mass_list[1]), (F_y_m2, 'y'))
 
+# geometric relationships
+# distance between global coordinate origin and first mass
+system.generate_constraint("link", 'm1', 'm1', l1_0)
+# distance between first mass and second mass
+system.generate_constraint("link", 'm1', 'm2', l2_0)
+
+print(system.constraints)
 
 param_values = {sym_mass_list[0]: 1, sym_mass_list[1]: 2, k1: 100, k2: 150, g: 9.81, l1_0: 0.5, l2_0: 0.4}
 # get equation of motion (only required for displaying purposes), not needed for simulation
@@ -180,7 +187,7 @@ savepath_equation = os.path.dirname(os.path.realpath(__file__))+"\data\\tex_equa
 tex_save(savepath_equation, [Eq1a, Eq2a])
 
 # animation
-animation.animation(res, list_of_object_lists)
+# animation.animation(res, list_of_object_lists)
 
 ######################################################
 #init class newton
