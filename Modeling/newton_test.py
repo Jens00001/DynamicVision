@@ -61,6 +61,13 @@ system.add_force('m2', (F_x_m2, 'x'))
 F_y_m2 = 0
 system.add_force('m2', (F_y_m2, 'y'))
 
+# geometric relationships
+# distance between global coordinate origin and first mass
+system.generate_constraint("link", '0', 'm1', l1)
+# distance between first mass and second mass
+system.generate_constraint("link", 'm1', 'm2', l2)
+print(system.constraints)
+
 # get equation of motion (only required for displaying purposes)
 equations = system.generate_equations()
 param_values = {m1: 1, m2: 2, k1: 100, k2: 150, g: 9.81, l1: 0.5, l2: 0.4}
