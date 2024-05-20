@@ -33,7 +33,7 @@ class Spring:
         self.angle = inital_angle      # in ° 
         self.stiffness = stiffness # in (N/m)
         self.type = type
-        self.endpoint = [self.startingpoint[0] + self.length*np.sin(self.angle), self.startingpoint[1] + self.length*np.cos(self.angle)] # in (m)
+        self.endpoint = [self.startingpoint[0] - self.length*np.sin(self.angle), self.startingpoint[1] - self.length*np.cos(self.angle)] # in (m)
         self.color = color
         self.lw =lienwidth
 
@@ -92,7 +92,7 @@ class Spring:
         
         return self.sym_F
     
-    def move(self,x, attached_point, angle=0):
+    def move(self,attached_point, connected_point_below, angle=0):
         """
         Method for computing the new lenght and y-coordinate of the end point of the spring by a given change x
 
@@ -106,16 +106,15 @@ class Spring:
         :rtype: list 
         """
         self.startingpoint = attached_point
-        self.angle += angle
-        self.length += x
-        self.endpoint += [self.startingpoint[0] + self.length*np.sin(self.angle), self.startingpoint[1] + self.length*np.cos(self.angle)]
+        # self.angle += angle
+        # self.length += x
+        self.endpoint = connected_point_below
 
-        return [self.startingpoint, self.angle, self.length, self.endpoint]
+        return [self.startingpoint,  self.endpoint]
     
-    def substitution_list(self):
-        l_0 = (self.sym_rest_length, self.rest_length)
-        k = (self.sym_stiffness, self.stiffness)
-        return (l_0), (k)
+    def get_param_values(self):
+        
+        return {self.sym_rest_length: self.rest_length,self.sym_stiffness: self.stiffness}
 
 class Mass:
     """
@@ -131,7 +130,7 @@ class Mass:
     :param color: color of the mass in the animation, default is red
     :type color: str
     """
-    def __init__(self, position, mass, index, diameter= 0.3, color ="red"):
+    def __init__(self, position, mass, index, diameter= 0.1, color ="red"):
         self.position = position
         self.mass = mass
         self.index = index
@@ -171,17 +170,17 @@ class Mass:
 
         return self.sym_F
     
-    def move(self,attached_point):
+    def move(self,x,y):
         """
         :param attached_point: is the point where the mass is attached
         :type attached_point: list
         :return: position of the mass
         :rtype: list
         """
-        self.position += attached_point
+        self.position = [x,y]
 
         return self.position
     
-    def substitution_list(self):
-        m = (self.sym_mass, self.mass)
-        return m
+    def get_param_values(self):
+        
+        return {self.sym_mass: self.mass}

@@ -20,27 +20,18 @@ def preview(expr, **kwargs):
     plt.figure(figsize=(12, 5))  # 12x5 Zoll
     plt.text(0.5, 0.5, latex_str, fontsize=30, horizontalalignment="center")
     plt.axis("off")
-    plt.show()
+    plt.show(block=False)
 
-
-# t = sp.Symbol("t")  # create the symbol for the time
-# xt = Function("x")(t)  # x(t)
-# xdt = xt.diff(t)
-# xddt = xt.diff(t, 2)
-# q = [[xt, xdt, xddt],]
-#
-# params = sp.symbols("g, d")
-# g, d = params
-# gravity = 9.81
-# d = 0.2
 
 initializeObjects = "manual" 
 match initializeObjects:
     case "manual":
-        list_of_springs = [objects.Spring(startingpoint=[0,0], rest_length=1, stiffness=0.1, index=1), objects.Spring(startingpoint=[0,1], rest_length=1, stiffness=0.1, index=2)]
-        list_of_mass = [objects.Mass(position=[0,1],mass=5, index=1), objects.Mass(position=[0,2],mass=5, index=2)]
+        list_of_springs = [objects.Spring(startingpoint=[0,0], rest_length=0.5, stiffness=10, index=1), objects.Spring(startingpoint=[0,-0.5], rest_length=0.4, stiffness=15, index=2),
+                           objects.Spring(startingpoint=[0,-0.9], rest_length=0.6, stiffness=5, index=3)]
+        list_of_mass = [objects.Mass(position=[0,-0.5],mass=1, diameter= 0.2,index=1), objects.Mass(position=[0,-0.9],mass=2, diameter= 0.2,index=2), 
+                        objects.Mass(position=[0,-1.5],mass=0.5, diameter= 0.2, index=3)]
         list_of_object_lists = [list_of_springs, list_of_mass]
-
+        
     case "with_create_objects":
         list_of_object_lists= create_objects.create_objects("Value") # enter stop as object to stop the creating process
         list_of_springs, list_of_mass = list_of_object_lists
@@ -89,40 +80,74 @@ for mass in list_of_mass:
 
 # Setup system with Newton mechanics
 system = newton.Mechanics()
+
 # add masses
-system.add_mass(name=str(sym_mass_list[0]), mass=sym_mass_list[0]) # mass 1
-system.add_mass(name=str(sym_mass_list[1]), mass=sym_mass_list[1]) # mass 2
+for i in range(len(list_of_mass)):
+    system.add_mass(name=str(sym_mass_list[i]), mass=sym_mass_list[i]) # add mass i to the system 
 
-# define symbols (should get defined while setting up each component)
-k1, k2, g, l1_0, l2_0 = sp.symbols('k1 k2 g l1_0 l2_0')
+for i in range(len(sym_mass_list)):
+    system.add_force(str(sym_mass_list[i]), (0, 'y'))
+    system.add_force(str(sym_mass_list[i]), (sum(list_of_forces_all[i]), 'x'))
 
-# force in x direction of m1
-F_x_m1 = sum(list_of_forces_all[0])
-system.add_force(str(sym_mass_list[0]), (F_x_m1, 'x'))
-# force in y direction of m1
-F_y_m1 = 0
-system.add_force(str(sym_mass_list[0]), (F_y_m1, 'y'))
+# # force in x direction of m1
+# F_x_m1 = sum(list_of_forces_all[0])
+# system.add_force(str(sym_mass_list[0]), (F_x_m1, 'x'))
+# # force in y direction of m1
+# F_y_m1 = 0
+# system.add_force(str(sym_mass_list[0]), (F_y_m1, 'y'))
 
-# force in x direction of m2
-F_x_m2 = sum(list_of_forces_all[1])
-system.add_force(str(sym_mass_list[1]), (F_x_m2, 'x'))
+# # force in x direction of m2
+# F_x_m2 = sum(list_of_forces_all[1])
+# system.add_force(str(sym_mass_list[1]), (F_x_m2, 'x'))
 
-# force in y direction of m2
-F_y_m2 = 0
-system.add_force(str(sym_mass_list[1]), (F_y_m2, 'y'))
+# # force in y direction of m2
+# F_y_m2 = 0
+# system.add_force(str(sym_mass_list[1]), (F_y_m2, 'y'))
+
+# # force in x direction of m3
+# F_x_m3 = sum(list_of_forces_all[2])
+# system.add_force(str(sym_mass_list[2]), (F_x_m3, 'x'))
+
+# # force in y direction of m3
+# F_y_m3 = 0
+# system.add_force(str(sym_mass_list[2]), (F_y_m3, 'y'))
 
 
-param_values = {sym_mass_list[0]: 1, sym_mass_list[1]: 2, k1: 100, k2: 150, g: 9.81, l1_0: 0.5, l2_0: 0.4}
+#create dictionary of parameter values of each mass 
+param_values_mass = {}
+for mass in list_of_mass:
+    param_values_mass.update(mass.get_param_values())
+
+#create dictionary of parameter values of each spring 
+param_values_spring ={}
+for spring in list_of_springs:
+    param_values_spring.update(spring.get_param_values())
+    #print(param_values_spring)
+
+g = sp.Symbol('g')
+# ** unpacks the dictionary into positional arguments  
+param_values =  {**param_values_mass, **param_values_spring, g: 9.81}
+#print(param_values)
+
+
 # get equation of motion (only required for displaying purposes), not needed for simulation
 equations = system.generate_equations()
 sub_equations = system.substitute_parameters(equations, param_values)
 rhs_eq = system.rhs_of_equation(sub_equations)
 
-z0 = [1, 0, 2, 0, 0, 0, 0, 0]  # [x1, y1, x2, y2, x1_dot, y1_dot, x2_dot, y2_dot]
+#create list of inital conditions
+z0 = []
+for mass in list_of_mass:
+    z0.append(-mass.position[1])
+    z0.append(-mass.position[0])
+z0 += [0]*2*len(list_of_mass)
+print(z0)
+#z0 = [0.5, 0, 0.9, 0, 1.5, 0, 0, 0, 0, 0, 0, 0]  # [x1, y1, x2, y2, x1_dot, y1_dot, x2_dot, y2_dot]
+
 t_span = (0, 10)
 
 start = time.time()
-res = system.simulate(param_values, z0, t_span, 100001)
+res = system.simulate(param_values, z0, t_span, 100001) 
 end = time.time()
 print("Duration of simulation: ", end - start, "s.")
 
@@ -142,19 +167,24 @@ savepath = os.path.dirname(os.path.realpath(__file__))+"\data\\test.nc"
 save(savepath, data=save_data)
 print("Data saved.")
 
-time = res.t
+t = res.t
+# x1_val = res.y[1]
+# x2_val = res.y[3]
+# x3_val = res.y[5]
 x1_val = res.y[0]
 x2_val = res.y[2]
+x3_val = res.y[4]
 
 # Plot results
-plt.plot(time, x1_val, label='Position of Mass 1 (m)')
-plt.plot(time, x2_val, label='Position of Mass 2 (m)')
+plt.plot(t, x1_val, label='Position of Mass 1 (m)')
+plt.plot(t, x2_val, label='Position of Mass 2 (m)')
+plt.plot(t, x3_val, label='Position of Mass 3 (m)')
 plt.xlabel('Time (s)')
 plt.ylabel('Position (m)')
 plt.title('Double Mass Oscillator')
 plt.legend()
 plt.grid(True)
-plt.show()
+plt.show(block=False)
 
 # plot equations
 x1, x2, x1d, x2d, x1dd, x2dd = sp.symbols("x1, x2, x1d, x2d, x1dd, x2dd")
@@ -180,7 +210,7 @@ savepath_equation = os.path.dirname(os.path.realpath(__file__))+"\data\\tex_equa
 tex_save(savepath_equation, [Eq1a, Eq2a])
 
 # animation
-animation.animation(res, list_of_object_lists)
+animation.animation(res, list_of_object_lists,skip_sim_steps=150)
 
 ######################################################
 #init class newton
