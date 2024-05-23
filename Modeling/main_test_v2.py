@@ -2,7 +2,7 @@ from sympy import Function, pprint
 import sympy as sp
 import newton
 from matplotlib import pyplot as plt
-from simsave import save, tex_save
+from simsave import save_system, tex_save
 import time
 from numpy import array
 import objects
@@ -131,9 +131,9 @@ param_values =  {**param_values_mass, **param_values_spring, g: 9.81}
 
 # geometric relationships
 # distance between global coordinate origin and first mass
-system.generate_constraint("link", 'm1', 'm1', l1_0)
+# system.generate_constraint("link", 'm1', 'm1', l1_0)
 # distance between first mass and second mass
-system.generate_constraint("link", 'm1', 'm2', l2_0)
+# system.generate_constraint("link", 'm1', 'm2', l2_0)
 
 print(system.constraints)
 
@@ -159,19 +159,8 @@ end = time.time()
 print("Duration of simulation: ", end - start, "s.")
 
 print("Saving data ...")
-# save (symbolic data must be converted to a string)
-names = ["m1", "m2"]
-forces = [system.forces.get(name, []) for name in names]
-sym_data = array([str(param_values), str(system.coordinates), str(system.velocities), str(system.accelerations), str(forces)])
-# save time
-save_data = [res.t]
-# save simulation result
-save_data.extend(res.y)
-save_data.append(sym_data)
-# save (symbolic data must be converted to a string)
-#path and name of the saved file
 savepath = os.path.dirname(os.path.realpath(__file__))+"\data\\test.nc"
-save(savepath, data=save_data)
+save_system(savepath, res, system)
 print("Data saved.")
 
 t = res.t
@@ -217,11 +206,8 @@ savepath_equation = os.path.dirname(os.path.realpath(__file__))+"\data\\tex_equa
 tex_save(savepath_equation, [Eq1a, Eq2a])
 
 # animation
-<<<<<<< HEAD
 animation.animation(res, list_of_object_lists,skip_sim_steps=150)
-=======
 # animation.animation(res, list_of_object_lists)
->>>>>>> 2ae63033aaddbb7d212857610d363cde55a3036c
 
 ######################################################
 #init class newton

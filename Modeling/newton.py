@@ -18,6 +18,8 @@ class Mechanics:
     :type accelerations: dictionary
     :param forces: sum of force at every mass resulting the free-body principle/principle of intersection
     :type forces: dictionary
+    :param param_values: Values of parameters like k, m, g,...
+    :type param_values: dictionary
     :param t: time variable
     :type t: sympy.Symbols
     """
@@ -29,6 +31,7 @@ class Mechanics:
         self.accelerations = {}
         self.forces = {}
         self.constraints = {}
+        self.param_values = {}
         self.t = symbols("t")
 
     def add_mass(self, name, mass):

@@ -1,5 +1,6 @@
 from netCDF4 import Dataset
-from sympy import latex
+from sympy import latex, sympify
+from numpy import array
 
 def save(file_name="data.nc", data=None, names=None):
     """
@@ -44,6 +45,37 @@ def save(file_name="data.nc", data=None, names=None):
 
     # close file
     data_file.close()
+
+
+def save_system(file_name="data.nc", sim_res=None, system=None,  names=None):
+    """
+    Method for saving the simulated data and the mechanical system
+
+    :param file_name: name of the wanted file (with or without .nc)
+    :type file_name: string
+    :param sim_res: simulation results
+    :type sim_res: string
+    :param system: mechanical system
+    :type system: Newton System
+    :param names: names of the corresponding data (like keys for python dictionaries)
+    :type names: list of strings
+    """
+
+    # get masses to save forces
+    masses = [str(system.parameters[key]['mass']) for key in system.parameters]
+    forces = [system.forces.get(mass, []) for mass in masses]
+    # save system
+    sym_data = array(
+        [str(system.param_values), str(system.parameters), str(system.coordinates),
+         str(system.velocities), str(system.accelerations), str(forces), str(system.constraints)])
+
+    # save time
+    save_data = [sim_res.t]
+    # save simulation result
+    save_data.extend(sim_res.y)
+    save_data.append(sym_data)
+
+    save(file_name, save_data, names)
 
 
 def load(file_name="data.nc", num_data=(0,)):
@@ -98,6 +130,31 @@ def load(file_name="data.nc", num_data=(0,)):
     data_set = [data_file.variables[n] for n in data]  # faster than for-loop
 
     return data_set
+
+
+def load_system(file_name="data.nc"):
+    """
+    Method for loading the simulation results and the simulated system
+
+    :param file_name: name of the file you want to load (with or without .nc)
+    :type file_name: string
+    :return: data loaded from file {time,results,system}
+    :rtype: dictionary
+    """
+
+    data = load(file_name, num_data=(0,))
+    loaded_data = {'time': data[0][:],
+                   'results': [d[:] for d in data[1:-1]],
+                   'system': {'param_values': sympify(data[9][0]),
+                              'masses': list(sympify(data[9][1]).keys()),
+                              'coordinates': sympify(data[9][2]),
+                              'velocities': sympify(data[9][3]),
+                              'accelerations': sympify(data[9][4]),
+                              'forces': sympify(data[9][5]),
+                              'constraints': sympify(data[9][6])
+                              }
+                   }
+    return loaded_data
 
 
 def tex_save(file_name="tex_equation.txt", data=None):
