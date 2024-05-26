@@ -79,7 +79,6 @@ class Mechanics:
             self.forces[mass] = []
         self.forces[mass].append(force)
 
-
     def sum_of_force(self, name, dir):
         """
         Method for computing the sum of the forces regarding the directions x and y

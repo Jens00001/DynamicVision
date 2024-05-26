@@ -1,6 +1,8 @@
 from netCDF4 import Dataset
-from sympy import latex, sympify
+from sympy import sympify
 from numpy import array
+from os import path, remove
+from additions import eq_to_latex
 
 def save(file_name="data.nc", data=None, names=None):
     """
@@ -157,14 +159,14 @@ def load_system(file_name="data.nc"):
     return loaded_data
 
 
-def tex_save(file_name="tex_equation.txt", data=None):
+def tex_save(file_name="tex_equation.txt", system=None):
     """
     Method for saving the symbolic equation in latex format
 
     :param file_name: name of the wanted file (with or without .txt)
     :type file_name: string
-    :param data: data to save (equation)
-    :type data: list of symbolic equations
+    :param system: system to save (equations of motions)
+    :type system: newton.Mechanics Class
     """
 
     # check if ".txt" is already in file name
@@ -173,15 +175,18 @@ def tex_save(file_name="tex_equation.txt", data=None):
     else:
         name_str = file_name + ".txt"
 
-    # open and create file
+    # check if file already exits and delete it
+    if path.exists(name_str):
+        remove(name_str)
+
+    # open and create a new file
     file = open(name_str, "w")
 
-    # check for one or more equations
-    if isinstance(data, list):
-        for d in data:
-            file.write(latex(d) + "\n")
-    else:
-        file.write(latex(data))
+    # get latex expression of equation of motion and remove dollar sign
+    equation = eq_to_latex(system).replace("$", "")
+
+    # write to file
+    file.write(equation)
 
     # close file
     file.close()
