@@ -86,6 +86,7 @@ q = [[xt, xdt, xddt], [phit, phidt, phiddt]]
 L1 = lagrange.Lagrange(q, t, T, U, F)
 
 L_eq = L1.lagrangian()
+print(L_eq)
 
 # simulation
 x0 = [0,  sp.pi*0.5, 0, 0]

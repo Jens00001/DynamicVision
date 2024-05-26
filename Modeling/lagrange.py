@@ -2,6 +2,9 @@ from sympy import lambdify, Mul, Add, Symbol, trigsimp, Eq, solve
 from scipy.integrate import solve_ivp
 from numpy import linspace
 
+'''
+!!!!!!!!!!!!!!!!!!Obsolete. Please do not use anymore.!!!!!!!!!!!!!!!!!!!!!!!
+'''
 
 class Lagrange:
     """

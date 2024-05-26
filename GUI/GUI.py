@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 import matplotlib.animation as animation 
 from matplotlib.figure import Figure
+import os
 
 # Define the Start Menu with Header, Pictures and Buttons to Switch to Create Model, Open Model, Documentation and Exit the App 
 class StartMenu(wx.Panel):
@@ -12,8 +13,8 @@ class StartMenu(wx.Panel):
         self.SetBackgroundColour(wx.Colour(255,255,255,0))
 
         # Create Images from the Univeristy Logo and the Logo of Systems Engineering 
-        image_left = wx.Image("Image_uni.png",wx.BITMAP_TYPE_ANY)   # Load the Image of the Uni Logo
-        image_right = wx.Image("Image_se.png",wx.BITMAP_TYPE_ANY)   # Load the Image of Systems Engineering
+        image_left = wx.Image(os.path.dirname(os.path.realpath(__file__))+"\Image_uni.png",wx.BITMAP_TYPE_ANY)   # Load the Image of the Uni Logo
+        image_right = wx.Image(os.path.dirname(os.path.realpath(__file__))+"\Image_se.png",wx.BITMAP_TYPE_ANY)   # Load the Image of Systems Engineering
         image_left = image_left.ConvertToBitmap()
         image_right = image_right.ConvertToBitmap()
         self.bitmap_left = wx.StaticBitmap(self,bitmap=image_left,pos=(10,10))
@@ -201,19 +202,19 @@ class SteadyBody(wx.Panel):
         self.SetBackgroundColour(wx.Colour(255,255,255))
         text = wx.StaticText(self, label="SteadyBody", pos=(50, 50))  # Add a static text to the panel
 
-        self.density_label = wx.StaticText(self.panel,label = "What is the density of the Steady Body:",pos=(10,10))
+        self.density_label = wx.StaticText(self,label = "What is the density of the Steady Body:",pos=(10,10))
         self.density = wx.TextCtrl(self, pos=(10, 30), size=(200, -1))
         self.input_density = None
 
-        self.length_label = wx.StaticText(self.panel,label = "What is the length of the Steady Body:",pos=(10,10))
+        self.length_label = wx.StaticText(self,label = "What is the length of the Steady Body:",pos=(10,10))
         self.length = wx.TextCtrl(self, pos=(10, 30), size=(200, -1))
         self.input_length = None 
 
-        self.height_label = wx.StaticText(self.panel,label = "What is the height of the Steady Body:",pos=(10,10))
+        self.height_label = wx.StaticText(self,label = "What is the height of the Steady Body:",pos=(10,10))
         self.height = wx.TextCtrl(self, pos=(10, 30), size=(200, -1))
         self.input_height = None
 
-        self.width_label = wx.StaticText(self.panel,label = "What is the width of the Steady Body:",pos=(10,10))
+        self.width_label = wx.StaticText(self,label = "What is the width of the Steady Body:",pos=(10,10))
         self.width = wx.TextCtrl(self, pos=(10, 30), size=(200, -1))
         self.input_width = None
 
@@ -256,11 +257,11 @@ class SingleSpring(wx.Panel):
         self.SetBackgroundColour(wx.Colour(255,255,255))
         text = wx.StaticText(self, label="Single Spring", pos=(50, 50))  # Add a static text to the panel
 
-        self.length_spring_label = wx.StaticText(self.panel,label = "What is the length of the spring:",pos=(10,10))
+        self.length_spring_label = wx.StaticText(self,label = "What is the length of the spring:",pos=(10,10))
         self.length_spring = wx.TextCtrl(self, pos=(10, 30), size=(200, -1))
         self.input_length_spring = None
 
-        self.stiffness_spring_label = wx.StaticText(self.panel,label = "What is the stiffness of the spring:",pos=(10,10))
+        self.stiffness_spring_label = wx.StaticText(self,label = "What is the stiffness of the spring:",pos=(10,10))
         self.stiffness_spring = wx.TextCtrl(self, pos=(10, 30), size=(200, -1))
         self.input_stiffness_spring = None
 
@@ -270,7 +271,7 @@ class ParallelSpring(wx.Panel):
         self.SetBackgroundColour(wx.Colour(255,255,255))
         text = wx.StaticText(self, label="Sveral parallel springs", pos=(50, 50))  # Add a static text to the panel
 
-        self.length_spring_label = wx.StaticText(self.panel,label = "What is the length of the spring:",pos=(10,10))
+        self.length_spring_label = wx.StaticText(self,label = "What is the length of the spring:",pos=(10,10))
         self.length_spring = wx.TextCtrl(self, pos=(10, 30), size=(200, -1))
         self.input_length_spring = None
 

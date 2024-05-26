@@ -1,14 +1,21 @@
 from sympy import MatrixSymbol, Matrix, Symbol, pprint, Derivative
 import numpy
 
-
+'''
+!!!!!!!!!!!!!!!!!!Obsolete. Please do not use anymore.!!!!!!!!!!!!!!!!!!!!!!!
+'''
 class Relation:
     """
     Class for calculating the geometric relationship between the component and the generalized coordinates
 
-    :param x:
-    :type x:
-
+    :param E: kinetic and potential energy of the system
+    :type E: list of sympy.Add or sympy.Mul
+    :param d: geometric dimension of each component
+    :type d: integer or float
+    :param c: coordinates to be replaced
+    :type c: list of sympy.Symbol
+    :param q: substitute coordinates
+    :type q: list of sympy.Symbol
     """
 
     def __init__(self, E, d, c, q):
@@ -35,8 +42,8 @@ class Relation:
         """
         Method for calculating the geometric relation
 
-        :return: x
-        :rtype: x
+        :return: relationship between two coordinates systems c and q
+        :rtype: list of sympy.Add, sympy.Mul, float or integer
         """
         # construct 2-dimensional translation matrix
         # (T[0,2]: translation in x-direction, T[1,2]: translation in y-direction)
@@ -64,8 +71,8 @@ class Relation:
         """
         Method for computing the potential and kinetic energy (depending on the generalized coordinates)
 
-        :return: x
-        :rtype: x
+        :return: kinetic and potential energy dependent on the substitute coordinates q
+        :rtype: list of sympy.Add
         """
         # get geometric relation
         coords = self.compute_relation()
