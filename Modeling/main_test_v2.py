@@ -9,18 +9,7 @@ import objects
 import create_objects
 import os
 import animation
-
-def preview(expr, **kwargs):
-    """
-    Auxiliary function for "nice" display of extensive expressions (in LaTeX)
-    """
-    import matplotlib.pyplot as plt
-    latex_str = "$ %s $" % sp.latex(expr, **kwargs)
-    latex_str = latex_str.replace("operatorname", "mathrm")
-    plt.figure(figsize=(12, 5))  # 12x5 Zoll
-    plt.text(0.5, 0.5, latex_str, fontsize=30, horizontalalignment="center")
-    plt.axis("off")
-    plt.show(block=False)
+from additions import eq_to_latex, show_equations_of_motion
 
 
 initializeObjects = "manual" 
@@ -126,7 +115,7 @@ for spring in list_of_springs:
 
 g = sp.Symbol('g')
 # ** unpacks the dictionary into positional arguments  
-param_values =  {**param_values_mass, **param_values_spring, g: 9.81}
+system.param_values = {**param_values_mass, **param_values_spring, g: 9.81}
 #print(param_values)
 
 # geometric relationships
@@ -139,7 +128,7 @@ print(system.constraints)
 
 # get equation of motion (only required for displaying purposes), not needed for simulation
 equations = system.generate_equations()
-sub_equations = system.substitute_parameters(equations, param_values)
+sub_equations = system.substitute_parameters(equations, system.param_values)
 rhs_eq = system.rhs_of_equation(sub_equations)
 
 #create list of inital conditions
@@ -154,7 +143,7 @@ print(z0)
 t_span = (0, 10)
 
 start = time.time()
-res = system.simulate(param_values, z0, t_span, 100001) 
+res = system.simulate(system.param_values, z0, t_span, 100001)
 end = time.time()
 print("Duration of simulation: ", end - start, "s.")
 
@@ -183,27 +172,15 @@ plt.grid(True)
 plt.show(block=False)
 
 # plot equations
-x1, x2, x1d, x2d, x1dd, x2dd = sp.symbols("x1, x2, x1d, x2d, x1dd, x2dd")
-x1t = system.coordinates['m1']['x']
-x1dt = system.velocities['m1']['x']
-x1ddt = system.accelerations['m1']['x']
-x2t = system.coordinates['m1']['x']
-x2dt = system.velocities['m1']['x']
-x2ddt = system.accelerations['m1']['x']
+# generate latex notion of equations of motion
+eqm = eq_to_latex(system)
 
-rplmts = [(x1ddt, x1dd), (x2ddt, x2dd), (x1dt, x1d), (x2dt, x2d), (x1t, x1), (x2t, x2)]
-Eq1a = sp.Eq(x1dd, rhs_eq[0].subs(rplmts))
-Eq2a = sp.Eq(x2dd, rhs_eq[2].subs(rplmts))
-# provide LaTey notation for the symbols
-sn_dict = {x1dd: r"\ddot{x1}", x1d: r"\dot{\x1}",
-           x2dd: r"\ddot{x2}", x2d: r"\dot{\x2}"}
-
-preview(Eq1a, symbol_names=sn_dict)
-preview(Eq2a, symbol_names=sn_dict)
+# plot/show equations of motion
+show_equations_of_motion(eqm)
 
 #path and name of the saved file
 savepath_equation = os.path.dirname(os.path.realpath(__file__))+"\data\\tex_equation"
-tex_save(savepath_equation, [Eq1a, Eq2a])
+tex_save(savepath_equation, system)
 
 # animation
 animation.animation(res, list_of_object_lists,skip_sim_steps=150)
