@@ -7,6 +7,7 @@ import numpy
 class Relation:
     """
     Class for calculating the geometric relationship between the component and the generalized coordinates
+    !!!!!!!!!!!!!!!!!!Obsolete. Please do not use anymore.!!!!!!!!!!!!!!!!!!!!!!!
 
     :param E: kinetic and potential energy of the system
     :type E: list of sympy.Add or sympy.Mul

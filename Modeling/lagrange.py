@@ -9,6 +9,7 @@ from numpy import linspace
 class Lagrange:
     """
     Class for calculating the equation of motion using Lagrange (symbolic), only second order systems possible
+    !!!!!!!!!!!!!!!!!!Obsolete. Please do not use anymore.!!!!!!!!!!!!!!!!!!!!!!!
 
     :param q: generalized coordinate of the system and the derivatives
     :type q: list of lists of sympy.Function (q depends on time q(t)) [[q1,dq1,ddq1],[q2,dq2,ddq2],...]

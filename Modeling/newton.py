@@ -6,7 +6,7 @@ from re import search
 
 class Mechanics:
     """
-    Class for calculating the equation of motion using Newton in 2 dimensions
+    Class for computing the equation of motion using Newton in 2 dimensions
 
     :param parameters: store mass parameter needed for free-body principle/principle of intersection
     :type parameters: dictionary

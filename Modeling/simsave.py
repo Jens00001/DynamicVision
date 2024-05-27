@@ -90,7 +90,7 @@ def load(file_name="data.nc", num_data=(0,)):
                      Default value loads all data inside file.
                      One Value loads one column: (x,). "x" corresponds to the index of the data you want to load.
                      Two values load data between the values: (x,y).
-                        "x" and "y" corresponds to the indices of the data you want to load (and the data between these indices).
+                     "x" and "y" corresponds to the indices of the data you want to load (and the data between these indices).
     :type num_data: tuple of int
     :return: data loaded from file
     :rtype: list of lists (of int, float or string)
