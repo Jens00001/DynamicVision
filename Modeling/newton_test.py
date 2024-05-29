@@ -66,7 +66,7 @@ sub_equations = system.substitute_parameters(equations, system.param_values)
 rhs_eq = system.rhs_of_equation(sub_equations)
 # print(rhs_eq)
 
-z0 = [0, 1, 0, 2, 0, 0, 0, 0]  # [x1, y1, x2, y2, x1_dot, y1_dot, x2_dot, y2_dot]
+z0 = [0, 0.5, 0, 0.4, 0, 0, 0, 0]  # [x1, y1, x2, y2, x1_dot, y1_dot, x2_dot, y2_dot]
 t_span = (0, 10)
 
 start = time.time()

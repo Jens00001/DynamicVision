@@ -68,4 +68,4 @@ def show_equations_of_motion(latex_str, window_size=(1, 1), font_size=30):
     plt.text(0.5, 0.5, latex_str, fontsize=font_size, horizontalalignment="center", verticalalignment="center",
              multialignment="center", wrap=True)
     plt.axis("off")
-    plt.show()
+    plt.show(block=False)

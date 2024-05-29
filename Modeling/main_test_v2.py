@@ -124,7 +124,7 @@ system.param_values = {**param_values_mass, **param_values_spring, g: 9.81}
 # distance between first mass and second mass
 # system.generate_constraint("link", 'm1', 'm2', l2_0)
 
-print(system.constraints)
+# print(system.constraints)
 
 # get equation of motion (only required for displaying purposes), not needed for simulation
 equations = system.generate_equations()
@@ -137,7 +137,7 @@ for mass in list_of_mass:
     z0.append(-mass.position[1])
     z0.append(-mass.position[0])
 z0 += [0]*2*len(list_of_mass)
-print(z0)
+
 #z0 = [0.5, 0, 0.9, 0, 1.5, 0, 0, 0, 0, 0, 0, 0]  # [x1, y1, x2, y2, x1_dot, y1_dot, x2_dot, y2_dot]
 
 t_span = (0, 10)
