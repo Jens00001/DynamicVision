@@ -134,11 +134,11 @@ class OpenModel(wx.Panel):
 # Create the Panel "ChooseElement"
 class ChooseElement(wx.Panel):
     def __init__(self,parent):
-        wx.Panel.__init__(self,parent,size=(400,200))
+        wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
 
         # Define Button Size  
-        button_size_element = (100,25)
+        button_size_element = (200,25)
 
         # Create Button to Switch to the Mass panel
         self.button_mass = wx.Button(self,label="Mass",size=button_size_element)
@@ -163,12 +163,21 @@ class ChooseElement(wx.Panel):
 # Create the Panel "Mass"
 class MassElement(wx.Panel):
     def __init__(self,parent):
-        wx.Panel.__init__(self,parent,size=(400,200))
+        wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
-        #text = wx.StaticText(self, label="Mass", pos=(50, 50))  # Add a static text to the panel
+        self.text_mass = wx.StaticText(self, label="Mass")  # Add a static text to the panel
+        text_mass_font = wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)  # Define font for header
+        self.text_mass.SetFont(text_mass_font) 
+        mass_size = self.text_mass.GetSize()
+        panel_size = self.GetSize()
+        x_pos_mass = (panel_size[0]-mass_size[0])//2
+        y_pos_mass = (2*mass_size[1])//1
+        self.text_mass.SetPosition((x_pos_mass,y_pos_mass))
+
+
 
         # Define Button Size  
-        button_size_element = (100,25)
+        button_size_element = (200,25)
 
         # Create Button to Switch to the Mass panel
         self.button_mass_point = wx.Button(self,label="Mass Point",size=button_size_element)
@@ -189,40 +198,76 @@ class MassElement(wx.Panel):
 
 class MassPoint(wx.Panel):
     def __init__(self, parent):
-        wx.Panel.__init__(self,parent,size=(400,200))
+        wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
-        text = wx.StaticText(self, label="MassPoint", pos=(50, 50))  # Add a static text to the panel
-        self.mass_label = wx.StaticText(self,label = "What is the mass of the Mass Point:",pos=(10,10))
-        self.mass = wx.TextCtrl(self, pos=(10, 30), size=(200, -1))
+        self.mass_point_text = wx.StaticText(self, label="Mass Point")  # Add a static text to the panel
+        self.mass_label = wx.StaticText(self,label = "What is the mass of the Mass Point:")
+        text_mass_point_font = wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)  # Define font for header
+        self.mass_point_text.SetFont(text_mass_point_font) 
+        mass_point_size = self.mass_point_text.GetSize()
+        panel_size = self.GetSize()
+        x_pos_mass_point = (panel_size[0]-mass_point_size[0])//2
+        y_pos_mass_point = (2*mass_point_size[1])//1
+        self.mass_point_text.SetPosition((x_pos_mass_point,y_pos_mass_point))
+
+        mass_point_label_size = self.mass_label.GetSize()
+        x_pos_mass_point_label = (panel_size[0]-1*mass_point_label_size[0])//2
+        y_pos_mass_point_label = (panel_size[1]-15*mass_point_label_size[1])//1
+        self.mass_label.SetPosition((x_pos_mass_point_label,y_pos_mass_point_label))
+
+        self.mass = wx.TextCtrl(self, pos=(x_pos_mass_point_label,y_pos_mass_point_label+1*mass_point_label_size[1]), size=(200, -1))
         self.input_mass = None
 
 class SteadyBody(wx.Panel):
     def __init__(self, parent):
-        wx.Panel.__init__(self,parent,size=(400,200))
+        wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
-        text = wx.StaticText(self, label="SteadyBody", pos=(50, 50))  # Add a static text to the panel
+        self.steady_body_text = wx.StaticText(self, label="SteadyBody", pos=(50, 50))  # Add a static text to the panel
+        text_steady_body_font = wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        self.steady_body_text.SetFont(text_steady_body_font) 
+        steady_body_size = self.steady_body_text.GetSize()
+        panel_size = self.GetSize()
+        x_pos_steady_body = (panel_size[0]-1*steady_body_size[0])//2
+        y_pos_steady_body = (panel_size[1]-15*steady_body_size[1])//1
+        self.steady_body_text.SetPosition((x_pos_steady_body,y_pos_steady_body))
 
-        self.density_label = wx.StaticText(self,label = "What is the density of the Steady Body:",pos=(10,10))
-        self.density = wx.TextCtrl(self, pos=(10, 30), size=(200, -1))
+        self.density_label = wx.StaticText(self,label = "What is the density of the Steady Body:")
+        density_label_size = self.density_label.GetSize()
+        x_pos_density_label = (panel_size[0]-2*density_label_size[0])//2
+        y_pos_density_label = (panel_size[1]-20*density_label_size[1])//1
+        self.density_label.SetPosition((x_pos_density_label,y_pos_density_label))
+        self.density = wx.TextCtrl(self, pos=(x_pos_density_label, y_pos_density_label+1*density_label_size[1]), size=(200, -1))
         self.input_density = None
 
-        self.length_label = wx.StaticText(self,label = "What is the length of the Steady Body:",pos=(10,10))
-        self.length = wx.TextCtrl(self, pos=(10, 30), size=(200, -1))
+        self.length_label = wx.StaticText(self,label = "What is the length of the Steady Body:")
+        length_label_size = self.length_label.GetSize()
+        x_pos_length_label = (panel_size[0]-2*length_label_size[0])//2
+        y_pos_length_label = (panel_size[1]-16*length_label_size[1])//1
+        self.length_label.SetPosition((x_pos_length_label,y_pos_length_label))
+        self.length = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
         self.input_length = None 
 
-        self.height_label = wx.StaticText(self,label = "What is the height of the Steady Body:",pos=(10,10))
-        self.height = wx.TextCtrl(self, pos=(10, 30), size=(200, -1))
+        self.height_label = wx.StaticText(self,label = "What is the height of the Steady Body:")
+        height_label_size = self.height_label.GetSize()
+        x_pos_height_label = (panel_size[0]-2*height_label_size[0])//2
+        y_pos_height_label = (panel_size[1]-12*height_label_size[1])//1
+        self.height_label.SetPosition((x_pos_height_label,y_pos_height_label))
+        self.height = wx.TextCtrl(self, pos=(x_pos_height_label, y_pos_height_label+1*height_label_size[1]), size=(200, -1))
         self.input_height = None
 
-        self.width_label = wx.StaticText(self,label = "What is the width of the Steady Body:",pos=(10,10))
-        self.width = wx.TextCtrl(self, pos=(10, 30), size=(200, -1))
+        self.width_label = wx.StaticText(self,label = "What is the width of the Steady Body:")
+        width_label_size = self.width_label.GetSize()
+        x_pos_width_label = (panel_size[0]-2*width_label_size[0])//2
+        y_pos_width_label = (panel_size[1]-8*width_label_size[1])//1
+        self.width_label.SetPosition((x_pos_width_label,y_pos_width_label))
+        self.width = wx.TextCtrl(self, pos=(x_pos_width_label, y_pos_width_label+1*width_label_size[1]), size=(200, -1))
         self.input_width = None
 
 
 # Create the Panel "Spring"
 class SpringElement(wx.Panel):
     def __init__(self,parent):
-        wx.Panel.__init__(self,parent,size=(400,200))
+        wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
         #text = wx.StaticText(self, label="Spring", pos=(50, 50))  # Add a static text to the panel
 
@@ -253,7 +298,7 @@ class SpringElement(wx.Panel):
 
 class SingleSpring(wx.Panel):
     def __init__(self,parent):
-        wx.Panel.__init__(self,parent,size=(400,200))
+        wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
         text = wx.StaticText(self, label="Single Spring", pos=(50, 50))  # Add a static text to the panel
 
@@ -267,7 +312,7 @@ class SingleSpring(wx.Panel):
 
 class ParallelSpring(wx.Panel):
     def __init__(self,parent):
-        wx.Panel.__init__(self,parent,size=(400,200))
+        wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
         text = wx.StaticText(self, label="Sveral parallel springs", pos=(50, 50))  # Add a static text to the panel
 
@@ -277,7 +322,7 @@ class ParallelSpring(wx.Panel):
 
 class SeriesSpring(wx.Panel):
     def __init__(self,parent):
-        wx.Panel.__init__(self,parent,size=(400,200))
+        wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
         text = wx.StaticText(self, label="Several springs in series", pos=(50, 50))  # Add a static text to the panel
 
@@ -286,7 +331,7 @@ class SeriesSpring(wx.Panel):
 # Create The Frame for the Create Element 
 class CreateElement(wx.Frame):
     def __init__(self,parent):
-        wx.Frame.__init__(self,parent,title="Create Element",size=(400,200))
+        wx.Frame.__init__(self,parent,title="Create Element",size=(600,400))
 
         self.choose_element = ChooseElement(self)
         self.mass_element = MassElement(self)
