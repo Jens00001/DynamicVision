@@ -48,14 +48,14 @@ def run_simulation(simulation_points=10001):
             # compares the startingpoint of all springs with the position of the mass
             # if the points are the same, this means that the spring is below the mass and the force is positiv
             if pos == list_of_springs[j].startingpoint: 
-                list_of_force.append(list_of_springs[j].force(list_of_springs[j-1].xt))
+                list_of_force.append(list_of_springs[j].force(list_of_springs[j-1].yt))
             # if the points are the same, this means that the spring is above the mass and the force is negativ
             elif pos == list_of_springs[j].endpoint:
                 #if j=0, this means that this is the first spring and the displacement is of the spring above, which dosen't exist, is 0
                 if j == 0:
                     list_of_force.append(-list_of_springs[j].force(0))
                 else:
-                    list_of_force.append(-list_of_springs[j].force(list_of_springs[j-1].xt))
+                    list_of_force.append(-list_of_springs[j].force(list_of_springs[j-1].yt))
                     
         list_of_forces_all.append(list_of_force) # write the list of forces attached to each mass in the list of all forces
     print(list_of_forces_all)
@@ -68,8 +68,8 @@ def run_simulation(simulation_points=10001):
         system.add_mass(name=str(sym_mass_list[i]), mass=sym_mass_list[i]) # add mass i to the system 
 
     for i in range(len(sym_mass_list)):
-        system.add_force(str(sym_mass_list[i]), (0, 'y'))
-        system.add_force(str(sym_mass_list[i]), (sum(list_of_forces_all[i]), 'x'))
+        system.add_force(str(sym_mass_list[i]), (0, 'x'))
+        system.add_force(str(sym_mass_list[i]), (sum(list_of_forces_all[i]), 'y'))
 
     #create dictionary of parameter values of each mass 
     param_values_mass = {}
@@ -103,8 +103,8 @@ def run_simulation(simulation_points=10001):
     #create list of inital conditions
     z0 = []
     for mass in list_of_mass:
-        z0.append(-mass.position[1])
         z0.append(-mass.position[0])
+        z0.append(-mass.position[1])
     z0 += [0]*2*len(list_of_mass)
 
     #z0 = [0.5, 0, 0.9, 0, 1.5, 0, 0, 0, 0, 0, 0, 0]  # [x1, y1, x2, y2, x1_dot, y1_dot, x2_dot, y2_dot]
@@ -131,8 +131,8 @@ def plot_results(res,ax):
     y_pos = pos[1::2]
 
     # Plot results
-    for i in range(len(x_pos)):
-        ax.plot(t, x_pos[i], label='Position of Mass '+str(i+1)+ '(m)')
+    for i in range(len(y_pos)):
+        ax.plot(t, y_pos[i], label='Position of Mass '+str(i+1)+ '(m)')
 
     ax.set_xlabel('Time (s)')
     ax.set_ylabel('Position (m)')

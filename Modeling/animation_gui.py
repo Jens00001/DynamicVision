@@ -21,8 +21,8 @@ class Animation:
         y_max = max((max(y) for y in y_pos))
         y_min = min((min(y) for y in y_pos))
         
-        self.ax.set_xlim(y_min - 3.5, y_max + 3.5)
-        self.ax.set_ylim(x_min - 3, x_max + 3)
+        self.ax.set_ylim(y_min - 3, y_max + 3)
+        self.ax.set_xlim(x_min - 3, x_max + 3)
         self.ax.set_aspect('equal')
         self.ax.grid(True)
         self.ax.set_title('Animation')
@@ -51,7 +51,7 @@ class Animation:
         if 0 <= num < len(y_pos[0]):
 
             for i in range(len(list_of_mass)):
-                list_of_mass[i].move(y_pos[i][num], x_pos[i][num])
+                list_of_mass[i].move(x_pos[i][num], y_pos[i][num])
                 self.mass_circles[i].set_center(list_of_mass[i].position)
 
             for i in range(len(list_of_springs)):
