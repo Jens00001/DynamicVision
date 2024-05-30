@@ -1,10 +1,14 @@
 import wx
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))+"\Modeling")
 import numpy as np 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 import matplotlib.animation as animation 
 from matplotlib.figure import Figure
-import os
+import main_test_v2 as main_modeling
+import animation_gui as anim
 
 # Define the Start Menu with Header, Pictures and Buttons to Switch to Create Model, Open Model, Documentation and Exit the App 
 class StartMenu(wx.Panel):
@@ -74,29 +78,12 @@ class CreateModel(wx.Panel):
         wx.Panel.__init__(self,parent,size=(1200,800))
         self.SetBackgroundColour(wx.Colour(255,255,255))
 
-        ## This Plot is a placeholder for the future plot 
-        ##
-
         # Create a Matplotlib canvas to display the figure
-        self.figure=Figure()
-        self.axes = self.figure.add_subplot(111)
+        self.figure=Figure(figsize=(10,4))
+        self.ax1 = self.figure.add_subplot(1,2,1)
+        self.ax2 = self.figure.add_subplot(1,2,2)
         self.canvas = FigureCanvas(self, -1, self.figure)
         
-        # Generate initial data for the plot
-        self.x = np.linspace(0, 10, 100)
-        self.y = np.sin(self.x)
-        
-        # Plot the initial data and store the line object
-        self.line, = self.axes.plot(self.x, self.y)
-        
-        # Create an animation that updates the plot at regular intervals
-        self.animation = animation.FuncAnimation(self.figure, self.update_plot, frames=100, interval=100)
-        
-        # Set up the layout using a sizer
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.canvas, 1, wx.EXPAND)
-        ##
-        ##
         # Create a button to open the pop-up window to create a Element 
         self.button_create_element = wx.Button(self,label="Create Element")
         self.Bind(wx.EVT_BUTTON,self.on_open_popup,self.button_create_element)             
@@ -104,20 +91,61 @@ class CreateModel(wx.Panel):
         # Add the button to the sizer (also maybe imporve after the whole layout is done)
         self.button_create_element.SetPosition((1000,500))
 
-        self.SetSizer(self.sizer)
+        #Create a button to start the simultion
+        button_run = wx.Button(self, label="Run Simulation", pos=(500, 600))
+        button_run.Bind(wx.EVT_BUTTON, self.on_run_simulation)
+        
 
-    # Method to update the plot
-    def update_plot(self, i):
-        self.axes.clear()  # Clear the previous plot
-        
-        # Update the data for the plot (in this example, animate a sine wave)
-        self.y = np.sin(self.x + 0.1 * i)
-        
-        # Plot the updated data and store the line object
-        self.line, = self.axes.plot(self.x, self.y)
-        
-        # Redraw the canvas with the updated plot
+        self.button_run = wx.Button(self, label="Run Simulation", pos=(500, 600))
+        self.button_run.Bind(wx.EVT_BUTTON, self.on_run_simulation)
+        self.num = 0  # Initialize num
+        self.paused = False 
+        self.updatetime = 100 # Initialize updatetime
+        self.skip_sim_steps = 1 # Intitalize the number of steps which are skiped in the animation
+
+    def on_run_simulation(self, event):
+        res, list_of_object_lists,system = main_modeling.run_simulation(simulation_points=50001)
+        self.plot_results(res, list_of_object_lists)
         self.canvas.draw()
+        # Start animation
+        max_simulated_time = res.t[-1]
+        num_frames = len(res.t)
+        animation_time = max_simulated_time * 1000  # Convert to milliseconds
+        # computes the necessary steps that must be skipped to obtain an update time of 110 ms which allows 
+        # matching the simulated time in the animation quiet good wtih one spring mass oszillator
+        self.skip_sim_steps = round(110 * num_frames / animation_time) 
+        print('Skipped Simulation Steps: ' + str(self.skip_sim_steps))
+
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.update_animation, self.timer)
+        self.timer.Start(self.updatetime)  # Update time per frame
+
+    def plot_results(self, res, list_of_object_lists):
+        # Plot results in ax1
+        main_modeling.plot_results(res, self.ax1)
+        self.animation = anim.Animation(res, list_of_object_lists, self.ax2)
+
+    def update_animation(self, event):
+        if not self.paused:
+            # Update animation with appropriate frame number
+            self.animation.update_frame(self.num)
+            self.num += self.skip_sim_steps  # Increment num for the next frame
+
+            # If num exceeds the length of y_pos, pause for a moment and restart
+            y = -self.animation.sol.y
+            pos = y[0:int(len(y)/2)]
+            y_pos = pos[1::2]
+            if self.num >= len(y_pos[0]):
+                self.paused = True
+                self.timer.Stop()
+                wx.CallLater(2000, self.restart_animation)  # Pause for 2 seconds before restarting
+
+            self.canvas.draw()
+
+    def restart_animation(self):
+        self.paused = False
+        self.timer.Start(self.updatetime)  # Restart timer
+        self.num = 0  # Reset num
 
     # Create Method to open the Pop-Up 
     def on_open_popup(self,event):
