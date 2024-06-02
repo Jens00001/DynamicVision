@@ -55,7 +55,7 @@ system.add_force('m2', (F_y_m2, 'y'))
 system.generate_constraint("link", 'm1', 'm1', l1)
 # distance between first mass and second mass
 system.generate_constraint("link", 'm1', 'm2', l2)
-print(system.constraints)
+# print(system.constraints)
 
 # get equation of motion (only required for displaying purposes)
 equations = system.generate_equations()
@@ -99,7 +99,7 @@ plt.ylabel('Position (m)')
 plt.title('Double Mass Oscillator')
 plt.legend()
 plt.grid(True)
-plt.show()
+plt.show(block=False)
 
 # construct equations of motion with saved data
 param_val = data['system']['param_values']

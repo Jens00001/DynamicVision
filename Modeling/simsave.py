@@ -6,7 +6,12 @@ from additions import eq_to_latex
 
 def save(file_name="data.nc", data=None, names=None):
     """
-    Method for saving the simulated data (and symbolic equation)
+    Method for saving the simulated data (and symbolic equation). To save data it uses the netCDF4 library
+    that is based on HDF5. HDF5 is uses optimized structures and algorithms to allow an efficient saving
+    and reading of one- and multidimensional tables.
+    The data is saved in a binary format. So it is machine-independent and the possibility of compression enables an
+    easy and efficient way to save data.
+    The given input data is appended to list which is saved in a binary table.
 
     :param file_name: name of the wanted file (with or without .nc)
     :type file_name: string
@@ -51,7 +56,10 @@ def save(file_name="data.nc", data=None, names=None):
 
 def save_system(file_name="data.nc", sim_res=None, system=None,  names=None):
     """
-    Method for saving the simulated data and the mechanical system
+    Method for saving the simulated data and the mechanical system. This method is based on the save() function
+    that uses the netCDF4 library. It is optimized to save simulation data and the simulated system itself.
+    It takes the simulated data and the important properties of the mechanical system
+    (that are needed to reconstruct the system) and saves the data by creating a list that is passed to the save() function.
 
     :param file_name: name of the wanted file (with or without .nc)
     :type file_name: string
@@ -82,7 +90,12 @@ def save_system(file_name="data.nc", sim_res=None, system=None,  names=None):
 
 def load(file_name="data.nc", num_data=(0,)):
     """
-    Method for loading the simulated data in the current workspace
+    Method for loading the simulated data in the current workspace. The file to be loaded must be saved in .nc format.
+    To save data you can use the netCDF4 library that is based on HDF5. HDF5 is uses optimized structures
+    and algorithms to allow an efficient saving and reading of one- and multidimensional tables.
+    The data is saved in a binary format. So it is machine-independent and the possibility of compression enables an
+    easy and efficient way to save data. As long as this criterion is met, the data can be loaded with the load() function.
+    The method loads each column in sequence and saves them in a list.
 
     :param file_name: name of the file you want to load (with or without .nc)
     :type file_name: string
@@ -136,7 +149,11 @@ def load(file_name="data.nc", num_data=(0,)):
 
 def load_system(file_name="data.nc"):
     """
-    Method for loading the simulation results and the simulated system
+    Method for loading the simulation results and the simulated system.
+    This method is based on the load() function that uses the netCDF4 library.
+    It is optimized to load simulation data and the simulated system itself. It exports the simulated results
+    and the properties of mechanical system to a dictionary for an easy access. After that the simulation results
+    can be plotted and the mechanical system can be reconstructed.
 
     :param file_name: name of the file you want to load (with or without .nc)
     :type file_name: string
@@ -161,7 +178,9 @@ def load_system(file_name="data.nc"):
 
 def tex_save(file_name="tex_equation.txt", system=None):
     """
-    Method for saving the symbolic equation in latex format
+    Method for saving the symbolic equation in latex format. It takes a mechanical system as an input and saves its
+    equation of motion in LaTex format to a .txt file. It uses the eq_to_latex() function of the addition library
+    to convert the equations of motion of the given system into LaTeX notion.
 
     :param file_name: name of the wanted file (with or without .txt)
     :type file_name: string
