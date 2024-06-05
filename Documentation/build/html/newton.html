@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>newton module &#8212; Dynamic Vision 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=2709fde1"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="objects module" href="objects.html" />
+    <link rel="prev" title="lagrange module" href="lagrange.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-newton">
+<span id="newton-module"></span><h1>newton module<a class="headerlink" href="#module-newton" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="newton.Mechanics">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">newton.</span></span><span class="sig-name descname"><span class="pre">Mechanics</span></span><a class="reference internal" href="_modules/newton.html#Mechanics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newton.Mechanics" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for computing the equation of motion using Newton in 2 dimensions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parameters</strong> (<em>dictionary</em>) – store mass parameter needed for free-body principle/principle of intersection</p></li>
+<li><p><strong>coordinates</strong> (<em>dictionary</em>) – coordinate of every mass</p></li>
+<li><p><strong>velocities</strong> (<em>dictionary</em>) – velocities of every mass</p></li>
+<li><p><strong>accelerations</strong> (<em>dictionary</em>) – accelerations of every mass</p></li>
+<li><p><strong>forces</strong> (<em>dictionary</em>) – sum of force at every mass resulting the free-body principle/principle of intersection</p></li>
+<li><p><strong>param_values</strong> (<em>dictionary</em>) – Values of parameters like k, m, g,…</p></li>
+<li><p><strong>t</strong> (<em>sympy.Symbols</em>) – time variable</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="newton.Mechanics.add_force">
+<span class="sig-name descname"><span class="pre">add_force</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newton.html#Mechanics.add_force"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newton.Mechanics.add_force" title="Link to this definition">¶</a></dt>
+<dd><p>Method for adding forces that act on the corresponding mass</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mass</strong> (<em>string</em>) – Mass on which the forces act</p></li>
+<li><p><strong>force</strong> (<em>sympy.Add</em><em>(</em><em>)</em>) – forces that act on the corresponding mass</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="newton.Mechanics.add_mass">
+<span class="sig-name descname"><span class="pre">add_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newton.html#Mechanics.add_mass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newton.Mechanics.add_mass" title="Link to this definition">¶</a></dt>
+<dd><p>Method for adding masses and computing their corresponding coordinates, velocities and accelerations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – name of the mass. Eg: m1, m2, m3,…</p></li>
+<li><p><strong>mass</strong> (<em>sympy.symbols</em><em>(</em><em>)</em>) – symbol of the mass. Eg: m1, m2, m3,…</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="newton.Mechanics.generate_constraint">
+<span class="sig-name descname"><span class="pre">generate_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newton.html#Mechanics.generate_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newton.Mechanics.generate_constraint" title="Link to this definition">¶</a></dt>
+<dd><p>Method for generating geometric relationships between two points/masses</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>constraint_type</strong> (<em>string</em>) – type of constraint. Eg. “link”</p></li>
+<li><p><strong>start_point</strong> (<em>string</em>) – starting point to define constraint. Eg. mass1.</p></li>
+<li><p><strong>end_point</strong> (<em>string</em>) – ending point to define constraint. Eg. mass2.
+If start = end: The function computes relationship between end_point and coordinate origin.</p></li>
+<li><p><strong>dimension</strong> (<em>sympy.Symbols</em>) – For link type: distance between start and end point</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="newton.Mechanics.generate_equations">
+<span class="sig-name descname"><span class="pre">generate_equations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/newton.html#Mechanics.generate_equations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newton.Mechanics.generate_equations" title="Link to this definition">¶</a></dt>
+<dd><p>Method for computing the equations of motion for every mass and direction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>symbolic equations of motion</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of sympy.Add()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="newton.Mechanics.rhs_of_equation">
+<span class="sig-name descname"><span class="pre">rhs_of_equation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">equations</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newton.html#Mechanics.rhs_of_equation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newton.Mechanics.rhs_of_equation" title="Link to this definition">¶</a></dt>
+<dd><p>Method for computing the right hand side of the equations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>equations</strong> (<em>list</em><em> of </em><em>sympy.Add</em><em>(</em><em>)</em>) – (Substituted) equations of motion</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>right hand side of the equations</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of sympy.Add()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="newton.Mechanics.simulate">
+<span class="sig-name descname"><span class="pre">simulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_cond</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_span</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newton.html#Mechanics.simulate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newton.Mechanics.simulate" title="Link to this definition">¶</a></dt>
+<dd><p>Method to simulate (integrate) the given system</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param_values</strong> (<em>dictionary</em>) – parameter of the given system. For example masses, spring constants,…)</p></li>
+<li><p><strong>init_cond</strong> (<em>list</em><em> of </em><em>int/float</em>) – initial conditions regarding the system (Initial state)</p></li>
+<li><p><strong>t_span</strong> (<em>tuple if int/float</em>) – Interval of integration (start time and end time)</p></li>
+<li><p><strong>num_points</strong> (<em>int</em>) – number of time steps for numerical integration</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>See documentation of solve_ivp()</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Bunch object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="newton.Mechanics.substitute_parameters">
+<span class="sig-name descname"><span class="pre">substitute_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">equations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newton.html#Mechanics.substitute_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newton.Mechanics.substitute_parameters" title="Link to this definition">¶</a></dt>
+<dd><p>Method for substituting the parameters of the system (masses, spring constants, etc.)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>equations</strong> (<em>list</em><em> of </em><em>sympy.Add</em><em>(</em><em>)</em>) – Equations in which the parameters are substituted (list of equations)</p></li>
+<li><p><strong>param</strong> (<em>dictionary</em>) – Parameter values. The keys are the name of the parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>equations with substituted parameters</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of sympy.Add()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="newton.Mechanics.sum_of_force">
+<span class="sig-name descname"><span class="pre">sum_of_force</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/newton.html#Mechanics.sum_of_force"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#newton.Mechanics.sum_of_force" title="Link to this definition">¶</a></dt>
+<dd><p>Method for computing the sum of the forces regarding the directions x and y</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – Mass on which the forces act</p></li>
+<li><p><strong>dir</strong> (<em>sympy.Add</em><em>(</em><em>)</em>) – direction of the sum of forces acting on the corresponding mass</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>symbolic sum of forces</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>sympy.Add()</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Dynamic Vision</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="additions.html">additions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animation.html">animation module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_objects.html">create_objects module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geometric_relation.html">geometric_relation module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lagrange.html">lagrange module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">newton module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#newton.Mechanics"><code class="docutils literal notranslate"><span class="pre">Mechanics</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="objects.html">objects module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simsave.html">simsave module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GUI.html">GUI module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="lagrange.html" title="previous chapter">lagrange module</a></li>
+      <li>Next: <a href="objects.html" title="next chapter">objects module</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Daniel Philippi, Jens Rößler, Nicolas Scherer.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/newton.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

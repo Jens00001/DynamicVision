@@ -6,7 +6,18 @@ from re import search
 
 class Mechanics:
     """
-    Class for calculating the equation of motion using Newton in 2 dimensions
+    Class for computing the equation of motion using Newton in 2 dimensions.
+    The idea is based on the free-body principle/principle of intersection with a mass.
+    First a mass must be defined. At the same time the mass is assigned to a position, velocity and acceleration.
+    Then the forces acting on the mass must be defined. A distinction must be made between the x and y direction.
+    After entering the forces, the equations of motion are computed according to Newton's second law.
+    The sum of the forces on the masses is calculated according to the direction.
+    The equation is then rearranged according to the acceleration. The next step is to substitute the parameters and
+    determine the right-hand side of the equations of motion. The last step involves the transformation
+    of second order differential equations to first order differential equations.
+    First order differential equations is needed to simulate the system numerically.
+    As an addition there exists the possibility to compute the geometric constraints of the system.
+    But it's not necessary for the simulation part.
 
     :param parameters: store mass parameter needed for free-body principle/principle of intersection
     :type parameters: dictionary
@@ -18,6 +29,8 @@ class Mechanics:
     :type accelerations: dictionary
     :param forces: sum of force at every mass resulting the free-body principle/principle of intersection
     :type forces: dictionary
+    :param constraints: geometric constraints/relationship between the masses and the global coordinate system
+    :type constraints: dictionary
     :param param_values: Values of parameters like k, m, g,...
     :type param_values: dictionary
     :param t: time variable

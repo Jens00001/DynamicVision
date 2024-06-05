@@ -27,8 +27,8 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
     # Create figure and axis
     fig, ax = plt.subplots()
     #ax.set_xlim(y_min - y_buffer, y_max + y_buffer)
-    ax.set_xlim(-3.5, 3.5)
-    ax.set_ylim(x_min - 3, x_max + 3)
+    ax.set_ylim(y_min - 3, y_max + 3)
+    ax.set_xlim(x_min - 3, x_max + 3)
     ax.set_aspect('equal')
     ax.grid()
 
@@ -57,7 +57,7 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
     def update_system(num): 
            
         for i in range(len(list_of_mass)):
-            list_of_mass[i].move(y_pos[i][num],x_pos[i][num])
+            list_of_mass[i].move(x_pos[i][num],y_pos[i][num])
             mass_circle[i].set_center(list_of_mass[i].position)
             #print(list_of_mass[i].position)
 

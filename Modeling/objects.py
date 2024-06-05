@@ -39,12 +39,19 @@ class Spring:
 
         #definiton of symbolic values 
         t = sp.Symbol("t")
+        
         self.xt = sp.Function("x"+str(self.index))(t)
         self.xdt = self.xt.diff(t)
         self.xddt = self.xt.diff(t,2)
+
+        self.yt = sp.Function("y"+str(self.index))(t)
+        self.ydt = self.yt.diff(t)
+        self.yddt = self.yt.diff(t,2)
+
         self.phit = sp.Function("phi"+str(self.index))(t)
         self.phidt = self.phit.diff(t)
         self.phiddt = self.phit.diff(t,2)
+
         self.sym_rest_length = sp.Symbol("l"+str(self.index)+"_0")
         self.sym_length = sp.Symbol("l"+str(self.index))
         self.sym_stiffness = sp.Symbol("k"+str(self.index))
@@ -73,7 +80,7 @@ class Spring:
         assert isinstance(self.lw, (int,float))
         
 
-    def force(self,xt_attached):
+    def force(self,yt_attached):
         """"
         Method for computing the force of the spring in its current position
 
@@ -85,7 +92,7 @@ class Spring:
        
         match self.type:
             case "linear":
-                self.sym_F =  self.sym_stiffness * (self.xt-xt_attached-self.sym_rest_length)
+                self.sym_F =  self.sym_stiffness * (self.yt-yt_attached-self.sym_rest_length)
             
             case "rotational":
                 self.sym_F = self.sym_stiffness * self.phit
@@ -106,15 +113,14 @@ class Spring:
         :rtype: list 
         """
         self.startingpoint = attached_point
-        # self.angle += angle
-        # self.length += x
         self.endpoint = connected_point_below
+        self.length = np.sqrt((self.endpoint[0]-self.startingpoint[0])**2 + (self.endpoint[1]-self.startingpoint[1])**2 )
 
         return [self.startingpoint,  self.endpoint]
     
     def get_param_values(self):
         
-        return {self.sym_rest_length: self.rest_length,self.sym_stiffness: self.stiffness}
+        return {self.sym_rest_length: self.rest_length, self.sym_stiffness: self.stiffness}
 
 class Mass:
     """
