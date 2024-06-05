@@ -314,17 +314,101 @@ class ParallelSpring(wx.Panel):
     def __init__(self,parent):
         wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
-        text = wx.StaticText(self, label="Sveral parallel springs", pos=(50, 50))  # Add a static text to the panel
+        self.spring_lengths = {}
+        self.spring_stiffness = {}
 
-        self.length_spring_label = wx.StaticText(self,label = "What is the length of the spring:",pos=(10,10))
-        self.length_spring = wx.TextCtrl(self, pos=(10, 30), size=(200, -1))
-        self.input_length_spring = None
+        self.parallel_spring_text = wx.StaticText(self, label="Parallel Spring", pos=(50, 50))  # Add a static text to the panel
+        text_parallel_spring_font = wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        self.parallel_spring_text.SetFont(text_parallel_spring_font) 
+        parallel_spring_size = self.parallel_spring_text.GetSize()
+        panel_size = self.GetSize()
+        x_pos_parallel_spring = (panel_size[0]-1*parallel_spring_size[0])//2
+        y_pos_parallel_spring = (panel_size[1]-15*parallel_spring_size[1])//1
+        self.parallel_spring_text.SetPosition((x_pos_parallel_spring,y_pos_parallel_spring))
+
+        self.stiffness_label = wx.StaticText(self,label = "What is the stiffness of the Spring:")
+        stiffness_label_size = self.stiffness_label.GetSize()
+        x_pos_stiffness_label = (panel_size[0]-2*stiffness_label_size[0])//2
+        y_pos_stiffness_label = (panel_size[1]-20*stiffness_label_size[1])//1
+        self.stiffness_label.SetPosition((x_pos_stiffness_label,y_pos_stiffness_label))
+        self.density = wx.TextCtrl(self, pos=(x_pos_stiffness_label, y_pos_stiffness_label+1*stiffness_label_size[1]), size=(200, -1))
+        self.input_stiffness = None
+
+        self.length_label = wx.StaticText(self,label = "What is the length of the Spring:")
+        length_label_size = self.length_label.GetSize()
+        x_pos_length_label = (panel_size[0]-2*length_label_size[0])//2
+        y_pos_length_label = (panel_size[1]-16*length_label_size[1])//1
+        self.length_label.SetPosition((x_pos_length_label,y_pos_length_label))
+        self.length_spring = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
+        self.input_length_spring = None 
+    
+    def on_add(self, event):
+        length = self.length_spring.GetValue()
+        if length:
+            self.spring_lengths.append(length)
+            self.length_spring.Clear()
+        stiffness = self.stiffness.GetValue()
+        if stiffness:
+            self.spring_stiffness.append(stiffness)
+            self.stiffness.Clear()
+    
+    def on_submit(self, event):
+        # Process the list of spring lengths
+        if self.spring_lengths:
+            wx.MessageBox(f"Submitted spring lengths: {', '.join(self.spring_lengths)}", "Info", wx.OK | wx.ICON_INFORMATION)
+        else:
+            wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
+
 
 class SeriesSpring(wx.Panel):
     def __init__(self,parent):
         wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
-        text = wx.StaticText(self, label="Several springs in series", pos=(50, 50))  # Add a static text to the panel
+        self.spring_lengths ={}
+        self.spring_stiffness = {}
+
+        self.series_spring_text = wx.StaticText(self, label="Series of Springs", pos=(50, 50))  # Add a static text to the panel
+        text_series_spring_font = wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        self.series_spring_text.SetFont(text_series_spring_font) 
+        series_spring_size = self.series_spring_text.GetSize()
+        panel_size = self.GetSize()
+        x_pos_series_spring = (panel_size[0]-1*series_spring_size[0])//2
+        y_pos_series_spring = (panel_size[1]-15*series_spring_size[1])//1
+        self.series_spring_text.SetPosition((x_pos_series_spring,y_pos_series_spring))
+
+        self.stiffness_label = wx.StaticText(self,label = "What is the stiffness of the Spring:")
+        stiffness_label_size = self.stiffness_label.GetSize()
+        x_pos_stiffness_label = (panel_size[0]-2*stiffness_label_size[0])//2
+        y_pos_stiffness_label = (panel_size[1]-20*stiffness_label_size[1])//1
+        self.stiffness_label.SetPosition((x_pos_stiffness_label,y_pos_stiffness_label))
+        self.stiffness = wx.TextCtrl(self, pos=(x_pos_stiffness_label, y_pos_stiffness_label+1*stiffness_label_size[1]), size=(200, -1))
+      
+
+        self.length_label = wx.StaticText(self,label = "What is the length of the Spring:")
+        length_label_size = self.length_label.GetSize()
+        x_pos_length_label = (panel_size[0]-2*length_label_size[0])//2
+        y_pos_length_label = (panel_size[1]-16*length_label_size[1])//1
+        self.length_label.SetPosition((x_pos_length_label,y_pos_length_label))
+        self.length_spring = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
+        
+
+    def on_add(self, event):
+        length = self.length_spring.GetValue()
+        if length:
+            self.spring_lengths.append(length)
+            self.length_spring.Clear()
+        stiffness = self.stiffness.GetValue()
+        if stiffness:
+            self.spring_stiffness.append(stiffness)
+            self.stiffness.Clear()
+    
+    def on_submit(self, event):
+        # Process the list of spring lengths
+        if self.spring_lengths:
+            wx.MessageBox(f"Submitted spring lengths: {', '.join(self.spring_lengths)}", "Info", wx.OK | wx.ICON_INFORMATION)
+        else:
+            wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
+
 
 
 
