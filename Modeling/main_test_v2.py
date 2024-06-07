@@ -15,10 +15,27 @@ def run_simulation(simulation_points=10001):
     initializeObjects = "manual" 
     match initializeObjects:
         case "manual":
-            list_of_springs = [objects.Spring(startingpoint=[0,0], rest_length=0.5, stiffness=10, index=1), objects.Spring(startingpoint=[0,-0.5], rest_length=0.4, stiffness=15, index=2),
-                            objects.Spring(startingpoint=[0,-0.9], rest_length=0.6, stiffness=5, index=3)]
-            list_of_mass = [objects.Mass(position=[0,-0.5],mass=1, diameter= 0.2,index=1), objects.Mass(position=[0,-0.9],mass=2, diameter= 0.2,index=2), 
-                            objects.Mass(position=[0,-1.5],mass=0.5, diameter= 0.2, index=3)]
+            # list_of_springs = [objects.Spring(startingpoint=[0,0], rest_length=0.5, stiffness=10, index=1), objects.Spring(startingpoint=[0,-0.5], rest_length=0.4, stiffness=15, index=2),
+            #                 objects.Spring(startingpoint=[0,-0.9], rest_length=0.6, stiffness=5, index=3)]
+            s1 = objects.Spring(rest_length=0.5, stiffness=100, index=1, type="cubic")
+            s2 = objects.Spring(rest_length=0.4, stiffness=100, index=2, type="linear")
+            s3 = objects.Spring(rest_length=0.6, stiffness=120, index=3, type="linear")
+            s1.setInitialConditions([0,0], [0,-0.5], [0,0])
+            s2.setInitialConditions([0,-0.5], [0,-0.9],[0,0])
+            s3.setInitialConditions([0,-0.9], [0, -1.5],[0,0])
+            list_of_springs = [s1, s2, s3]
+            # list_of_mass = [objects.Mass(position=[0,-0.5],mass=1,index=1), objects.Mass(position=[0,-0.9],mass=2,index=2), 
+            #                 objects.Mass(position=[0,-1.5],mass=0.5, index=3)]
+            m1 = objects.Masspoint(mass=1, index=1)
+            m2 = objects.Masspoint(mass=2, index=2)
+            m3 = objects.Masspoint(mass=0.5, index=3)
+            m1.setInitialConditions([0,-0.5],[0,0])
+            m2.setInitialConditions([0,-0.9],[0,0])
+            m3.setInitialConditions([0,-1.5],[0,0])
+            list_of_mass = [m1, m2, m3]
+
+            
+            
             list_of_object_lists = [list_of_springs, list_of_mass]
             
         case "with_create_objects":
@@ -39,26 +56,37 @@ def run_simulation(simulation_points=10001):
     # angle_list = [spring.angle for spring in list_of_springs]
 
     #creating the list of forces attached to each mass
-    list_of_forces_all = []  
+    list_of_forces_all_x = []  
+    list_of_forces_all_y = []
     for mass in list_of_mass:
         pos = mass.position 
-        list_of_force = [mass.force()]  #initializes the list of force for each mass with the gravitational force of each mass
-        
+        list_of_force_y = [mass.force()]  #initializes the list of force for each mass with the gravitational force of each mass
+        list_of_force_x = []
+
         for j in range(len(list_of_springs)): 
             # compares the startingpoint of all springs with the position of the mass
             # if the points are the same, this means that the spring is below the mass and the force is positiv
             if pos == list_of_springs[j].startingpoint: 
-                list_of_force.append(list_of_springs[j].force(list_of_springs[j-1].yt))
+                Fx,Fy =list_of_springs[j].force(list_of_springs[j-1].xt, list_of_springs[j-1].yt)
+                list_of_force_y.append(Fy)
+                list_of_force_x.append(Fx)
             # if the points are the same, this means that the spring is above the mass and the force is negativ
             elif pos == list_of_springs[j].endpoint:
                 #if j=0, this means that this is the first spring and the displacement is of the spring above, which dosen't exist, is 0
                 if j == 0:
-                    list_of_force.append(-list_of_springs[j].force(0))
+                    Fx,Fy =list_of_springs[j].force(0,0)
+                    list_of_force_y.append(-Fy)
+                    list_of_force_x.append(-Fx)
                 else:
-                    list_of_force.append(-list_of_springs[j].force(list_of_springs[j-1].yt))
+                    # list_of_force_y.append(-list_of_springs[j].force(list_of_springs[j-1].yt))
+                    Fx,Fy = list_of_springs[j].force(list_of_springs[j-1].xt, list_of_springs[j-1].yt)
+                    list_of_force_y.append(-Fy)
+                    list_of_force_x.append(-Fx)
                     
-        list_of_forces_all.append(list_of_force) # write the list of forces attached to each mass in the list of all forces
-    print(list_of_forces_all)
+        list_of_forces_all_y.append(list_of_force_y) # write the list of forces attached to each mass in the list of all forces
+        list_of_forces_all_x.append(list_of_force_x)
+    print("forces x:"+str(list_of_forces_all_x))
+    print("forces y:"+str(list_of_forces_all_y))
 
     # Setup system with Newton mechanics
     system = newton.Mechanics()
@@ -68,8 +96,9 @@ def run_simulation(simulation_points=10001):
         system.add_mass(name=str(sym_mass_list[i]), mass=sym_mass_list[i]) # add mass i to the system 
 
     for i in range(len(sym_mass_list)):
-        system.add_force(str(sym_mass_list[i]), (0, 'x'))
-        system.add_force(str(sym_mass_list[i]), (sum(list_of_forces_all[i]), 'y'))
+        system.add_force(str(sym_mass_list[i]), (sum(list_of_forces_all_x[i]), 'x'))
+        #system.add_force(str(sym_mass_list[i]), (0, 'x'))
+        system.add_force(str(sym_mass_list[i]), (sum(list_of_forces_all_y[i]), 'y'))
 
     #create dictionary of parameter values of each mass 
     param_values_mass = {}

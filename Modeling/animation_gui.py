@@ -20,7 +20,8 @@ class Animation:
         y_pos = pos[1::2]
         y_max = max((max(y) for y in y_pos))
         y_min = min((min(y) for y in y_pos))
-        
+        y_range = y_max - y_min
+
         self.ax.set_ylim(y_min - 3, y_max + 3)
         self.ax.set_xlim(x_min - 3, x_max + 3)
         self.ax.set_aspect('equal')
@@ -31,13 +32,17 @@ class Animation:
 
         list_of_springs, list_of_mass = self.list_of_object_lists
 
+        # zorder is use in matplotlib to control the drawing order, the grid have a zorder of 2.5 by default
+        # we want that the masses are plotted above the spring lines, so the zorder of the masses must have a higer values than the zorder of the spring lines
+        # and both zorders must have a higher value than the zorder of the grid, because we want that the animation is over the grid
         for i in range(len(list_of_springs)):
             x_sp, y_sp = list_of_springs[i].startingpoint
             x_ep, y_ep = list_of_springs[i].endpoint
-            self.spring_lines.append(self.ax.plot([x_sp, x_ep], [y_sp, y_ep], lw=2, color=list_of_springs[i].color)[0])
+            self.spring_lines.append(self.ax.plot([x_sp, x_ep], [y_sp, y_ep], lw=2, color=list_of_springs[i].color, zorder=3)[0])
 
         for i in range(len(list_of_mass)):
-            self.mass_circles.append(plt.Circle(list_of_mass[i].position, list_of_mass[i].diameter, color=list_of_mass[i].color))
+            list_of_mass[i].set_diameter(y_range)
+            self.mass_circles.append(plt.Circle(list_of_mass[i].position, list_of_mass[i].diameter, color=list_of_mass[i].color, zorder=4))
             self.ax.add_patch(self.mass_circles[i])
 
     def update_frame(self, num):
@@ -48,7 +53,7 @@ class Animation:
         list_of_springs, list_of_mass = self.list_of_object_lists
 
         # Ensure num is within the range of positions
-        if 0 <= num < len(y_pos[0]):
+        if 0 <= num <= len(y_pos[0]):
 
             for i in range(len(list_of_mass)):
                 list_of_mass[i].move(x_pos[i][num], y_pos[i][num])
@@ -65,3 +70,5 @@ class Animation:
                     x_sp, y_sp = list_of_springs[i].startingpoint
                     x_ep, y_ep = list_of_springs[i].endpoint
                     self.spring_lines[i].set_data([x_sp, x_ep], [y_sp, y_ep])
+        time = f"{self.sol.t[num]:.2f}" 
+        self.ax.set_title('Animation \nTime: '+time)

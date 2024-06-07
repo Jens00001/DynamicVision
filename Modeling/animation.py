@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 import matplotlib.animation 
 
 def animation(sol, list_of_object_lists,skip_sim_steps=150):
@@ -24,6 +25,9 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
     #print(pos)
     list_of_springs, list_of_mass = list_of_object_lists
 
+    y_range = y_max - y_min
+    base_diameter = 0.06
+    exponent = 0.5
     # Create figure and axis
     fig, ax = plt.subplots()
     #ax.set_xlim(y_min - y_buffer, y_max + y_buffer)
@@ -37,13 +41,18 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
     for i in range(len(list_of_springs)):
         x_sp, y_sp = list_of_springs[i].startingpoint
         x_ep, y_ep = list_of_springs[i].endpoint
-        spring_line.append(ax.plot([x_sp,x_ep],[y_sp,y_ep], lw=2, color = list_of_springs[i].color))
+        spring_line.append(ax.plot([x_sp,x_ep],[y_sp,y_ep], lw=2, color = list_of_springs[i].color, zorder=3))
 
     # Create mass 
     mass_circle = []
     for i in range(len(list_of_mass)):
-        mass_circle.append(plt.Circle(list_of_mass[i].position, list_of_mass[i].diameter, color = list_of_mass[i].color))
+        dynamic_diameter = base_diameter * (y_range**exponent)
+        print(dynamic_diameter)
+        list_of_mass[i].set_diameter(y_range)
+        mass_circle.append(plt.Circle(list_of_mass[i].position, list_of_mass[i].diameter, color = list_of_mass[i].color, zorder=4))
         ax.add_patch(mass_circle[i])
+
+
 
     # springline1, = ax.plot([list_of_springs[0].startingpoint[0], list_of_springs[0].endpoint[0]],[list_of_springs[0].startingpoint[1], list_of_springs[0].endpoint[1]],lw=2)
     # springline2, = ax.plot([list_of_springs[1].startingpoint[0], list_of_springs[1].endpoint[0]],[list_of_springs[1].startingpoint[1], list_of_springs[1].endpoint[1]],lw=2)
@@ -76,7 +85,8 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
                 x_ep, y_ep = list_of_springs[i].endpoint
                 spring_line[i][0].set_data([x_sp, x_ep],[y_sp,y_ep])
                 #print(list_of_springs[i])
-
+        time = f"{sol.t[num]:.2f}" 
+        plt.title('Animation \nTime: '+time)
         # list_of_springs[0].move(-x_pos[0][num],[0,0])
         # x_sp1, y_sp1 = list_of_springs[0].startingpoint
         # x_ep1, y_ep1 = list_of_springs[0].endpoint
@@ -98,7 +108,7 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
     # Create animation
     ani = matplotlib.animation.FuncAnimation(fig, update_system, frames=range(0, len(y[0]), skip_sim_steps), interval=dt*100, repeat=False, cache_frame_data=True) # intervall is the delay in ms between frames
     
-    plt.title('Animation')
+    #plt.title('Animation\n Time:'+str(3))
     plt.xlabel('x')
     plt.ylabel('y')
 

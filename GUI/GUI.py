@@ -104,7 +104,7 @@ class CreateModel(wx.Panel):
         self.skip_sim_steps = 1 # Intitalize the number of steps which are skiped in the animation
 
     def on_run_simulation(self, event):
-        res, list_of_object_lists,system = main_modeling.run_simulation(simulation_points=50001)
+        res, list_of_object_lists,system = main_modeling.run_simulation(simulation_points=25001)
         self.plot_results(res, list_of_object_lists)
         self.canvas.draw()
         # Start animation
@@ -136,6 +136,10 @@ class CreateModel(wx.Panel):
             pos = y[0:int(len(y)/2)]
             y_pos = pos[1::2]
             if self.num >= len(y_pos[0]):
+                #make sure that the animation stops at the last simulated point
+                self.num = len(y_pos[0])-1
+                self.animation.update_frame(self.num)
+
                 self.paused = True
                 self.timer.Stop()
                 wx.CallLater(2000, self.restart_animation)  # Pause for 2 seconds before restarting
