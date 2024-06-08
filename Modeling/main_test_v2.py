@@ -188,7 +188,7 @@ def main():
     res, list_of_object_lists, system = run_simulation(simulation_points=100001)
 
     #plot results     
-    fig = plt.figure (figsize=(10,4)) 
+    fig = plt.figure (figsize=(10,4))
     ax1 = fig.add_subplot(1,1,1)
     canvas = fig.canvas
     plot_results(res, ax1)
