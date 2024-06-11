@@ -92,12 +92,9 @@ class CreateModel(wx.Panel):
         self.button_create_element.SetPosition((1000,500))
 
         #Create a button to start the simultion
-        button_run = wx.Button(self, label="Run Simulation", pos=(500, 600))
-        button_run.Bind(wx.EVT_BUTTON, self.on_run_simulation)
-        
-
         self.button_run = wx.Button(self, label="Run Simulation", pos=(500, 600))
         self.button_run.Bind(wx.EVT_BUTTON, self.on_run_simulation)
+        
         self.num = 0  # Initialize num
         self.paused = False 
         self.updatetime = 100 # Initialize updatetime
