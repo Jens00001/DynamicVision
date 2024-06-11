@@ -9,6 +9,7 @@ import matplotlib.animation as animation
 from matplotlib.figure import Figure
 import main_test_v2 as main_modeling
 import animation_gui as anim
+from additions import eq_to_latex, show_equations_of_motion
 
 # Define the Start Menu with Header, Pictures and Buttons to Switch to Create Model, Open Model, Documentation and Exit the App 
 class StartMenu(wx.Panel):
@@ -101,8 +102,9 @@ class CreateModel(wx.Panel):
         self.skip_sim_steps = 1 # Intitalize the number of steps which are skiped in the animation
 
     def on_run_simulation(self, event):
-        res, list_of_object_lists,system = main_modeling.run_simulation(simulation_points=25001)
+        res, list_of_object_lists, system = main_modeling.run_simulation(simulation_points=25001)
         self.plot_results(res, list_of_object_lists)
+        self.show_equations(system)
         self.canvas.draw()
         # Start animation
         max_simulated_time = res.t[-1]
@@ -116,6 +118,10 @@ class CreateModel(wx.Panel):
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update_animation, self.timer)
         self.timer.Start(self.updatetime)  # Update time per frame
+
+    def show_equations(self, system):
+        # plot/show equations of motion
+        main_modeling.generate_latex(system)
 
     def plot_results(self, res, list_of_object_lists):
         # Plot results in ax1
