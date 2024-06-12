@@ -1,4 +1,4 @@
-from sympy import Function, Eq, symbols, lambdify, pprint
+from sympy import Function, Eq, symbols, lambdify
 from scipy.integrate import solve_ivp
 from numpy import linspace, concatenate
 from re import search

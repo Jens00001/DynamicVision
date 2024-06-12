@@ -55,7 +55,6 @@ system.add_force('m2', (F_y_m2, 'y'))
 system.generate_constraint("link", 'm1', 'm1', l1)
 # distance between first mass and second mass
 system.generate_constraint("link", 'm1', 'm2', l2)
-# print(system.constraints)
 
 # get equation of motion (only required for displaying purposes)
 equations = system.generate_equations()
@@ -67,7 +66,7 @@ rhs_eq = system.rhs_of_equation(sub_equations)
 # print(rhs_eq)
 
 z0 = [0, 0.5, 0, 0.4, 0, 0, 0, 0]  # [x1, y1, x2, y2, x1_dot, y1_dot, x2_dot, y2_dot]
-t_span = (0, 10)
+t_span = (0, 20)
 
 start = time.time()
 res = system.simulate(system.param_values, z0, t_span, 100001)
@@ -84,22 +83,6 @@ start = time.time()
 data = load_system(savepath)
 end = time.time()
 print("Duration of loading data: ", end - start, "s.")
-
-# load simulation data
-time = data['time']
-y1_val = data['results'][1]
-y2_val = data['results'][3]
-
-# Plot results
-plt.figure(figsize=(16 * 1, 9 * 1))
-plt.plot(time, y1_val, label='Position of Mass 1 (m)')
-plt.plot(time, y2_val, label='Position of Mass 2 (m)')
-plt.xlabel('Time (s)')
-plt.ylabel('Position (m)')
-plt.title('Double Mass Oscillator')
-plt.legend()
-plt.grid(True)
-plt.show(block=False)
 
 # construct equations of motion with saved data
 param_val = data['system']['param_values']
@@ -122,7 +105,6 @@ loaded_system.param_values = param_val
 equ = loaded_system.generate_equations()
 sub_eq = loaded_system.substitute_parameters(equ, loaded_system.param_values)
 eq_rhs = loaded_system.rhs_of_equation(sub_eq)
-
 # generate latex notion of equations of motion
 eqm = eq_to_latex(loaded_system)
 
@@ -132,3 +114,19 @@ show_equations_of_motion(eqm)
 #path and name of the saved file
 savepath_equation = os.path.dirname(os.path.realpath(__file__))+"\data\\tex_equation"
 tex_save(savepath_equation, loaded_system)
+
+# load simulation data
+time = data['time']
+res_pos = [d for d in data['results'][0:len(equ)]]
+
+# Plot results
+plt.figure(figsize=(16 * 1, 9 * 1))
+for data in res_pos:
+    plt.plot(time, data)
+
+plt.xlabel('Time (s)')
+plt.ylabel('Position (m)')
+plt.title('Double Mass Oscillator')
+plt.legend()
+plt.grid(True)
+plt.show(block=True)

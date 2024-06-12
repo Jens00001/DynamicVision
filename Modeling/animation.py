@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 import matplotlib.animation 
 
-def animation(sol, list_of_object_lists,skip_sim_steps=150):
+def animation(sol, list_of_object_lists,model,skip_sim_steps=150):
     '''
     :param sol: solution of the simulation of the system (See documentation of solve_ivp())
     :type Bunch object:
@@ -21,8 +22,11 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
     y_pos = pos[1::2]
     y_max = max((max(y) for y in y_pos)) #finds the maximum value of all y positions
     y_min = min((min(y) for y in y_pos)) #finds the minimum value of all y positions
-    #print(pos)
-    list_of_springs, list_of_mass = list_of_object_lists
+    print("Länge y_0: "+str(len(y[0])))
+    print(type(len(y[0])))
+    list_of_springs, list_of_mass, list_of_sbs = list_of_object_lists
+
+    y_range = y_max - y_min
 
     # Create figure and axis
     fig, ax = plt.subplots()
@@ -37,14 +41,24 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
     for i in range(len(list_of_springs)):
         x_sp, y_sp = list_of_springs[i].startingpoint
         x_ep, y_ep = list_of_springs[i].endpoint
-        spring_line.append(ax.plot([x_sp,x_ep],[y_sp,y_ep], lw=2, color = list_of_springs[i].color))
+        spring_line.append(ax.plot([x_sp,x_ep],[y_sp,y_ep], lw=2, color = list_of_springs[i].color, zorder=3))
 
     # Create mass 
     mass_circle = []
     for i in range(len(list_of_mass)):
-        mass_circle.append(plt.Circle(list_of_mass[i].position, list_of_mass[i].diameter, color = list_of_mass[i].color))
+        list_of_mass[i].set_diameter(y_range)
+        mass_circle.append(plt.Circle(list_of_mass[i].position, list_of_mass[i].diameter, color = list_of_mass[i].color, zorder=4))
         ax.add_patch(mass_circle[i])
 
+    sb_rectangles = []
+    for steadyBody in list_of_sbs:
+        x, y = steadyBody.position
+        # Calculate position of the rectangle (center)
+        x_left = x - steadyBody.x_dim / 2
+        y_bottom = y - steadyBody.y_dim / 2
+        sb_rectangles.append(patches.Rectangle((x_left, y_bottom), steadyBody.x_dim, steadyBody.y_dim, color=steadyBody.color, zorder=4))
+        ax.add_patch(sb_rectangles[-1])
+    #plt.show()
     # springline1, = ax.plot([list_of_springs[0].startingpoint[0], list_of_springs[0].endpoint[0]],[list_of_springs[0].startingpoint[1], list_of_springs[0].endpoint[1]],lw=2)
     # springline2, = ax.plot([list_of_springs[1].startingpoint[0], list_of_springs[1].endpoint[0]],[list_of_springs[1].startingpoint[1], list_of_springs[1].endpoint[1]],lw=2)
     # masscircle1 = plt.Circle(list_of_mass[0].position, 0.1, color='r')
@@ -54,29 +68,105 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
 
     # Function to update the animation
     
-    def update_system(num): 
-           
-        for i in range(len(list_of_mass)):
-            list_of_mass[i].move(x_pos[i][num],y_pos[i][num])
-            mass_circle[i].set_center(list_of_mass[i].position)
-            #print(list_of_mass[i].position)
+    def update_system(num,model): 
 
-        for i in range(len(list_of_springs)):
-            if list_of_springs[i].startingpoint[1] == 0:
-                list_of_springs[i].move(list_of_springs[i].startingpoint, list_of_mass[i].position)
-                #print(list_of_springs[i].endpoint)
-                x_sp, y_sp = list_of_springs[i].startingpoint
-                x_ep, y_ep = list_of_springs[i].endpoint
-                spring_line[i][0].set_data([x_sp, x_ep],[y_sp,y_ep])
-            else: 
-                list_of_springs[i].move(list_of_mass[i-1].position, list_of_mass[i].position)
-                #print(list_of_springs[i].startingpoint)
-                #print(list_of_springs[i].endpoint)
-                x_sp, y_sp = list_of_springs[i].startingpoint
-                x_ep, y_ep = list_of_springs[i].endpoint
-                spring_line[i][0].set_data([x_sp, x_ep],[y_sp,y_ep])
-                #print(list_of_springs[i])
+        match model:
+            case "mass-sb":
+                for i in range(len(list_of_mass)):
+                    list_of_mass[i].move(x_pos[i][num],y_pos[i][num])
+                    mass_circle[i].set_center(list_of_mass[i].position)
+                    #print(list_of_mass[i].position)
+                
+                for i in range(len(list_of_sbs)):
+                    list_of_sbs[i].move(x_pos[i+1][num], y_pos[i+1][num])
+                    x_center, y_center = list_of_sbs[i].position
+                    width, height = list_of_sbs[i].x_dim, list_of_sbs[i].y_dim
+                    bottom_left = (x_center - width / 2, y_center - height / 2)
+                    sb_rectangles[i].set_xy(bottom_left)
 
+                list_of_springs[0].move(list_of_springs[0].startingpoint, list_of_mass[0].position)
+                x_sp, y_sp = list_of_springs[0].startingpoint
+                x_ep, y_ep = list_of_springs[0].endpoint
+                spring_line[0][0].set_data([x_sp, x_ep],[y_sp,y_ep])
+
+                list_of_springs[1].move(list_of_mass[0].position, list_of_sbs[0].position)
+                x_sp, y_sp = list_of_springs[1].startingpoint
+                x_ep, y_ep = list_of_springs[1].endpoint
+                spring_line[1][0].set_data([x_sp, x_ep],[y_sp,y_ep])
+
+            case "sb-mass":
+                for i in range(len(list_of_mass)):
+                    list_of_mass[i].move(x_pos[i][num],y_pos[i][num])
+                    mass_circle[i].set_center(list_of_mass[i].position)
+                    #print(list_of_mass[i].position)
+                
+                for i in range(len(list_of_sbs)):
+                    list_of_sbs[i].move(x_pos[i+1][num], y_pos[i+1][num])
+                    x_center, y_center = list_of_sbs[i].position
+                    width, height = list_of_sbs[i].x_dim, list_of_sbs[i].y_dim
+                    bottom_left = (x_center - width / 2, y_center - height / 2)
+                    sb_rectangles[i].set_xy(bottom_left)
+
+                list_of_springs[0].move(list_of_springs[0].startingpoint, list_of_sbs[0].position)
+                x_sp, y_sp = list_of_springs[0].startingpoint
+                x_ep, y_ep = list_of_springs[0].endpoint
+                spring_line[0][0].set_data([x_sp, x_ep],[y_sp,y_ep])
+
+                list_of_springs[1].move(list_of_sbs[0].position, list_of_mass[0].position)
+                x_sp, y_sp = list_of_springs[1].startingpoint
+                x_ep, y_ep = list_of_springs[1].endpoint
+                spring_line[1][0].set_data([x_sp, x_ep],[y_sp,y_ep])
+            
+            case "two masses":
+                for i in range(len(list_of_mass)):
+                    list_of_mass[i].move(x_pos[i][num],y_pos[i][num])
+                    mass_circle[i].set_center(list_of_mass[i].position)
+                    #print(list_of_mass[i].position)
+
+                for i in range(len(list_of_springs)):
+                    if list_of_springs[i].startingpoint[1] == 0:
+                        list_of_springs[i].move(list_of_springs[i].startingpoint, list_of_mass[i].position)
+                        #print(list_of_springs[i].endpoint)
+                        x_sp, y_sp = list_of_springs[i].startingpoint
+                        x_ep, y_ep = list_of_springs[i].endpoint
+                        spring_line[i][0].set_data([x_sp, x_ep],[y_sp,y_ep])
+                    else: 
+                        list_of_springs[i].move(list_of_mass[i-1].position, list_of_mass[i].position)
+                        #print(list_of_springs[i].startingpoint)
+                        #print(list_of_springs[i].endpoint)
+                        x_sp, y_sp = list_of_springs[i].startingpoint
+                        x_ep, y_ep = list_of_springs[i].endpoint
+                        spring_line[i][0].set_data([x_sp, x_ep],[y_sp,y_ep])
+                        #print(list_of_springs[i])
+            
+            case "two sbs":
+                for i in range(len(list_of_sbs)):
+                    list_of_sbs[i].move(x_pos[i][num], y_pos[i][num])
+                    x_center, y_center = list_of_sbs[i].position
+                    width, height = list_of_sbs[i].x_dim, list_of_sbs[i].y_dim
+                    bottom_left = (x_center - width / 2, y_center - height / 2)
+                    sb_rectangles[i].set_xy(bottom_left)
+
+                for i in range(len(list_of_springs)):
+                    if list_of_springs[i].startingpoint[1] == 0:
+                        list_of_springs[i].move(list_of_springs[i].startingpoint, list_of_sbs[i].position)
+                        #print(list_of_springs[i].endpoint)
+                        x_sp, y_sp = list_of_springs[i].startingpoint
+                        x_ep, y_ep = list_of_springs[i].endpoint
+                        spring_line[i][0].set_data([x_sp, x_ep],[y_sp,y_ep])
+                    else: 
+                        list_of_springs[i].move(list_of_sbs[i-1].position, list_of_sbs[i].position)
+                        #print(list_of_springs[i].startingpoint)
+                        #print(list_of_springs[i].endpoint)
+                        x_sp, y_sp = list_of_springs[i].startingpoint
+                        x_ep, y_ep = list_of_springs[i].endpoint
+                        spring_line[i][0].set_data([x_sp, x_ep],[y_sp,y_ep])
+                        #print(list_of_springs[i])
+        
+
+
+        time = f"{sol.t[num]:.2f}" 
+        plt.title('Animation \nTime: '+time)
         # list_of_springs[0].move(-x_pos[0][num],[0,0])
         # x_sp1, y_sp1 = list_of_springs[0].startingpoint
         # x_ep1, y_ep1 = list_of_springs[0].endpoint
@@ -95,10 +185,10 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
 
             
 
-    # Create animation
-    ani = matplotlib.animation.FuncAnimation(fig, update_system, frames=range(0, len(y[0]), skip_sim_steps), interval=dt*100, repeat=False, cache_frame_data=True) # intervall is the delay in ms between frames
+    # Create animation range(0, len(y[0]), skip_sim_steps)
+    ani = matplotlib.animation.FuncAnimation(fig, update_system, frames= range(0, len(t), skip_sim_steps), interval=dt*100, fargs=(model,),repeat=True, cache_frame_data=True) # intervall is the delay in ms between frames
     
-    plt.title('Animation')
+    #plt.title('Animation\n Time:'+str(3))
     plt.xlabel('x')
     plt.ylabel('y')
 

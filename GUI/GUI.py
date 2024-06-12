@@ -13,6 +13,7 @@ import objects
 
 list_of_springs= []
 list_of_mass = []
+from additions import eq_to_latex, show_equations_of_motion
 
 # Define the Start Menu with Header, Pictures and Buttons to Switch to Create Model, Open Model, Documentation and Exit the App 
 class StartMenu(wx.Panel):
@@ -96,20 +97,18 @@ class CreateModel(wx.Panel):
         self.button_create_element.SetPosition((1000,500))
 
         #Create a button to start the simultion
-        button_run = wx.Button(self, label="Run Simulation", pos=(500, 600))
-        button_run.Bind(wx.EVT_BUTTON, self.on_run_simulation)
-        
-
         self.button_run = wx.Button(self, label="Run Simulation", pos=(500, 600))
         self.button_run.Bind(wx.EVT_BUTTON, self.on_run_simulation)
+        
         self.num = 0  # Initialize num
         self.paused = False 
         self.updatetime = 100 # Initialize updatetime
         self.skip_sim_steps = 1 # Intitalize the number of steps which are skiped in the animation
 
     def on_run_simulation(self, event):
-        res, list_of_object_lists,system = main_modeling.run_simulation(simulation_points=50001)
+        res, list_of_object_lists, system = main_modeling.run_simulation(simulation_points=25001)
         self.plot_results(res, list_of_object_lists)
+        self.show_equations(system)
         self.canvas.draw()
         # Start animation
         max_simulated_time = res.t[-1]
@@ -123,6 +122,10 @@ class CreateModel(wx.Panel):
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update_animation, self.timer)
         self.timer.Start(self.updatetime)  # Update time per frame
+
+    def show_equations(self, system):
+        # plot/show equations of motion
+        main_modeling.generate_latex(system)
 
     def plot_results(self, res, list_of_object_lists):
         # Plot results in ax1
@@ -140,6 +143,10 @@ class CreateModel(wx.Panel):
             pos = y[0:int(len(y)/2)]
             y_pos = pos[1::2]
             if self.num >= len(y_pos[0]):
+                #make sure that the animation stops at the last simulated point
+                self.num = len(y_pos[0])-1
+                self.animation.update_frame(self.num)
+
                 self.paused = True
                 self.timer.Stop()
                 wx.CallLater(2000, self.restart_animation)  # Pause for 2 seconds before restarting

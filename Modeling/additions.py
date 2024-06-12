@@ -1,12 +1,14 @@
 import matplotlib.pyplot as plt
 from sympy import Eq, latex, Function, symbols, Derivative
+from matplotlib.widgets import Slider
 
 
 def eq_to_latex(system):
     """
     Method for transform equations of motion to LaTeX notation.
     With the given input the method extracts the equations of motion of the system. To do that it replaces
-    the used variables(i.e. x1(t),x2(t),y1(t),y2(t)) with variables that don't depend on the time (i.e. x1,x2,y1,y2).
+    the used variables(i.e. x1(t),x2(t),y1(t),y2(t)) with variables that don't depend on the time (i.e. x1,x2,y1,y2)
+    for a better readability.
     It also generates the derivatives to display the equation accordingly.
     Using the latex() function of sympy the LaTeX notation of the equations of motion is generated.
 
@@ -53,22 +55,34 @@ def eq_to_latex(system):
     return latex_str
 
 
-def show_equations_of_motion(latex_str, window_size=(1, 1), font_size=30):
+def show_equations_of_motion(latex_str, font_size=16):
     """
     Method to display expressions in LaTeX.
     The method generates a simple figure based on matplotlib in 16x9 format. It uses the text() function of matplotlib
-    to show the input argument of the show_equations_of_motion() function.
+    to show expressions.
 
     :param latex_str: String that should be displayed (should be already in LaTeX notation)
     :type latex_str: string
-    :param window_size: Multiplier for window size in 16x9 format --> (width, height): width*16, height*9
-    :type window_size: tuple
     :param font_size: size of the displayed text
     :type font_size: int
     """
 
+    # base 16:9 aspect ratio
+    base_width = 16
+    base_height = 9
+    # split the string into lines and find the length of the longest line
+    lines = latex_str.split('\n')
+    longest_line_length = max(len(l) for l in lines)
+    # adjust width proportionally to the length of the string
+    correction_term = longest_line_length / 140
+
+    # compute the width based on the longest line length
+    width = base_width * correction_term
+    # compute the height based on the width to maintain a 16:9 aspect ratio
+    height = (width / 16) * 9
+
     # plot for LaTeX display
-    plt.figure(figsize=(16 * window_size[0], 9 * window_size[0]))  # 16x9 format
+    plt.figure(figsize=(width, height))  # adjusted 16x9 format based on string length
 
     # show the LaTex expression
     plt.text(0.5, 0.5, latex_str, fontsize=font_size, horizontalalignment="center", verticalalignment="center",
