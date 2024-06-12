@@ -76,7 +76,7 @@ class Spring:
         assert isinstance(self.color, str)
         assert isinstance(self.lw, (int,float))
         
-    def setInitialConditions(self,sp, ep, velocity):
+    def setInitialConditions(self,top_mass, bottom_mass, velocity):
         """"
         Method for setting the inital conditions of the spring
 
@@ -87,8 +87,28 @@ class Spring:
         :param velocitiy: starting velocity of the spring 
         :type v_x: list with int or float values
         """
-        self.startingpoint = sp
-        self.endpoint = ep
+        if top_mass == None:
+            self.startingpoint = [0,0]
+
+        elif top_mass.type == "masspoint":
+            self.startingpoint = top_mass.position
+
+        elif top_mass.type == "steady body":
+            self.startingpoint = [top_mass.position[0], top_mass.position[1] - top_mass.y_dim/2]
+        else:
+            raise AssertionError("Please insert a mass or None, if the spring is not placed between two masses, as first argument of the method")
+            
+
+        if bottom_mass.type == "masspoint":
+            self.endpoint = bottom_mass.position
+
+        elif bottom_mass.type == "steady body":
+            self.endpoint = [bottom_mass.position[0], bottom_mass.position[1] + bottom_mass.y_dim/2]
+
+        else:
+            raise AssertionError("Please insert a mass as second argument of the method")
+
+
         self.velocity= velocity
         
         self.length = np.sqrt((self.endpoint[0]-self.startingpoint[0])**2 + (self.endpoint[1]-self.startingpoint[1])**2)
@@ -121,7 +141,7 @@ class Spring:
 
         return [self.sym_Fx, self.sym_Fy]
     
-    def move(self,attached_point, connected_point_below):
+    def move(self,top_mass, bottom_mass):
         """
         Method for computing the new lenght and y-coordinate of the end point of the spring by a given change x
 
@@ -134,8 +154,23 @@ class Spring:
         :return: current startingpoint, angle, length and endpoint of the spring 
         :rtype: list 
         """
-        self.startingpoint = attached_point
-        self.endpoint = connected_point_below
+        if top_mass == None:
+            pass
+            #self.startingpoint = self.startingpoint
+
+        elif top_mass.type == "masspoint":
+            self.startingpoint = top_mass.position
+
+        elif top_mass.type == "steady body":
+            self.startingpoint = [top_mass.position[0], top_mass.position[1] - top_mass.y_dim/2]
+
+
+        if bottom_mass.type == "masspoint":
+            self.endpoint = bottom_mass.position
+
+        elif bottom_mass.type == "steady body":
+            self.endpoint = [bottom_mass.position[0], bottom_mass.position[1] + bottom_mass.y_dim/2]
+
         self.length = np.sqrt((self.endpoint[0]-self.startingpoint[0])**2 + (self.endpoint[1]-self.startingpoint[1])**2 )
 
         return [self.startingpoint,  self.endpoint]
@@ -225,6 +260,7 @@ class Masspoint(Mass):
     def __init__(self, mass, index):
         
         self.mass = mass
+        self.type = "masspoint"
         Mass.__init__(self, index)
 
     def set_diameter(self,y_range):
@@ -246,5 +282,6 @@ class SteadyBody(Mass):
         self.volume = self.x_dim*self.y_dim*self.z_dim
         self.mass = self.volume*self.density
         self.position = [] # is the position of the center of mass
+        self.type = "steady body"
         Mass.__init__(self, index)
 

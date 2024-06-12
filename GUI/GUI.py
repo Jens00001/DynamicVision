@@ -102,7 +102,8 @@ class CreateModel(wx.Panel):
         self.skip_sim_steps = 1 # Intitalize the number of steps which are skiped in the animation
 
     def on_run_simulation(self, event):
-        res, list_of_object_lists, system = main_modeling.run_simulation(simulation_points=25001)
+        list_of_object_lists = main_modeling.create_objects()
+        res, system = main_modeling.run_simulation(list_of_object_lists, simulation_points=25001)
         self.plot_results(res, list_of_object_lists)
         self.show_equations(system)
         self.canvas.draw()
