@@ -9,6 +9,10 @@ import matplotlib.animation as animation
 from matplotlib.figure import Figure
 import main_test_v2 as main_modeling
 import animation_gui as anim
+import objects
+
+list_of_springs= []
+list_of_mass = []
 
 # Define the Start Menu with Header, Pictures and Buttons to Switch to Create Model, Open Model, Documentation and Exit the App 
 class StartMenu(wx.Panel):
@@ -246,6 +250,25 @@ class MassPoint(wx.Panel):
         self.mass = wx.TextCtrl(self, pos=(x_pos_mass_point_label,y_pos_mass_point_label+1*mass_point_label_size[1]), size=(200, -1))
         self.input_mass = None
 
+        button_size_element = (100,25)
+
+        # Create submit Button
+        self.button_steady_body_submit= wx.Button(self,label="submit",size = button_size_element)
+        self.Bind(wx.EVT_BUTTON,self.on_submit,self.button_steady_body_submit)
+        self.button_steady_body_submit.SetPosition((300,325))
+    
+    def on_submit(self, event):
+        # Process the list of spring lengths
+        if self.mass:
+            self.mass_mass_point = 0
+            self.mass_mass_point = int(self.mass.GetValue())
+            #wx.MessageBox(f"{self.mass_mass_point}")
+            m = objects.Masspoint(mass=self.mass_mass_point, index = (len(list_of_mass)+1))
+            list_of_mass.append(m)
+
+        else:
+            wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
+
 class SteadyBody(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self,parent,size=(600,400))
@@ -291,6 +314,27 @@ class SteadyBody(wx.Panel):
         self.width = wx.TextCtrl(self, pos=(x_pos_width_label, y_pos_width_label+1*width_label_size[1]), size=(200, -1))
         self.input_width = None
 
+        button_size_element = (100,25)
+
+        # Create submit Button
+        self.button_steady_body_submit= wx.Button(self,label="submit",size = button_size_element)
+        self.Bind(wx.EVT_BUTTON,self.on_submit,self.button_steady_body_submit)
+        self.button_steady_body_submit.SetPosition((300,325))
+    
+    def on_submit(self, event):
+        # Process the list of spring lengths
+        if self.density:
+            self.mass_steady_body = 0
+            self.density = int(self.density.GetValue())
+            self.width = int(self.width.GetValue())
+            self.height = int(self.height.GetValue())
+            self.length = int(self.length.GetValue())
+            self.mass_steady_body = self.height*self.width*self.length*self.density
+            wx.MessageBox(f"{self.mass_steady_body}")
+
+        else:
+            wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
+
 
 # Create the Panel "Spring"
 class SpringElement(wx.Panel):
@@ -328,22 +372,59 @@ class SingleSpring(wx.Panel):
     def __init__(self,parent):
         wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
-        text = wx.StaticText(self, label="Single Spring", pos=(50, 50))  # Add a static text to the panel
 
-        self.length_spring_label = wx.StaticText(self,label = "What is the length of the spring:",pos=(10,10))
-        self.length_spring = wx.TextCtrl(self, pos=(10, 30), size=(200, -1))
-        self.input_length_spring = None
+        panel_size = self.GetSize()
+        self.single_spring_text = wx.StaticText(self, label="Single Spring", pos=(50, 50))  # Add a static text to the panel
+        text_single_spring_font = wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        self.single_spring_text.SetFont(text_single_spring_font) 
+        single_spring_size = self.single_spring_text.GetSize()
+        x_pos_parallel_spring = (panel_size[0]-1*single_spring_size[0])//2
+        y_pos_parallel_spring = (panel_size[1]-15*single_spring_size[1])//1
+        self.single_spring_text.SetPosition((x_pos_parallel_spring,y_pos_parallel_spring))
 
-        self.stiffness_spring_label = wx.StaticText(self,label = "What is the stiffness of the spring:",pos=(10,10))
-        self.stiffness_spring = wx.TextCtrl(self, pos=(10, 30), size=(200, -1))
-        self.input_stiffness_spring = None
+        self.stiffness_label = wx.StaticText(self,label = "What is the stiffness of the Spring:")
+        stiffness_label_size = self.stiffness_label.GetSize()
+        x_pos_stiffness_label = (panel_size[0]-2*stiffness_label_size[0])//2
+        y_pos_stiffness_label = (panel_size[1]-20*stiffness_label_size[1])//1
+        self.stiffness_label.SetPosition((x_pos_stiffness_label,y_pos_stiffness_label))
+        self.stiffness_spring_single = wx.TextCtrl(self, pos=(x_pos_stiffness_label, y_pos_stiffness_label+1*stiffness_label_size[1]), size=(200, -1))
+     
+
+        self.length_label = wx.StaticText(self,label = "What is the length of the Spring:")
+        length_label_size = self.length_label.GetSize()
+        x_pos_length_label = (panel_size[0]-2*length_label_size[0])//2
+        y_pos_length_label = (panel_size[1]-16*length_label_size[1])//1
+        self.length_label.SetPosition((x_pos_length_label,y_pos_length_label))
+        self.length_spring_single = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
+        
+    
+        button_size_element = (100,25)
+
+        # Create submit Button
+        self.button_spring_single_submit= wx.Button(self,label="submit",size = button_size_element)
+        self.Bind(wx.EVT_BUTTON,self.on_submit,self.button_spring_single_submit)
+        self.button_spring_single_submit.SetPosition((300,325))
+    
+    def on_submit(self, event):
+        # Process the list of spring lengths
+        if self.length_spring_single:
+            self.spring_length = 0
+            self.spring_length = int(self.length_spring_single.GetValue())
+            wx.MessageBox(f"{self.spring_length}")
+
+            self.spring_stiffness = 0
+            self.spring_stiffness = int(self.stiffness_spring_single.GetValue())
+            wx.MessageBox(f"{self.spring_stiffness}")
+            
+        else:
+            wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
 
 class ParallelSpring(wx.Panel):
-    def __init__(self,parent):
+    def __init__(self,parent,*args):
         wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
-        self.spring_lengths = {}
-        self.spring_stiffness = {}
+        self.spring_lengths_parallel = []
+        self.spring_stiffness_parallel = []
 
         self.parallel_spring_text = wx.StaticText(self, label="Parallel Spring", pos=(50, 50))  # Add a static text to the panel
         text_parallel_spring_font = wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
@@ -359,7 +440,7 @@ class ParallelSpring(wx.Panel):
         x_pos_stiffness_label = (panel_size[0]-2*stiffness_label_size[0])//2
         y_pos_stiffness_label = (panel_size[1]-20*stiffness_label_size[1])//1
         self.stiffness_label.SetPosition((x_pos_stiffness_label,y_pos_stiffness_label))
-        self.density = wx.TextCtrl(self, pos=(x_pos_stiffness_label, y_pos_stiffness_label+1*stiffness_label_size[1]), size=(200, -1))
+        self.stiffness_spring_parallel = wx.TextCtrl(self, pos=(x_pos_stiffness_label, y_pos_stiffness_label+1*stiffness_label_size[1]), size=(200, -1))
         self.input_stiffness = None
 
         self.length_label = wx.StaticText(self,label = "What is the length of the Spring:")
@@ -367,23 +448,47 @@ class ParallelSpring(wx.Panel):
         x_pos_length_label = (panel_size[0]-2*length_label_size[0])//2
         y_pos_length_label = (panel_size[1]-16*length_label_size[1])//1
         self.length_label.SetPosition((x_pos_length_label,y_pos_length_label))
-        self.length_spring = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
+        self.length_spring_parallel = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
         self.input_length_spring = None 
     
+        button_size_element = (100,25)
+
+        # Create add Button
+        self.button_spring_parallel_add= wx.Button(self,label="add",size = button_size_element)
+        self.Bind(wx.EVT_BUTTON,self.on_add,self.button_spring_parallel_add)
+        self.button_spring_parallel_add.SetPosition((300,300))
+
+        # Create submit Button
+        self.button_spring_parallel_submit= wx.Button(self,label="submit",size = button_size_element)
+        self.Bind(wx.EVT_BUTTON,self.on_submit,self.button_spring_parallel_submit)
+        self.button_spring_parallel_submit.SetPosition((300,325))
+
     def on_add(self, event):
-        length = self.length_spring.GetValue()
+        length = int(self.length_spring_parallel.GetValue())
         if length:
-            self.spring_lengths.append(length)
-            self.length_spring.Clear()
-        stiffness = self.stiffness.GetValue()
+            self.spring_lengths_parallel.append(length)
+            self.length_spring_parallel.Clear()
+        stiffness = int(self.stiffness_spring_parallel.GetValue())
         if stiffness:
-            self.spring_stiffness.append(stiffness)
-            self.stiffness.Clear()
+            self.spring_stiffness_parallel.append(stiffness)
+            self.stiffness_spring_parallel.Clear()
     
     def on_submit(self, event):
         # Process the list of spring lengths
-        if self.spring_lengths:
-            wx.MessageBox(f"Submitted spring lengths: {', '.join(self.spring_lengths)}", "Info", wx.OK | wx.ICON_INFORMATION)
+        if self.spring_lengths_parallel:
+            self.spring_length = 0
+            for length in self.spring_lengths_parallel:
+                self.spring_length +=length
+            self.spring_length = self.spring_length/len(self.spring_lengths_parallel) 
+            list_of_springs_length.append(self.spring_length)
+            wx.MessageBox(f"{list_of_springs_length}")
+
+            self.spring_stiffness = 0
+            for stiffness in self.spring_stiffness_parallel:
+                self.spring_stiffness +=stiffness
+            list_of_springs_stiffness.append(self.spring_stiffness)
+            wx.MessageBox(f"{list_of_springs_stiffness}")
+            
         else:
             wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
 
@@ -392,8 +497,8 @@ class SeriesSpring(wx.Panel):
     def __init__(self,parent):
         wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
-        self.spring_lengths ={}
-        self.spring_stiffness = {}
+        self.spring_lengths_series =[]
+        self.spring_stiffness_series = []
 
         self.series_spring_text = wx.StaticText(self, label="Series of Springs", pos=(50, 50))  # Add a static text to the panel
         text_series_spring_font = wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
@@ -409,7 +514,7 @@ class SeriesSpring(wx.Panel):
         x_pos_stiffness_label = (panel_size[0]-2*stiffness_label_size[0])//2
         y_pos_stiffness_label = (panel_size[1]-20*stiffness_label_size[1])//1
         self.stiffness_label.SetPosition((x_pos_stiffness_label,y_pos_stiffness_label))
-        self.stiffness = wx.TextCtrl(self, pos=(x_pos_stiffness_label, y_pos_stiffness_label+1*stiffness_label_size[1]), size=(200, -1))
+        self.stiffness_spring_series = wx.TextCtrl(self, pos=(x_pos_stiffness_label, y_pos_stiffness_label+1*stiffness_label_size[1]), size=(200, -1))
       
 
         self.length_label = wx.StaticText(self,label = "What is the length of the Spring:")
@@ -417,27 +522,49 @@ class SeriesSpring(wx.Panel):
         x_pos_length_label = (panel_size[0]-2*length_label_size[0])//2
         y_pos_length_label = (panel_size[1]-16*length_label_size[1])//1
         self.length_label.SetPosition((x_pos_length_label,y_pos_length_label))
-        self.length_spring = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
-        
+        self.length_spring_series = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
+
+        button_size_element = (100,25)
+
+        # Create add Button
+        self.button_spring_parallel_add= wx.Button(self,label="add",size = button_size_element)
+        self.Bind(wx.EVT_BUTTON,self.on_add,self.button_spring_parallel_add)
+        self.button_spring_parallel_add.SetPosition((300,300))
+
+        # Create submit Button
+        self.button_spring_parallel_submit= wx.Button(self,label="submit",size = button_size_element)
+        self.Bind(wx.EVT_BUTTON,self.on_submit,self.button_spring_parallel_submit)
+        self.button_spring_parallel_submit.SetPosition((300,325))
 
     def on_add(self, event):
-        length = self.length_spring.GetValue()
+        length = int(self.length_spring_series.GetValue())
         if length:
-            self.spring_lengths.append(length)
-            self.length_spring.Clear()
-        stiffness = self.stiffness.GetValue()
+            self.spring_lengths_series.append(length)
+            self.length_spring_series.Clear()
+        stiffness = int(self.stiffness_spring_series.GetValue())
         if stiffness:
-            self.spring_stiffness.append(stiffness)
-            self.stiffness.Clear()
+            self.spring_stiffness_series.append(stiffness)
+            self.stiffness_spring_series.Clear()
     
     def on_submit(self, event):
         # Process the list of spring lengths
-        if self.spring_lengths:
-            wx.MessageBox(f"Submitted spring lengths: {', '.join(self.spring_lengths)}", "Info", wx.OK | wx.ICON_INFORMATION)
+        if self.spring_lengths_series:
+            self.spring_length = 0
+            for length in self.spring_lengths_series:
+                self.spring_length +=length
+            list_of_springs_length.append(self.spring_length)
+            wx.MessageBox(f"{list_of_springs_length}")
+
+            self.spring_stiffness = 0
+            for stiffness in self.spring_stiffness_series:
+                self.spring_stiffness += (1/stiffness)
+            self.spring_stiffness = (1/self.spring_stiffness)
+            list_of_springs_stiffness.append(self.spring_stiffness)
+            wx.MessageBox(f"{list_of_springs_stiffness}")
+            
         else:
             wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
-
-
+        
 
 
 # Create The Frame for the Create Element 
