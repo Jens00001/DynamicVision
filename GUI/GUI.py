@@ -337,7 +337,9 @@ class SteadyBody(wx.Panel):
             self.height = int(self.height.GetValue())
             self.length = int(self.length.GetValue())
             self.mass_steady_body = self.height*self.width*self.length*self.density
-            wx.MessageBox(f"{self.mass_steady_body}")
+            m = objects.SteadyBody(self.height,self.height,self.width, index = (len(list_of_mass)+1))
+            list_of_mass.append(m)
+            #wx.MessageBox(f"{self.mass_steady_body}")
 
         else:
             wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
@@ -422,6 +424,9 @@ class SingleSpring(wx.Panel):
             self.spring_stiffness = 0
             self.spring_stiffness = int(self.stiffness_spring_single.GetValue())
             wx.MessageBox(f"{self.spring_stiffness}")
+
+            s = objects.Spring(rest_length = self.spring_length,stiffness=self.spring_stiffness,index =(len(list_of_springs)+1))
+            list_of_springs.append(s)
             
         else:
             wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
@@ -487,14 +492,15 @@ class ParallelSpring(wx.Panel):
             for length in self.spring_lengths_parallel:
                 self.spring_length +=length
             self.spring_length = self.spring_length/len(self.spring_lengths_parallel) 
-            list_of_springs_length.append(self.spring_length)
-            wx.MessageBox(f"{list_of_springs_length}")
+            #wx.MessageBox(f"{list_of_springs_length}")
 
             self.spring_stiffness = 0
             for stiffness in self.spring_stiffness_parallel:
                 self.spring_stiffness +=stiffness
-            list_of_springs_stiffness.append(self.spring_stiffness)
-            wx.MessageBox(f"{list_of_springs_stiffness}")
+            #wx.MessageBox(f"{list_of_springs_stiffness}")
+
+            s = objects.Spring(rest_length = self.spring_length,stiffness=self.spring_stiffness,index =(len(list_of_springs)+1))
+            list_of_springs.append(s)
             
         else:
             wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
@@ -559,15 +565,16 @@ class SeriesSpring(wx.Panel):
             self.spring_length = 0
             for length in self.spring_lengths_series:
                 self.spring_length +=length
-            list_of_springs_length.append(self.spring_length)
-            wx.MessageBox(f"{list_of_springs_length}")
+            #wx.MessageBox(f"{list_of_springs_length}")
 
             self.spring_stiffness = 0
             for stiffness in self.spring_stiffness_series:
                 self.spring_stiffness += (1/stiffness)
             self.spring_stiffness = (1/self.spring_stiffness)
-            list_of_springs_stiffness.append(self.spring_stiffness)
-            wx.MessageBox(f"{list_of_springs_stiffness}")
+            #wx.MessageBox(f"{list_of_springs_stiffness}")
+
+            s = objects.Spring(rest_length = self.spring_length,stiffness=self.spring_stiffness,index =(len(list_of_springs)+1))
+            list_of_springs.append(s)
             
         else:
             wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
