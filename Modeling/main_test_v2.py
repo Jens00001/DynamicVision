@@ -14,93 +14,27 @@ from additions import eq_to_latex, show_equations_of_motion
 def create_objects():
 
     m1 = objects.Masspoint(mass=2, index=1)
+    #m2 = objects.Masspoint(mass=2, index=2)
+    #m1 = objects.SteadyBody(x_dim= 0.2, y_dim=0.1, z_dim=0.03, density=2700, index=1)
     m2 = objects.SteadyBody(x_dim= 0.2, y_dim=0.1, z_dim=0.03, density=2700, index=2)
+    m3 = objects.SteadyBody(x_dim= 0.2, y_dim=0.1, z_dim=0.03, density=2700, index=3)
+    #print("mass 2 = "+str(m2.mass))
     s1 = objects.Spring(rest_length=0.5, stiffness=100, index=1, type="linear")
-    s2 = objects.Spring(rest_length=0.4, stiffness=50, index=2, type="linear")
-
-    list_of_mass = [m1, m2]
-    list_of_springs = [s1, s2] 
-    list_of_object_lists = [list_of_springs, list_of_mass]
+    s2 = objects.Spring(rest_length=0.4, stiffness=100, index=2, type="linear")
+    s3 = objects.Spring(rest_length=0.6, stiffness=100, index=3, type="linear")
 
     m1.setInitialConditions([0,-0.5], [0,0])
     m2.setInitialConditions([0,-0.9], [0,0])
+    m3.setInitialConditions([0,-1.5], [0,0])
 
     s1.setInitialConditions(None, m1 , [0,0])
     s2.setInitialConditions(m1,  m2, [0,0])
+    s3.setInitialConditions(m2,  m3, [0,0])
 
-
-
-    # model = "mass-sb"
-    # match model:
-    #     case "mass-sb":
-    #         m1 = objects.Masspoint(mass=1, index=1)
-    #         m1.setInitialConditions([0,-0.5],[0,0])
-    #         list_of_mass = [m1]
-
-    #         sb2 = objects.SteadyBody(0.2,0.1,0.2,2700,2)
-    #         sb2.setInitialConditions([0,-0.9], [0,0])
-    #         list_of_steadyBodies = [sb2]
-
-    #         s1 = objects.Spring(rest_length=0.5, stiffness=100, index=1, type="linear")
-    #         s2 = objects.Spring(rest_length=0.4, stiffness=100, index=2, type="linear")
-    #         s1.setInitialConditions([0,0], m1.position , [0,0])
-    #         s2_endpoint = [sb2.position[0], sb2.position[1] + sb2.y_dim/2]
-    #         s2.setInitialConditions(m1.position,  s2_endpoint,[0,0])
-    #         list_of_springs = [s1, s2]
-
-    #     case "sb-mass":
-    #         m1 = objects.Masspoint(mass=1, index=2)
-    #         m1.setInitialConditions([0,-0.9],[0,0])
-    #         list_of_mass = [m1]
-
-    #         sb1 = objects.SteadyBody(0.2,0.1,0.2,2700,1)
-    #         sb1.setInitialConditions([0,-0.5], [0,0])
-    #         list_of_steadyBodies = [sb1]
-
-    #         s1 = objects.Spring(rest_length=0.5, stiffness=100, index=1, type="linear")
-    #         s2 = objects.Spring(rest_length=0.4, stiffness=100, index=2, type="linear")
-    #         s1_endpoint =[sb1.position[0], sb1.position[1] + sb1.y_dim/2]
-    #         s1.setInitialConditions([0,0], s1_endpoint , [0,0])
-
-            
-    #         s2_startpoint = [sb1.position[0], sb1.position[1] -sb1.y_dim/2]
-    #         s2.setInitialConditions(s2_startpoint,  m1.position,[0,0])
-    #         list_of_springs = [s1, s2]
-
-    #     case "two masses":
-    #         m1 = objects.Masspoint(mass=1, index=1)
-    #         m1.setInitialConditions([0,-0.5],[0,0])
-    #         m2 = objects.Masspoint(mass=1, index=2)
-    #         m2.setInitialConditions([0,-0.9],[0,0])
-    #         list_of_mass = [m1,m2]
-
-    #         s1 = objects.Spring(rest_length=0.5, stiffness=100, index=1, type="linear")
-    #         s2 = objects.Spring(rest_length=0.4, stiffness=100, index=2, type="linear")
-    #         s1.setInitialConditions([0,0], m1.position , [0,0])
-    #         s2.setInitialConditions(m1.position,  m2.position,[0,0])
-    #         list_of_springs = [s1, s2]
-    #         list_of_steadyBodies = []
-
-    #     case "two sbs":
-    #         sb1 = objects.SteadyBody(0.2,0.1,0.2,2700,1)
-    #         sb1.setInitialConditions([0,-0.5], [0,0])
-    #         sb2 = objects.SteadyBody(0.2,0.1,0.2,2700,2)
-    #         sb2.setInitialConditions([0,-0.9], [0,0])
-    #         list_of_steadyBodies = [sb1,sb2]
-
-    #         s1 = objects.Spring(rest_length=0.5, stiffness=100, index=1, type="linear")
-    #         s2 = objects.Spring(rest_length=0.4, stiffness=100, index=2, type="linear")
-    #         s1_endpoint =[sb1.position[0], sb1.position[1] + sb1.y_dim/2]
-    #         s1.setInitialConditions([0,0], s1_endpoint , [0,0])
-
-    #         s2_startpoint = [sb1.position[0], sb1.position[1] -sb1.y_dim/2]
-    #         s2_endpoint = [sb2.position[0], sb2.position[1] + sb2.y_dim/2]
-    #         s2.setInitialConditions(s2_startpoint,  s2_endpoint,[0,0])
-    #         list_of_springs = [s1, s2]
-    #         list_of_mass = []
-            
-    # list_of_object_lists = [list_of_springs, list_of_mass, list_of_steadyBodies]
-        
+    list_of_mass = [m1, m2, m3]
+    list_of_springs = [s1, s2, s3] 
+    list_of_object_lists = [list_of_springs, list_of_mass]
+ 
     return list_of_object_lists
 
 def run_simulation(list_of_object_lists, simulation_points=10001):
@@ -113,7 +47,7 @@ def run_simulation(list_of_object_lists, simulation_points=10001):
     # list of masses
     sym_mass_list = [mass.sym_mass for mass in list_of_mass]
     #sym_steadyBody_list = [sb.sym_mass for sb in list_of_steadyBodies]
-    # print(sym_mass_list)
+    print(sym_mass_list)
 
     #list of angles (not needed)
     # angle_list = [spring.angle for spring in list_of_springs]
@@ -121,54 +55,51 @@ def run_simulation(list_of_object_lists, simulation_points=10001):
     #creating the list of forces attached to each mass
     list_of_forces_all_x = []  
     list_of_forces_all_y = []
-    for mass in list_of_mass:
-        pos = mass.position 
-        list_of_force_y = [mass.force()]  #initializes the list of force for each mass with the gravitational force of each mass
+    for i in range(len(list_of_mass)):
+        pos = list_of_mass[i].position 
+        list_of_force_y = [list_of_mass[i].force()]  #initializes the list of force for each mass with the gravitational force of each mass
         list_of_force_x = []
-
-        match mass.type:
+        print(i)
+        match list_of_mass[i].type:
             case "masspoint":
                 for j in range(len(list_of_springs)): 
                     # compares the startingpoint of all springs with the position of the mass
                     # if the points are the same, this means that the spring is below the mass and the force is positiv
                     if pos == list_of_springs[j].startingpoint: 
-                        Fx,Fy =list_of_springs[j].force(list_of_springs[j-1].xt, list_of_springs[j-1].yt)
+                        Fx,Fy =list_of_springs[j].force(list_of_mass[j-1], list_of_mass[j])
                         list_of_force_y.append(Fy)
                         list_of_force_x.append(Fx)
                     # if the points are the same, this means that the spring is above the mass and the force is negativ
                     elif pos == list_of_springs[j].endpoint:
                         #if j=0, this means that this is the first spring and the displacement is of the spring above, which dosen't exist, is 0
                         if j == 0:
-                            Fx,Fy =list_of_springs[j].force(0,0)
+                            Fx,Fy =list_of_springs[j].force(None, list_of_mass[j])
                             list_of_force_y.append(-Fy)
                             list_of_force_x.append(-Fx)
                         else:
                             # list_of_force_y.append(-list_of_springs[j].force(list_of_springs[j-1].yt))
-                            Fx,Fy = list_of_springs[j].force(list_of_springs[j-1].xt, list_of_springs[j-1].yt)
+                            Fx,Fy = list_of_springs[j].force(list_of_mass[j-1], list_of_mass[j])
                             list_of_force_y.append(-Fy)
                             list_of_force_x.append(-Fx)
-                            
-                list_of_forces_all_y.append(list_of_force_y) # write the list of forces attached to each mass in the list of all forces
-                list_of_forces_all_x.append(list_of_force_x)
             
             case "steady body":
                 for j in range(len(list_of_springs)): 
                     # compares the startingpoint of all springs with the position of the mass
                     # if the points are the same, this means that the spring is below the mass and the force is positiv
-                    if [pos[0],pos[1]-mass.y_dim/2] == list_of_springs[j].startingpoint: 
-                        Fx,Fy =list_of_springs[j].force(list_of_springs[j-1].xt, list_of_springs[j-1].yt)
+                    if [pos[0],pos[1]-list_of_mass[i].y_dim/2] == list_of_springs[j].startingpoint: 
+                        Fx,Fy =list_of_springs[j].force(list_of_mass[j-1], list_of_mass[j])
                         list_of_force_y.append(Fy)
                         list_of_force_x.append(Fx)
                     # if the points are the same, this means that the spring is above the mass and the force is negativ
-                    elif [pos[0],pos[1]+mass.y_dim/2] == list_of_springs[j].endpoint:
+                    elif [pos[0],pos[1]+list_of_mass[i].y_dim/2] == list_of_springs[j].endpoint:
                         #if j=0, this means that this is the first spring and the displacement is of the spring above, which dosen't exist, is 0
                         if j == 0:
-                            Fx,Fy =list_of_springs[j].force(0,0)
+                            Fx,Fy =list_of_springs[j].force(None, list_of_mass[j])
                             list_of_force_y.append(-Fy)
                             list_of_force_x.append(-Fx)
                         else:
                             # list_of_force_y.append(-list_of_springs[j].force(list_of_springs[j-1].yt))
-                            Fx,Fy = list_of_springs[j].force(list_of_springs[j-1].xt, list_of_springs[j-1].yt)
+                            Fx,Fy = list_of_springs[j].force(list_of_mass[j-1], list_of_mass[j])
                             list_of_force_y.append(-Fy)
                             list_of_force_x.append(-Fx)
                     
@@ -201,7 +132,7 @@ def run_simulation(list_of_object_lists, simulation_points=10001):
     param_values_mass = {}
     for mass in list_of_mass:
         param_values_mass.update(mass.get_param_values())
-    
+    print(param_values_mass)
     # for sb in list_of_steadyBodies:
     #     param_values_mass.update(sb.get_param_values())
 

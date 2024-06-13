@@ -22,8 +22,8 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
     y_pos = pos[1::2]
     y_max = max((max(y) for y in y_pos)) #finds the maximum value of all y positions
     y_min = min((min(y) for y in y_pos)) #finds the minimum value of all y positions
-    print("Länge y_0: "+str(len(y[0])))
-    print(type(len(y[0])))
+    # print("Länge y_0: "+str(len(y[0])))
+    # print(type(len(y[0])))
     list_of_springs, list_of_mass = list_of_object_lists
 
     y_range = y_max - y_min

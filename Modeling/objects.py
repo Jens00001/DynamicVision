@@ -119,7 +119,7 @@ class Spring:
         # self.prestretch_x = np.sin(phi)
         # self.prestretch_y = np.cos(phi)
 
-    def force(self,xt_attached,yt_attached):
+    def force(self, top_mass, bottom_mass):
         """"
         Method for computing the force of the spring in its current position
 
@@ -131,11 +131,35 @@ class Spring:
        
         match self.type:
             case "linear":
-                self.sym_Fx = self.sym_stiffness * (self.xt-xt_attached-self.sym_rest_length)
-                self.sym_Fy = self.sym_stiffness * (self.yt-yt_attached-self.sym_rest_length)
+                if top_mass== None and bottom_mass.type == "masspoint":
+                    self.sym_Fy = self.sym_stiffness * (bottom_mass.yt-self.sym_rest_length)
+                elif top_mass== None and bottom_mass.type == "steady body":
+                    self.sym_Fy = self.sym_stiffness * (bottom_mass.yt-bottom_mass.sym_h/2-self.sym_rest_length)
+                elif top_mass.type == "masspoint" and bottom_mass.type == "masspoint":
+                    self.sym_Fy = self.sym_stiffness * (bottom_mass.yt-top_mass.yt-self.sym_rest_length)
+                elif top_mass.type == "masspoint" and bottom_mass.type == "steady body":
+                    self.sym_Fy = self.sym_stiffness * (bottom_mass.yt-bottom_mass.sym_h/2-top_mass.yt-self.sym_rest_length)
+                elif top_mass.type == "steady body" and bottom_mass.type == "masspoint":
+                    self.sym_Fy = self.sym_stiffness * (bottom_mass.yt-top_mass.yt-top_mass.sym_h/2-self.sym_rest_length)
+                elif top_mass.type == "steady body" and bottom_mass.type == "steady body":
+                    self.sym_Fy = self.sym_stiffness * (bottom_mass.yt-bottom_mass.sym_h/2-top_mass.yt-top_mass.sym_h/2-self.sym_rest_length)
+                else:
+                    raise AssertionError("Please insert a masspoint, a steady body or None as first argument of the method and a masspoint or a steady body as second argument of the method")
             case "cubic":
-                self.sym_Fx = self.sym_stiffness * (self.xt-xt_attached-self.sym_rest_length)**3
-                self.sym_Fy = self.sym_stiffness * (self.yt-yt_attached-self.sym_rest_length)**3
+                if top_mass== None and bottom_mass.type == "masspoint":
+                    self.sym_Fy = self.sym_stiffness * (bottom_mass.yt-self.sym_rest_length)**3
+                elif top_mass== None and bottom_mass.type == "steady body":
+                    self.sym_Fy = self.sym_stiffness * (bottom_mass.yt-bottom_mass.sym_h/2-self.sym_rest_length)**3
+                elif top_mass.type == "masspoint" and bottom_mass.type == "masspoint":
+                    self.sym_Fy = self.sym_stiffness * (bottom_mass.yt-top_mass.yt-self.sym_rest_length)**3
+                elif top_mass.type == "masspoint" and bottom_mass.type == "steady body":
+                    self.sym_Fy = self.sym_stiffness * (bottom_mass.yt-bottom_mass.sym_h/2-top_mass.yt-self.sym_rest_length)**3
+                elif top_mass.type == "steady body" and bottom_mass.type == "masspoint":
+                    self.sym_Fy = self.sym_stiffness * (bottom_mass.yt-top_mass.yt-top_mass.sym_h/2-self.sym_rest_length)**3
+                elif top_mass.type == "steady body" and bottom_mass.type == "steady body":
+                    self.sym_Fy = self.sym_stiffness * (bottom_mass.yt-bottom_mass.sym_h/2-top_mass.yt-top_mass.sym_h/2-self.sym_rest_length)**3
+                else:
+                    raise AssertionError("Please insert a masspoint, a steady body or None as first argument of the method and a masspoint or a steady body as second argument of the method")
 
         self.sym_Fx=0
 
@@ -283,5 +307,11 @@ class SteadyBody(Mass):
         self.mass = self.volume*self.density
         self.position = [] # is the position of the center of mass
         self.type = "steady body"
+        self.sym_h = sp.Symbol("h_"+str(index))
+
         Mass.__init__(self, index)
+    
+    def get_param_values(self):
+        
+        return {self.sym_mass: self.mass, self.sym_h: self.y_dim}
 
