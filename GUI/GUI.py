@@ -274,6 +274,8 @@ class MassPoint(wx.Panel):
             m = objects.Masspoint(mass=self.mass_mass_point, index = (len(list_of_mass)+1))
             list_of_mass.append(m)
 
+            self.mass.Clear()
+
         else:
             wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
 
@@ -341,6 +343,12 @@ class SteadyBody(wx.Panel):
             m = objects.SteadyBody(self.height,self.height,self.width, index = (len(list_of_mass)+1))
             list_of_mass.append(m)
             #wx.MessageBox(f"{self.mass_steady_body}")
+
+            self.height.Clear()
+            self.width.Clear()
+            self.length.Clear()
+            self.density.Clear()
+            
 
         else:
             wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
@@ -429,6 +437,9 @@ class SingleSpring(wx.Panel):
             s = objects.Spring(rest_length = self.spring_length,stiffness=self.spring_stiffness,index =(len(list_of_springs)+1))
             list_of_springs.append(s)
             
+            self.length_spring_single.Clear()
+            self.stiffness_spring_single.Clear()
+            
         else:
             wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
 
@@ -454,7 +465,6 @@ class ParallelSpring(wx.Panel):
         y_pos_stiffness_label = (panel_size[1]-20*stiffness_label_size[1])//1
         self.stiffness_label.SetPosition((x_pos_stiffness_label,y_pos_stiffness_label))
         self.stiffness_spring_parallel = wx.TextCtrl(self, pos=(x_pos_stiffness_label, y_pos_stiffness_label+1*stiffness_label_size[1]), size=(200, -1))
-        self.input_stiffness = None
 
         self.length_label = wx.StaticText(self,label = "What is the length of the Spring:")
         length_label_size = self.length_label.GetSize()
@@ -462,7 +472,6 @@ class ParallelSpring(wx.Panel):
         y_pos_length_label = (panel_size[1]-16*length_label_size[1])//1
         self.length_label.SetPosition((x_pos_length_label,y_pos_length_label))
         self.length_spring_parallel = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
-        self.input_length_spring = None 
     
         button_size_element = (100,25)
 
@@ -502,6 +511,9 @@ class ParallelSpring(wx.Panel):
 
             s = objects.Spring(rest_length = self.spring_length,stiffness=self.spring_stiffness,index =(len(list_of_springs)+1))
             list_of_springs.append(s)
+
+            self.stiffness_spring_parallel.Clear()
+            self.length_spring_parallel.Clear()
             
         else:
             wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
@@ -647,6 +659,7 @@ class CreateElement(wx.Frame):
         self.spring_element.Hide()
         self.spring_series.Show()
         self.Layout()
+
 
 # Create the Main Frame 
 class MainFrame(wx.Frame):
