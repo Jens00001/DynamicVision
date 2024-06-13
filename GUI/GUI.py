@@ -106,7 +106,8 @@ class CreateModel(wx.Panel):
         self.skip_sim_steps = 1 # Intitalize the number of steps which are skiped in the animation
 
     def on_run_simulation(self, event):
-        list_of_object_lists = main_modeling.create_objects()
+        #list_of_object_lists = main_modeling.create_objects()
+        list_of_object_lists = [list_of_springs, list_of_mass]
         res, system = main_modeling.run_simulation(list_of_object_lists, simulation_points=25001)
         self.plot_results(res, list_of_object_lists)
         self.show_equations(system)
@@ -269,7 +270,7 @@ class MassPoint(wx.Panel):
         # Process the list of spring lengths
         if self.mass:
             self.mass_mass_point = 0
-            self.mass_mass_point = int(self.mass.GetValue())
+            self.mass_mass_point = float(self.mass.GetValue())
             #wx.MessageBox(f"{self.mass_mass_point}")
             m = objects.Masspoint(mass=self.mass_mass_point, index = (len(list_of_mass)+1))
             list_of_mass.append(m)
@@ -297,7 +298,7 @@ class SteadyBody(wx.Panel):
         x_pos_density_label = (panel_size[0]-2*density_label_size[0])//2
         y_pos_density_label = (panel_size[1]-20*density_label_size[1])//1
         self.density_label.SetPosition((x_pos_density_label,y_pos_density_label))
-        self.density = wx.TextCtrl(self, pos=(x_pos_density_label, y_pos_density_label+1*density_label_size[1]), size=(200, -1))
+        self.density_input = wx.TextCtrl(self, pos=(x_pos_density_label, y_pos_density_label+1*density_label_size[1]), size=(200, -1))
         self.input_density = None
 
         self.length_label = wx.StaticText(self,label = "What is the length of the Steady Body:")
@@ -305,7 +306,7 @@ class SteadyBody(wx.Panel):
         x_pos_length_label = (panel_size[0]-2*length_label_size[0])//2
         y_pos_length_label = (panel_size[1]-16*length_label_size[1])//1
         self.length_label.SetPosition((x_pos_length_label,y_pos_length_label))
-        self.length = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
+        self.length_input = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
         self.input_length = None 
 
         self.height_label = wx.StaticText(self,label = "What is the height of the Steady Body:")
@@ -313,7 +314,7 @@ class SteadyBody(wx.Panel):
         x_pos_height_label = (panel_size[0]-2*height_label_size[0])//2
         y_pos_height_label = (panel_size[1]-12*height_label_size[1])//1
         self.height_label.SetPosition((x_pos_height_label,y_pos_height_label))
-        self.height = wx.TextCtrl(self, pos=(x_pos_height_label, y_pos_height_label+1*height_label_size[1]), size=(200, -1))
+        self.height_input = wx.TextCtrl(self, pos=(x_pos_height_label, y_pos_height_label+1*height_label_size[1]), size=(200, -1))
         self.input_height = None
 
         self.width_label = wx.StaticText(self,label = "What is the width of the Steady Body:")
@@ -321,7 +322,7 @@ class SteadyBody(wx.Panel):
         x_pos_width_label = (panel_size[0]-2*width_label_size[0])//2
         y_pos_width_label = (panel_size[1]-8*width_label_size[1])//1
         self.width_label.SetPosition((x_pos_width_label,y_pos_width_label))
-        self.width = wx.TextCtrl(self, pos=(x_pos_width_label, y_pos_width_label+1*width_label_size[1]), size=(200, -1))
+        self.width_input = wx.TextCtrl(self, pos=(x_pos_width_label, y_pos_width_label+1*width_label_size[1]), size=(200, -1))
         self.input_width = None
 
         button_size_element = (100,25)
@@ -333,21 +334,21 @@ class SteadyBody(wx.Panel):
     
     def on_submit(self, event):
         # Process the list of spring lengths
-        if self.density:
+        if self.density_input:
             self.mass_steady_body = 0
-            self.density = int(self.density.GetValue())
-            self.width = int(self.width.GetValue())
-            self.height = int(self.height.GetValue())
-            self.length = int(self.length.GetValue())
+            self.density = float(self.density_input.GetValue())
+            self.width = float(self.width_input.GetValue())
+            self.height = float(self.height_input.GetValue())
+            self.length = float(self.length_input.GetValue())
             self.mass_steady_body = self.height*self.width*self.length*self.density
-            m = objects.SteadyBody(self.height,self.height,self.width, index = (len(list_of_mass)+1))
+            m = objects.SteadyBody(self.length,self.height,self.width,self.density, index = (len(list_of_mass)+1))
             list_of_mass.append(m)
             #wx.MessageBox(f"{self.mass_steady_body}")
 
-            self.height.Clear()
-            self.width.Clear()
-            self.length.Clear()
-            self.density.Clear()
+            self.height_input.Clear()
+            self.width_input.Clear()
+            self.length_input.Clear()
+            self.density_input.Clear()
             
 
         else:
@@ -427,15 +428,16 @@ class SingleSpring(wx.Panel):
         # Process the list of spring lengths
         if self.length_spring_single:
             self.spring_length = 0
-            self.spring_length = int(self.length_spring_single.GetValue())
-            wx.MessageBox(f"{self.spring_length}")
+            self.spring_length = float(self.length_spring_single.GetValue())
+            #wx.MessageBox(f"{self.spring_length}")
 
             self.spring_stiffness = 0
-            self.spring_stiffness = int(self.stiffness_spring_single.GetValue())
-            wx.MessageBox(f"{self.spring_stiffness}")
+            self.spring_stiffness = float(self.stiffness_spring_single.GetValue())
+           
 
             s = objects.Spring(rest_length = self.spring_length,stiffness=self.spring_stiffness,index =(len(list_of_springs)+1))
             list_of_springs.append(s)
+            wx.MessageBox(f"{list_of_springs}")
             
             self.length_spring_single.Clear()
             self.stiffness_spring_single.Clear()
@@ -486,11 +488,11 @@ class ParallelSpring(wx.Panel):
         self.button_spring_parallel_submit.SetPosition((300,325))
 
     def on_add(self, event):
-        length = int(self.length_spring_parallel.GetValue())
+        length = float(self.length_spring_parallel.GetValue())
         if length:
             self.spring_lengths_parallel.append(length)
             self.length_spring_parallel.Clear()
-        stiffness = int(self.stiffness_spring_parallel.GetValue())
+        stiffness = float(self.stiffness_spring_parallel.GetValue())
         if stiffness:
             self.spring_stiffness_parallel.append(stiffness)
             self.stiffness_spring_parallel.Clear()
@@ -563,11 +565,11 @@ class SeriesSpring(wx.Panel):
         self.button_spring_parallel_submit.SetPosition((300,325))
 
     def on_add(self, event):
-        length = int(self.length_spring_series.GetValue())
+        length = float(self.length_spring_series.GetValue())
         if length:
             self.spring_lengths_series.append(length)
             self.length_spring_series.Clear()
-        stiffness = int(self.stiffness_spring_series.GetValue())
+        stiffness = float(self.stiffness_spring_series.GetValue())
         if stiffness:
             self.spring_stiffness_series.append(stiffness)
             self.stiffness_spring_series.Clear()

@@ -23,6 +23,7 @@ def create_objects():
     s2 = objects.Spring(rest_length=0.4, stiffness=100, index=2, type="linear")
     s3 = objects.Spring(rest_length=0.6, stiffness=100, index=3, type="linear")
 
+
     m1.setInitialConditions([0,-0.5], [0,0])
     m2.setInitialConditions([0,-0.9], [0,0])
     m3.setInitialConditions([0,-1.5], [0,0])
@@ -40,6 +41,15 @@ def create_objects():
 def run_simulation(list_of_object_lists, simulation_points=10001):
 
     list_of_springs, list_of_mass =list_of_object_lists
+
+    # list_of_mass[0].setInitialConditions([0,-0.5], [0,0])
+    # list_of_mass[1].setInitialConditions([0,-0.9], [0,0])
+    # list_of_mass[2].setInitialConditions([0,-1.5], [0,0])
+
+    # list_of_springs[0].setInitialConditions(None, list_of_mass[0] , [0,0])
+    # list_of_springs[1].setInitialConditions(list_of_mass[0], list_of_mass[1] , [0,0])
+    # list_of_springs[2].setInitialConditions(list_of_mass[1], list_of_mass[2] , [0,0])
+        
     # coordinate direction of the corresponding forces (not needed, class newton.Mechanics generates coordinates)
     yt = [mass.yt for mass in list_of_mass]
     # print(yt)
