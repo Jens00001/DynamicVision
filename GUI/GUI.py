@@ -178,7 +178,7 @@ class ChooseElement(wx.Panel):
         self.SetBackgroundColour(wx.Colour(255,255,255))
 
         # Define Button Size  
-        button_size_element = (200,25)
+        button_size_element = (300,25)
 
         # Create Button to Switch to the Mass panel
         self.button_mass = wx.Button(self,label="Mass",size=button_size_element)
@@ -354,7 +354,7 @@ class SpringElement(wx.Panel):
         #text = wx.StaticText(self, label="Spring", pos=(50, 50))  # Add a static text to the panel
 
         # Define Button Size  
-        button_size_element = (100,25)
+        button_size_element = (200,25)
 
         # Create Button to Switch to the Single Spring
         self.button_spring_single = wx.Button(self,label="Single Spring",size=button_size_element)
