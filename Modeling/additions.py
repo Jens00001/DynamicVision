@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from sympy import Eq, latex, Function, symbols, Derivative
-from matplotlib.widgets import Slider
 
 
 def eq_to_latex(system):
