@@ -11,14 +11,11 @@ import main_test_v2 as main_modeling
 import animation_gui as anim
 import objects
 from additions import eq_to_latex, show_equations_of_motion
+from simsave import save_system, tex_save
 
 list_of_springs= []
 list_of_mass = []
 list_of_IC_mass = [1]
-i = 0
-
-
-
 
 # Define the Start Menu with Header, Pictures and Buttons to Switch to Create Model, Open Model, Documentation and Exit the App 
 class StartMenu(wx.Panel):
@@ -116,13 +113,13 @@ class CreateModel(wx.Panel):
     def on_run_simulation(self, event):
         #list_of_object_lists = main_modeling.create_objects()
         list_of_object_lists = [list_of_springs, list_of_mass]
-        res, system = main_modeling.run_simulation(list_of_object_lists, simulation_points=25001)
-        self.plot_results(res, list_of_object_lists)
-        self.show_equations(system)
+        self.res, self.system = main_modeling.run_simulation(list_of_object_lists, simulation_points=25001)
+        self.plot_results(self.res, list_of_object_lists)
+        self.show_equations(self.system)
         self.canvas.draw()
         # Start animation
-        max_simulated_time = res.t[-1]
-        num_frames = len(res.t)
+        max_simulated_time = self.res.t[-1]
+        num_frames = len(self.res.t)
         animation_time = max_simulated_time * 1000  # Convert to milliseconds
         # computes the necessary steps that must be skipped to obtain an update time of 110 ms which allows 
         # matching the simulated time in the animation quiet good wtih one spring mass oszillator
@@ -133,6 +130,11 @@ class CreateModel(wx.Panel):
         self.Bind(wx.EVT_TIMER, self.update_animation, self.timer)
         self.timer.Start(self.updatetime)  # Update time per frame
 
+        Save_popup = SaveData(None,self.res,self.system)
+        Save_popup.Show()
+
+
+
     def show_equations(self, system):
         # plot/show equations of motion
         main_modeling.generate_latex(system)
@@ -141,6 +143,9 @@ class CreateModel(wx.Panel):
         # Plot results in ax1
         main_modeling.plot_results(res, self.ax1)
         self.animation = anim.Animation(res, list_of_object_lists, self.ax2)
+
+    def get_res(self):
+        return self.res, self.system
 
     def update_animation(self, event):
         if not self.paused:
@@ -609,20 +614,47 @@ class SeriesSpring(wx.Panel):
 
 class InitialCondition(wx.Frame):
     def __init__(self,parent):
-        wx.Frame.__init__(self,parent,title="Initian Conditions", size =(600,400))
+        wx.Frame.__init__(self,parent,title="Initial Conditions", size =(600,400))
 
         self.IC = IC(self)
         self.IC.Show()
+
+
+class SaveData(wx.Frame):
+    def __init__(self,parent,res,system):
+        wx.Frame.__init__(self,parent,title="Save", size =(600,400))
+
+        self.panel = wx.Panel(self)
+        self.res = res 
+        self.system = system
+        self.SetBackgroundColour(wx.Colour(255,255,255))
+        panel_size = self.GetSize()
+
+        self.save_label = wx.StaticText(self,label = "How to you want to name the data file ?:")
+        self.save_label_size = self.save_label.GetSize()
+        x_pos_save_label = (panel_size[0]-2*self.save_label_size[0])//2
+        y_pos_save_label = (panel_size[1]-20*self.save_label_size[1])//1
+        self.save_label.SetPosition((x_pos_save_label,y_pos_save_label))
+        self.save_input = wx.TextCtrl(self, pos=(x_pos_save_label, y_pos_save_label+1*self.save_label_size[1]), size=(200, -1))
+
+        # Create submit Button
+        self.button_save_data= wx.Button(self,label="Save",size = (100,25))
+        self.Bind(wx.EVT_BUTTON,self.on_save,self.button_save_data)
+        self.button_save_data.SetPosition((200,125))
     
+
+    def on_save(self,event):
+        file_name = self.save_input.GetValue()
+        print("Saving data ...")
+        savepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))+"\Modelling\data\\"+ file_name + ".nc"
+        save_system(savepath, self.res ,self.system)
+        print("Data saved.")
+
 class IC(wx.Panel):
     def __init__(self,parent):
         wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
         panel_size = self.GetSize()
-    
-
-
-    
             
         self.position_label = wx.StaticText(self,label = "What is inital Position of the mass:")
         position_label_size = self.position_label.GetSize()
@@ -643,7 +675,7 @@ class IC(wx.Panel):
         self.Bind(wx.EVT_BUTTON,self.on_submit_IC,self.button_IC_submit)
         self.button_IC_submit.SetPosition((300,325))
 
-
+        self.i = 0
 
     def on_submit_IC(self,event):
 
@@ -652,17 +684,17 @@ class IC(wx.Panel):
         self.position = float(self.position_input.GetValue())
         self.velocity = float(self.velocity_input.GetValue())
 
-
-        list_of_mass[len(list_of_IC_mass)].setInitialConditions([0,self.position],[0,self.velocity])
-        if len(list_of_IC_mass) == 0:
-            list_of_springs[len(list_of_IC_mass)].setInitalConditions(None,list_of_mass[len(list_of_IC_mass)],[0,0])
+    
+        list_of_mass[self.i].setInitialConditions([0,self.position],[0,self.velocity])
+        if self.i == 0:
+            list_of_springs[self.i].setInitialConditions(None,list_of_mass[self.i],[0,0])
         else: 
-            list_of_springs[len(list_of_IC_mass)].setInitialConditions(list_of_mass[len(list_of_IC_mass)-1],list_of_mass[len(list_of_IC_mass)],[0,0])
+            list_of_springs[self.i].setInitialConditions(list_of_mass[self.i-1],list_of_mass[self.i],[0,0])
 
         self.position_input.Clear()
         self.velocity_input.Clear()
 
-        list_of_IC_mass.append(1)
+        self.i += 1 
 
     
 
