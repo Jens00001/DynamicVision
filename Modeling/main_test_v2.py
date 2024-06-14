@@ -196,7 +196,8 @@ def run_simulation(list_of_object_lists, simulation_points=10001):
     print("Duration of simulation: ", end - start, "s.")
 
     print("Saving data ...")
-    savepath = os.path.dirname(os.path.realpath(__file__))+"\data\\test.nc"
+    savepath = os.path.dirname(os.path.realpath(__file__))+"\data\\test5.nc"
+    print(savepath)
     save_system(savepath, res, system)
     print("Data saved.")
     

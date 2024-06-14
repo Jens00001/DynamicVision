@@ -646,7 +646,8 @@ class SaveData(wx.Frame):
     def on_save(self,event):
         file_name = self.save_input.GetValue()
         print("Saving data ...")
-        savepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))+"\Modelling\data\\"+ file_name + ".nc"
+        savepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))+"\Modeling\data\\"+ file_name + ".nc"
+        print(savepath)
         save_system(savepath, self.res ,self.system)
         print("Data saved.")
 
