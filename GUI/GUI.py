@@ -10,10 +10,15 @@ from matplotlib.figure import Figure
 import main_test_v2 as main_modeling
 import animation_gui as anim
 import objects
+from additions import eq_to_latex, show_equations_of_motion
 
 list_of_springs= []
 list_of_mass = []
-from additions import eq_to_latex, show_equations_of_motion
+list_of_IC_mass = [1]
+i = 0
+
+
+
 
 # Define the Start Menu with Header, Pictures and Buttons to Switch to Create Model, Open Model, Documentation and Exit the App 
 class StartMenu(wx.Panel):
@@ -99,6 +104,9 @@ class CreateModel(wx.Panel):
         #Create a button to start the simultion
         self.button_run = wx.Button(self, label="Run Simulation", pos=(500, 600))
         self.button_run.Bind(wx.EVT_BUTTON, self.on_run_simulation)
+
+        self.button_IC = wx.Button(self, label="Set Inital Conditions", pos=(550, 600))
+        self.button_IC.Bind(wx.EVT_BUTTON, self.on_open_IC)
         
         self.num = 0  # Initialize num
         self.paused = False 
@@ -164,6 +172,10 @@ class CreateModel(wx.Panel):
     def on_open_popup(self,event):
         popup = CreateElement(self)
         popup.Show()
+
+    def on_open_IC(self,event):
+        IC_popup = InitialCondition(self)
+        IC_popup.Show()
 
 # Create the panel "Open Model"
 class OpenModel(wx.Panel):
@@ -594,6 +606,65 @@ class SeriesSpring(wx.Panel):
         else:
             wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
         
+
+class InitialCondition(wx.Frame):
+    def __init__(self,parent):
+        wx.Frame.__init__(self,parent,title="Initian Conditions", size =(600,400))
+
+        self.IC = IC(self)
+        self.IC.Show()
+    
+class IC(wx.Panel):
+    def __init__(self,parent):
+        wx.Panel.__init__(self,parent,size=(600,400))
+        self.SetBackgroundColour(wx.Colour(255,255,255))
+        panel_size = self.GetSize()
+    
+
+
+    
+            
+        self.position_label = wx.StaticText(self,label = "What is inital Position of the mass:")
+        position_label_size = self.position_label.GetSize()
+        x_pos_position_label = (panel_size[0]-2*position_label_size[0])//2
+        y_pos_position_label = (panel_size[1]-20*position_label_size[1])//1
+        self.position_label.SetPosition((x_pos_position_label,y_pos_position_label))
+        self.position_input = wx.TextCtrl(self, pos=(x_pos_position_label, y_pos_position_label+1*position_label_size[1]), size=(200, -1))
+
+        self.velocity_label = wx.StaticText(self,label = "What is inital Velocity of the mass:")
+        velocity_label_size = self.velocity_label.GetSize()
+        x_pos_velocity_label = (panel_size[0]-2*velocity_label_size[0])//2
+        y_pos_velocity_label = (panel_size[1]-16*velocity_label_size[1])//1
+        self.velocity_label.SetPosition((x_pos_velocity_label,y_pos_velocity_label))
+        self.velocity_input = wx.TextCtrl(self, pos=(x_pos_velocity_label, y_pos_velocity_label+1*velocity_label_size[1]), size=(200, -1))
+
+        # Create submit Button
+        self.button_IC_submit= wx.Button(self,label="submit",size = (100,25))
+        self.Bind(wx.EVT_BUTTON,self.on_submit_IC,self.button_IC_submit)
+        self.button_IC_submit.SetPosition((300,325))
+
+
+
+    def on_submit_IC(self,event):
+
+        self.position = 0
+        self.velocity = 0
+        self.position = float(self.position_input.GetValue())
+        self.velocity = float(self.velocity_input.GetValue())
+
+
+        list_of_mass[len(list_of_IC_mass)].setInitialConditions([0,self.position],[0,self.velocity])
+        if len(list_of_IC_mass) == 0:
+            list_of_springs[len(list_of_IC_mass)].setInitalConditions(None,list_of_mass[len(list_of_IC_mass)],[0,0])
+        else: 
+            list_of_springs[len(list_of_IC_mass)].setInitialConditions(list_of_mass[len(list_of_IC_mass)-1],list_of_mass[len(list_of_IC_mass)],[0,0])
+
+        self.position_input.Clear()
+        self.velocity_input.Clear()
+
+        list_of_IC_mass.append(1)
+
+    
 
 
 # Create The Frame for the Create Element 
