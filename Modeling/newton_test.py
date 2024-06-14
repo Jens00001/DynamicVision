@@ -126,7 +126,6 @@ for data in res_pos:
 
 plt.xlabel('Time (s)')
 plt.ylabel('Position (m)')
-plt.title('Double Mass Oscillator')
 plt.legend()
 plt.grid(True)
 plt.show(block=True)

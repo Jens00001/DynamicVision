@@ -164,13 +164,13 @@ def load_system(file_name="data.nc"):
     data = load(file_name, num_data=(0,))
     loaded_data = {'time': data[0][:],
                    'results': [d[:] for d in data[1:-1]],
-                   'system': {'param_values': sympify(data[9][0]),
-                              'masses': list(sympify(data[9][1]).keys()),
-                              'coordinates': sympify(data[9][2]),
-                              'velocities': sympify(data[9][3]),
-                              'accelerations': sympify(data[9][4]),
-                              'forces': sympify(data[9][5]),
-                              'constraints': sympify(data[9][6])
+                   'system': {'param_values': sympify(data[-1][0]),
+                              'masses': list(sympify(data[-1][1]).keys()),
+                              'coordinates': sympify(data[-1][2]),
+                              'velocities': sympify(data[-1][3]),
+                              'accelerations': sympify(data[-1][4]),
+                              'forces': sympify(data[-1][5]),
+                              'constraints': sympify(data[-1][6])
                               }
                    }
     return loaded_data

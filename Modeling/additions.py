@@ -88,3 +88,20 @@ def show_equations_of_motion(latex_str, font_size=16):
              multialignment="center", wrap=True)
     plt.axis("off")
     plt.show(block=False)
+
+
+class LoadedSystem:
+    """
+    A class to represent a loaded system with associated time, output data, and system parameters.
+
+    :param t: time values of the simulated and loaded system
+    :type t: float
+    :param y: results of the simulated and loaded system
+    :type y: Numpy.array
+    :param loaded_system: Loaded system regarding the Newton class
+    :type loaded_system: Newton class
+    """
+    def __init__(self, t, y, loaded_system):
+        self.t = t
+        self.y = y
+        self.loaded_system = loaded_system

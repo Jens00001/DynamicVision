@@ -125,7 +125,7 @@ class Spring:
             self.startingpoint = top_mass.position
 
         elif top_mass.type == "steady body":
-            self.startingpoint = [top_mass.position[0], top_mass.position[1] - top_mass.y_dim/2]
+            self.startingpoint = [top_mass.position[0], top_mass.position[1] - float(top_mass.y_dim)/2]
         else:
             raise AssertionError("Please insert a mass or None, if the spring is not placed between two masses, as first argument of the method")
             
@@ -134,7 +134,7 @@ class Spring:
             self.endpoint = bottom_mass.position
 
         elif bottom_mass.type == "steady body":
-            self.endpoint = [bottom_mass.position[0], bottom_mass.position[1] + bottom_mass.y_dim/2]
+            self.endpoint = [bottom_mass.position[0], bottom_mass.position[1] + float(bottom_mass.y_dim)/2]
 
         else:
             raise AssertionError("Please insert a mass as second argument of the method")

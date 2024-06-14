@@ -2,14 +2,14 @@ from sympy import Function, pprint
 import sympy as sp
 import newton
 from matplotlib import pyplot as plt
-from simsave import save_system, tex_save
+from simsave import save_system, tex_save, load_system
 import time
 from numpy import array
 import objects
 #import create_objects
 import os
 import animation
-from additions import eq_to_latex, show_equations_of_motion
+from additions import eq_to_latex, show_equations_of_motion, LoadedSystem
 
 def create_objects():
 
@@ -203,6 +203,119 @@ def run_simulation(list_of_object_lists, simulation_points=10001):
     
     return res,system
 
+def load_list(name):
+    # I think we both know how terrible this function is but we have a deadline so here we go
+    savepath = os.path.dirname(os.path.realpath(__file__)) + "\data\\" + name
+    loaded_sys = load_system(savepath)
+
+    # load simulation results to get inital conditions
+    load_res = loaded_sys['results']
+    res_pos = load_res[:int(len(load_res[:])/2)]
+    res_vel = load_res[int(len(load_res[:])/2):]
+
+    loaded_params = loaded_sys['system']['param_values']
+    params_keys = [str(key) for key in list(loaded_params.keys())]
+    # print(loaded_params)
+
+    # find Masspoints, Steady Body and Spring to reconstruct the list_of_object_lists for animation
+    masspoints = []
+    steady_bodies = []
+    springs = []
+
+    # iterate through the list to check each pair of neighboring elements
+    for i in range(len(params_keys) - 1):
+        current_item = params_keys[i]
+        next_item = params_keys[i + 1]
+
+        if current_item.startswith('m') and next_item.startswith('l'):
+            steady_bodies.append(i)
+        elif current_item.startswith('m'):
+            masspoints.append(i)
+        elif current_item.startswith('l') and next_item.startswith('k'):
+            springs.append(i+1)
+
+    # reconstruct Masspoints objects and Steady Bodies objects
+    list_of_mass = []
+    i = 1
+    for mass in masspoints:
+        m = objects.Masspoint(mass=float(loaded_params[sp.Symbol(params_keys[mass])]), index=i)
+        list_of_mass.append(m)
+        i = i + 1
+
+    for body in steady_bodies:
+        dens = loaded_params[sp.Symbol(params_keys[body])] / (loaded_params[sp.Symbol(params_keys[body+1])] *
+                                                              loaded_params[sp.Symbol(params_keys[body+2])] *
+                                                              loaded_params[sp.Symbol(params_keys[body+3])])
+        b = objects.SteadyBody(x_dim=float(loaded_params[sp.Symbol(params_keys[body+1])]),
+                               y_dim=float(loaded_params[sp.Symbol(params_keys[body+2])]),
+                               z_dim=float(loaded_params[sp.Symbol(params_keys[body+3])]),
+                               density=float(dens), index=i)
+
+        list_of_mass.append(b)
+        i = i + 1
+
+    # set initial conditions of masses
+    j = 0
+    for m in list_of_mass:
+        m.setInitialConditions([float(res_pos[j][0]), -float(res_pos[j+1][0])], [float(res_vel[j][0]), float(res_vel[j+1][0])])
+        j = j + 2
+
+    # reconstruct Spring Objects
+    list_of_spring = []
+    n = 1
+    for spring in springs:
+        s = objects.Spring(rest_length=float(loaded_params[sp.Symbol(params_keys[spring-1])]),
+                           stiffness=float(loaded_params[sp.Symbol(params_keys[spring])]),
+                           index=n, type="linear")
+        list_of_spring.append(s)
+        n = n + 1
+
+    # set initial conditions of springs
+    m = 0
+    for s in list_of_spring:
+        if m == 0:
+            s.setInitialConditions(None, list_of_mass[m],[0,0])
+        else:
+            s.setInitialConditions(list_of_mass[m-1], list_of_mass[m],[0,0])
+        m = m + 1
+
+    return [list_of_spring, list_of_mass]
+
+def load_sys(name):
+    savepath = os.path.dirname(os.path.realpath(__file__)) + "\\data\\" + name
+    data = load_system(savepath)
+
+    # construct equations of motion with saved data
+    param_val = data['system']['param_values']
+    masses = data['system']['masses']
+    coordinates = data['system']['coordinates']
+    forces = data['system']['forces']
+    force_list = [f for f in forces]
+
+    # set up system with loaded data
+    loaded_system = newton.Mechanics()
+    i = 0
+    for m in masses:
+        loaded_system.add_mass(m, mass=sp.symbols(m))
+        force = force_list[i]
+        for f in force:
+            loaded_system.add_force(m, f)
+        i += 1
+
+    loaded_system.param_values = param_val
+    equ = loaded_system.generate_equations()
+    sub_eq = loaded_system.substitute_parameters(equ, loaded_system.param_values)
+    eq_rhs = loaded_system.rhs_of_equation(sub_eq)
+    # generate latex notion of equations of motion
+    eqm = eq_to_latex(loaded_system)
+
+    # load simulation data
+    t = data['time']
+    y = array(data['results'][:])
+
+    results = LoadedSystem(t, y, loaded_system)
+    return results
+
 def plot_results(res,ax):
     t = res.t
     y = res.y
@@ -239,6 +352,14 @@ def main():
     list_of_object_lists=create_objects()
     res, system = run_simulation(list_of_object_lists, simulation_points=100001)
 
+    # load list_of_object_lists with saved data
+    loaded_list_of_object_lists = load_list('test5')
+
+    # load system and simulation data
+    loaded_res = load_sys('test5')
+    loaded_system = loaded_res.loaded_system
+
+
     #plot results     
     fig = plt.figure (figsize=(10,4))
     ax1 = fig.add_subplot(1,1,1)
@@ -254,132 +375,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# animation.animation(res, list_of_object_lists)
-
-######################################################
-#init class newton
-# newton = n.mechanics(list_of_forces_all, sym_mass_list, yt, angle_list)
-# # get sum of forces per mass
-# F_sum = newton.sum_of_force()
-#
-# # get equation of motion
-# Eq = newton.equation_of_motion()
-# print(Eq)
-#
-# # take equation of motion and substitute parameters
-# #create list of tuple of each mass to substitue the parameters
-# subs_mass = [mass.substitution_list() for mass in list_of_mass]
-# #create list of tuple of each spring to substitue the parameters
-# subs_spring =[]
-# for spring in list_of_springs:
-#     subs_spring += spring.substitution_list()
-#     print(subs_spring)
-# rplmts = subs_mass+subs_spring+[(g, 9.81)]
-# print(rplmts)
-# Eq = [Eq[i].subs(rplmts) for i in range(len(Eq))]
-# Eq_ = newton.get_eom(Eq)
-#
-# # plot equation
-# # create equation in the form yddt = rhs for each mass/generalized coordinate
-# Eqa = [sp.Eq(mass.yddt,Eq_[mass.yddt]) for mass in list_of_mass]
-# # y1, y2, y1d, y2d, y1dd, y2dd = sp.symbols("y1, y2, y1d, y2d, y1dd, y2dd")
-#
-# # rplmts = [(mass.yddt, y1dd), (y2ddt, y2dd), (y1dt, y1d), (y2dt, y2d), (y1t, y1), (y2t, y2)]
-# # Eq1a = sp.Eq(y1dd, xdd_expr1.subs(rplmts))
-# # Eq2a = sp.Eq(y2dd, xdd_expr2.subs(rplmts))
-# # provide LaTey notation for the symbols
-# # sn_dict = {xd: r"\dot{x}", xdd: r"\ddot{x}"}
-# # rplmts = [(xddt, xdd), (xdt, xd), (xt, x)]
-# # Eq1a = sp.Eq(xdd, xdd_expr.subs(rplmts))
-# # preview(Eq1a, symbol_names=sn_dict)
-# # provide LaTeX notation for the symbols
-# sn_dict = {list_of_mass[0].yddt: r"\ddot{y1}", list_of_mass[0].ydt: r"\dot{\y1}",
-#            list_of_mass[1].yddt: r"\ddot{y2}", list_of_mass[1].ydt: r"\dot{\y2}"}
-#
-# preview(Eqa[0], symbol_names=sn_dict)
-# preview(Eqa[1], symbol_names=sn_dict)
-#
-#
-# # simulation
-# y1_0 = 1      # initial position of the first object (m)
-# v1_0 = 0.0      # initial velocity of the first object (m/s)
-# y2_0 = 1     # initial position of the second object (m)
-# v2_0 = 0.0      # initial velocity of the second object (m/s)
-# y0 = [y1_0, v1_0, y2_0, v2_0]
-# t_span = (0, 100)
-#
-# start = time.time()
-# res = newton.simulate(Eq, y0, t_span, 100001)
-# end = time.time()
-# print("Duration of simulation: ", end - start, "s.")
-#
-# t_values = res.t
-# x1_values = res.y[0]
-# x2_values = res.y[2]
-#
-# # Plot results
-# plt.plot(t_values, x1_values, label='Position of Mass 1 (m)')
-# plt.plot(t_values, x2_values, label='Position of Mass 2 (m)')
-# plt.xlabel('Time (s)')
-# plt.ylabel('Position (m)')
-# plt.title('Double Mass Oscillator')
-# plt.legend()
-# plt.grid(True)
-# plt.show()
-
-
-################################################################
-# #save (symbolic data must be converted to a string)
-# sym_data = array([str(q), str(t), str(T), str(U), str(F)])
-# # save time
-# save_data = [sol.t]
-# # save simulation result
-# save_data.extend(sol.y)
-# save_data.append(sym_data)
-# # save (symbolic data must be converted to a string)
-# #path and name of the saved file
-# savepath = os.path.dirname(os.path.realpath(__file__))+"\data\\test.nc"
-# save(savepath, data=save_data)
-
-# # load
-# start = time.time()
-# data = load(savepath, (0,))
-# end = time.time()
-# print("Duration of loading data: ", end - start, "s.")
-
-# # load simulation data
-# time = data[0][:]
-# #y = data[1]
-# position = data[1][:]
-# velocity = data[2][:]
-
-# # load simulation variables and transform them into symbolic variables
-# q_l = sp.sympify(data[3][0])
-# t_l = sp.sympify(data[3][1])
-# T_l = sp.sympify(data[3][2])
-# U_l = sp.sympify(data[3][3])
-# F_l = sp.sympify(data[3][4])
-# xt = q_l[0][0]
-# xdt = q_l[0][1]
-# xddt = q_l[0][2]
-
-# # construct symbolic equation of motion with loaded data
-# L1 = lagrange.Lagrange(q_l, t_l, T_l, U_l, F_l)
-# L_eq_l = L1.lagrangian()[q_l[0][-1]]
-# pprint(L_eq_l)
-# # plot equation
-# xdd_expr = L_eq_l
-# x, xd, xdd = sp.symbols("x, xd, xdd")
-# rplmts = [(xddt, xdd), (xdt, xd), (xt, x)]
-# Eq1a = sp.Eq(xdd, xdd_expr.subs(rplmts))
-# # provide LaTeX notation for the symbols
-# sn_dict = {xd: r"\dot{x}", xdd: r"\ddot{x}"}
-
-# #preview(Eq1a, symbol_names=sn_dict)
-
-# # plot
-# plt.plot(time, position)
-# plt.plot(time, velocity)
-# plt.legend(["position", "velocity"])
-# plt.show()
