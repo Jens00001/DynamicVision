@@ -3,53 +3,81 @@ import numpy as np
 
 class Spring:
     """"
-    Class for creating a Spring object
+    Class for creating a Spring object.
+    First the Spring it self is initialized. After that the inital conditions can be set.
+    There are also Methods to compute the related force or the movement of the spring.
+    An mehtod for geting the values for each symbolic parameter as a dictionary is also implemented.
 
-    :param startingpoint: startingpoint of the spring in (m)
-    :type startingpoint: list of float numbers with two elements [x,y]
-    :param rest_length: the length of the spring in the rest position in (m)
-    :type rest_length: int or float
-    :param inital_angle: the intital angle of the spring in (°)
-    :type inital_angle: int or float
     :param stiffness: stifness of the spring in (N/m)
     :type stiffness: int or float
-    :param index: index of the spring in the system
+    :param rest_length: the length of the spring in the rest position in (m)
+    :type rest_length: int or float
+    :param index: index of the spring in the system which is used for the Notation of the symbolic vaules
     :type index: int
-    :param type: the type of the spring (linear or cubic), default is linear
+    :param type: the type of the spring (linear or cubic), default is "linear"
     :type type: str
-    :param endpoint: endpoint of the spring in (m)
-    :type endpoint: list of float numbers with two elements [x,y]
-    :param color: color of the spring in the animation, default is black
+    :param color: color of the spring in the animation, default is "black"
     :type color: str
-    :param lienwidth: the lienwidth of the spring in the animation
+    :param lienwidth: the lienwidth of the spring in the animation, default is 2
     :type lienwidth: int or float
+
+    :ivar stiffness: Stiffness of the spring  in (N/m)
+    :vartype stiffness: int or float
+    :ivar rest_length: the length of the spring in the rest position in (m)
+    :vartype rest_length: int or float
+    :ivar index: Index of the spring which is used for the Notation of the symbolic vaules
+    :vartype index: int
+    :ivar type: Type of the spring (linear or cubic)
+    :vartype type: str
+    :ivar color: Color of the spring in the animation
+    :vartype color: str
+    :ivar lw: linewidth of the spring in the animation
+    :vartype lw: int or float
+    :ivar sym_rest_length: Symbolic rest length of the spring
+    :vartype sym_rest_length: sympy.Symbol
+    :ivar sym_stiffness: Symbolic stiffness of the spring
+    :vartype sym_stiffness: sympy.Symbol
+    :ivar sym_Fx: Symbolic force in x direction
+    :vartype sym_Fx: sympy.Symbol
+    :ivar sym_Fy: Symbolic force in y direction
+    :vartype sym_Fy: sympy.Symbol
+    :ivar startingpoint: Startingpoint of the spring in m
+    :vartype startingpoint: list of int or float
+    :ivar endpoint: Endpoint of the spring in m
+    :vartype endpoint: list of int or float
+    :ivar velocity: Starting velocity of the spring in m/s
+    :vartype velocity: list of float
+    :ivar length: Current length of the spring in m
+    :vartype length: float
+    :ivar prestretch: Prestretch of the spring in m
+    :vartype prestretch: float
     """
     def __init__(self, stiffness, rest_length, index, type = "linear", color="black", lienwidth=2):
-        #self.startingpoint = startingpoint # in (m)
-        self.rest_length = rest_length # in (m)
-        #self.length = self.rest_length # in (m) 
-        self.index = index
-        #self.inital_angle = inital_angle # in °
-        #self.angle = inital_angle      # in ° 
+        """
+        Initialize the Spring instance.
+
+        :param stiffness: Stiffness of the spring in (N/m)
+        :type stiffness: int or float
+        :param rest_length: Rest length of the spring in (m)
+        :type rest_length: int or float
+        :param index: Index of the spring
+        :type index: int
+        :param type: Type of the spring, default is "linear"
+        :type type: str
+        :param color: Color of the spring, default is "black"
+        :type color: str
+        :param linewidth: Line width of the spring, default is 2
+        :type linewidth: int or float
+        """
         self.stiffness = stiffness # in (N/m)
+        self.rest_length = rest_length # in (m)
+        self.index = index
         self.type = type
-        #self.endpoint = [self.startingpoint[0] - self.length*np.sin(self.angle), self.startingpoint[1] - self.length*np.cos(self.angle)] # in (m)
         self.color = color
-        self.lw =lienwidth
+        self.lw = lienwidth
 
         #definiton of symbolic values 
-        t = sp.Symbol("t")
-        
-        self.xt = sp.Function("x"+str(self.index))(t)
-        self.xdt = self.xt.diff(t)
-        self.xddt = self.xt.diff(t,2)
-
-        self.yt = sp.Function("y"+str(self.index))(t)
-        self.ydt = self.yt.diff(t)
-        self.yddt = self.yt.diff(t,2)
-
         self.sym_rest_length = sp.Symbol("l"+str(self.index)+"_0")
-        self.sym_length = sp.Symbol("l"+str(self.index))
         self.sym_stiffness = sp.Symbol("k"+str(self.index))
         self.sym_Fx = sp.Symbol("F_x"+str(self.index)) #force
         self.sym_Fy = sp.Symbol("F_y"+str(self.index)) #force
@@ -67,8 +95,6 @@ class Spring:
         assert self.startingpoint.shape == (2,)
         assert isinstance(self.rest_length, (int, float))
         assert isinstance(self.length, (int, float))
-        assert isinstance(self.inital_angle, (int, float))
-        assert isinstance(self.angle, (int, float))
         assert isinstance(self.stiffness, (int, float))
         assert isinstance(self.type, str)
         assert isinstance(self.endpoint, list)
@@ -78,14 +104,19 @@ class Spring:
         
     def setInitialConditions(self,top_mass, bottom_mass, velocity):
         """"
-        Method for setting the inital conditions of the spring
+        Method for setting the inital conditions of the spring. 
+        The user have the choice weather he wants to input a mass point or a steady body as a mass.
+        Depending on the type of mass connected to the spring, the start and end point is set differently,
+        because the steady body has a dimension and the mass point does not.
+        If the inputs aren't correct an assertion error should be raised.
 
-        :param sp: startingpoint of the spring
-        :type sp: list (int,float)
-        :param ep: endpoint of the spring
-        :type ep: list (int,float)
-        :param velocitiy: starting velocity of the spring 
-        :type v_x: list with int or float values
+        :param top_mass: the mass on which the spring is attached, if the created spring is the first spring in the system 
+            it is usally attached to the origin instead of a mass. Therefore the value should be None in this case.
+        :type top_mass: object or None
+        :param bottom_mass: the mass which is connected with the endpoint of the spring
+        :type bottom_mass: object
+        :param velocity: the starting velocity of the spring
+        :type velocity: list of int or float
         """
         if top_mass == None:
             self.startingpoint = [0,0]
@@ -110,23 +141,24 @@ class Spring:
 
 
         self.velocity= velocity
-        
         self.length = np.sqrt((self.endpoint[0]-self.startingpoint[0])**2 + (self.endpoint[1]-self.startingpoint[1])**2)
         self.prestretch =  self.length - self.rest_length
-        # length_x = self.endpoint[0]-self.startingpoint[0]
-        # length_y = self.endpoint[1]-self.startingpoint[1]
-        # phi = length_x/length_y
-        # self.prestretch_x = np.sin(phi)
-        # self.prestretch_y = np.cos(phi)
+
 
     def force(self, top_mass, bottom_mass):
         """"
-        Method for computing the force of the spring in its current position
+        Method for computing the force of the spring in its current position.
+        The force of the spring depends on the type of the spring. 
+        Also it depends on the type of mass connected to the spring, because the steady body has a dimension and the mass point does not.
+        If the inputs aren't correct an assertion error should be raised.
 
-        :param xt_attached: is the displacement of the object where the spring is attached
-        :type xt_attached: sympy.Function
-        :return: force of the spring
-        :rtype: sympy.Add or sympy.Mul
+        :param top_mass: the mass on which the spring is attached, if the created spring is the first spring in the system 
+            it is usally attached to the origin instead of a mass. Therefore the value should be None in this case.
+        :type top_mass: object or None
+        :param bottom_mass: the mass which is connected with the endpoint of the spring
+        :type bottom_mass: object
+        :return: forces of the spring
+        :rtype: list of sympy.Add or sympy.Mul
         """
        
         match self.type:
@@ -167,16 +199,17 @@ class Spring:
     
     def move(self,top_mass, bottom_mass):
         """
-        Method for computing the new lenght and y-coordinate of the end point of the spring by a given change x
+        Method for computing the new start and end point of the spring depending on the positons of the masses.
+        The current length is also computed.
+        The computation depends on weather the connected mass is a masspoint or a steady body, because steady bodies have a dimension and masspoints do not
 
-        :param x: is the value of the change of the length
-        :type x: int or float
-        :param angle: is the value of the change of the angle
-        :type angle: int or float
-        :param attached_point: is the point where the spring is attached
-        :type attached_point: list
-        :return: current startingpoint, angle, length and endpoint of the spring 
-        :rtype: list 
+        :param top_mass: the mass on which the spring is attached, if the created spring is the first spring in the system 
+            it is usally attached to the origin instead of a mass. Therefore the value should be None in this case.
+        :type top_mass: object or None
+        :param bottom_mass: the mass which is connected with the endpoint of the spring
+        :type bottom_mass: object
+        :return: current startingpoint and endpoint of the spring 
+        :rtype: list of lists of int or float
         """
         if top_mass == None:
             pass
@@ -200,7 +233,12 @@ class Spring:
         return [self.startingpoint,  self.endpoint]
     
     def get_param_values(self):
-        
+        """
+        This method returns the numeric value to the corresponding symbolic value.
+
+        :return: numeric values to corresponding symbolic values
+        :rtype: dictionary
+        """
         return {self.sym_rest_length: self.rest_length, self.sym_stiffness: self.stiffness}
 
 class Mass:
@@ -308,10 +346,12 @@ class SteadyBody(Mass):
         self.position = [] # is the position of the center of mass
         self.type = "steady body"
         self.sym_h = sp.Symbol("h_"+str(index))
+        self.sym_l = sp.Symbol("l_"+str(index))
+        self.sym_w = sp.Symbol("w_"+str(index))
 
         Mass.__init__(self, index)
     
     def get_param_values(self):
         
-        return {self.sym_mass: self.mass, self.sym_h: self.y_dim}
+        return {self.sym_mass: self.mass, self.sym_l: self.x_dim ,self.sym_h: self.y_dim, self.sym_w: self.z_dim}
 
