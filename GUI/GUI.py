@@ -697,7 +697,6 @@ class IC(wx.Panel):
 
         self.i += 1 
 
-    
 
 
 # Create The Frame for the Create Element 
