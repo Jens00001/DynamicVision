@@ -299,7 +299,7 @@ class OpenModel(wx.Panel):
 
         # Create a file dialog
         with wx.FileDialog(self, "Select the file to be loaded ", defaultDir=folder_path,
-                           wildcard="All files (*.*)|*.*",
+                           wildcard="NetCDF files (*.nc)|*.nc",
                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
 
             # Show the dialog and get the response
