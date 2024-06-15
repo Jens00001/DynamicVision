@@ -70,6 +70,7 @@ def save_system(file_name="data.nc", sim_res=None, system=None,  names=None):
     :param names: names of the corresponding data (like keys for python dictionaries)
     :type names: list of strings
     """
+    tex_save(file_name, system)
 
     # get masses to save forces
     masses = [str(system.parameters[key]['mass']) for key in system.parameters]
@@ -187,12 +188,11 @@ def tex_save(file_name="tex_equation.txt", system=None):
     :param system: system to save (equations of motions)
     :type system: newton.Mechanics Class
     """
-
     # check if ".txt" is already in file name
-    if ".txt" in file_name:
+    if "_tex_equation.txt" in file_name:
         name_str = file_name
     else:
-        name_str = file_name + ".txt"
+        name_str = file_name + "_tex_equation.txt"
 
     # check if file already exits and delete it
     if path.exists(name_str):
