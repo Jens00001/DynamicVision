@@ -212,7 +212,7 @@ def save_created_system(name, res, system):
     :type system: Newtonian mechanics system object
     """
     print("Saving data ...")
-    savepath = os.path.dirname(os.path.realpath(__file__))+"\data\\"+ name + ".nc"
+    savepath = os.path.dirname(os.path.realpath(__file__))+"\data\\"+ name 
     print(savepath)
     save_system(savepath, res, system)
     print("Data saved.")
@@ -403,13 +403,14 @@ def generate_latex(system):
 def main():
     # Run the simulation
     list_of_object_lists=create_objects()
-    res, system = run_simulation(list_of_object_lists, simulation_points=100001)
-    print(list_of_object_lists)
+    res, system = run_simulation(list_of_object_lists, simulation_points=25001)
+    #print(list_of_object_lists)
+    
     #save system
-    save_created_system("test3", res, system)
+    name = "test3"
+    save_created_system(name, res, system)
 
     # load list_of_object_lists with saved data
-    name = "test3"
     savepath = os.path.dirname(os.path.realpath(__file__)) + "\data\\" + name + ".nc"
     loaded_list_of_object_lists = load_list(savepath)
     #print(loaded_list_of_object_lists)
