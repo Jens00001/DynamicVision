@@ -28,6 +28,7 @@ def create_objects():
     s1 = objects.Spring(rest_length=0.5, stiffness=100, index=1, type="cubic")
     s2 = objects.Spring(rest_length=0.4, stiffness=100, index=2, type="linear")
     s3 = objects.Spring(rest_length=0.6, stiffness=100, index=3, type="linear")
+    s4 = objects.Spring(rest_length=0.5, stiffness=100, index=4, type="linear")
 
     # Setting initial conditions for each object
     m1.setInitialConditions([0,-0.5], [0,0])
@@ -216,7 +217,7 @@ def save_created_system(name, res, system):
     save_system(savepath, res, system)
     print("Data saved.")
 
-def load_list(name):
+def load_list(savepath):
     """
     Loads a system configuration and initial conditions from a saved file, reconstructing Masspoint, Steady Body, and Spring objects for animation.
 
@@ -226,7 +227,7 @@ def load_list(name):
     :rtype: list of lists of objects
     """
     # I think we both know how terrible this function is but we have a deadline so here we go
-    savepath = os.path.dirname(os.path.realpath(__file__)) + "\data\\" + name + ".nc"
+    
     loaded_sys = load_system(savepath)
 
     # load simulation results to get inital conditions
@@ -312,7 +313,7 @@ def load_list(name):
 
     return [list_of_spring, list_of_mass]
 
-def load_sys(name):
+def load_sys(savepath):
     """
     Loads a system configuration and equations of motion from a saved file.
 
@@ -321,7 +322,7 @@ def load_sys(name):
     :return: LoadedSystem object containing time, results, and loaded system
     :rtype: LoadedSystem
     """
-    savepath = os.path.dirname(os.path.realpath(__file__)) + "\\data\\" + name + ".nc"
+    #savepath = os.path.dirname(os.path.realpath(__file__)) + "\\data\\" + name + ".nc"
     data = load_system(savepath)
 
     # construct equations of motion with saved data
@@ -408,10 +409,12 @@ def main():
     save_created_system("test3", res, system)
 
     # load list_of_object_lists with saved data
-    loaded_list_of_object_lists = load_list('test3')
-    print(loaded_list_of_object_lists)
+    name = "test3"
+    savepath = os.path.dirname(os.path.realpath(__file__)) + "\data\\" + name + ".nc"
+    loaded_list_of_object_lists = load_list(savepath)
+    #print(loaded_list_of_object_lists)
     # load system and simulation data
-    loaded_res = load_sys('test3')
+    loaded_res = load_sys(savepath)
     loaded_system = loaded_res.loaded_system
 
 
