@@ -44,24 +44,24 @@ An example is used to show how to use the app. A double mass oscillator is set u
 ![CreateElement](/Pictures/CreateElement.png)
 * Here you can add **_Masses_** and **_Springs_** to the system. It makes no difference whether you add the springs or the masses first.
 * Let's select **_Mass_** first. Click on **_Masspoint_** in the next window.
-* There you can enter the mass of the **_Masspoint_**. Let's enter $$\inline 2\,\text{kg}$$.
+* There you can enter the mass of the **_Masspoint_**. Let's enter $2\,\text{kg}$.
 ![Mass2Parameters](/Pictures/Mass2Parameters.png)
 * Press **_submit_** and close the **_Create Element_** window.
 * Now click on **_Create Element_** ⟶ **_Masses_** ⟶ **_Steady Body_**.
 * The steady body needs 4 parameters: **_density_**, **_length_**, **_height_** and **_width_**.
-* For example you can enter $$\inline 2710 \, \frac{\text{kg}}{\text{m}^3}$$ for the **_density_**. The **_length_** is $$\inline 0.2\,\text{m}$$, the height can be $$\inline 0.15\,\text{m}$$ and the **_width_** is $$\inline 0.1\,\text{m}$$.
+* For example you can enter $2710 \, \frac{\text{kg}}{\text{m}^3}$ for the **_density_**. The **_length_** is $ 0.2\,\text{m}$, the height can be $0.15\,\text{m}$ and the **_width_** is $0.1\,\text{m}$.
 ![Mass1Parameters](/Pictures/Mass1Parameters.png)
 * Press **_submit_** and close the **_Create Element_** window.
 * Now click on **_Create Element_** ⟶ **_Spring_** ⟶ **_Single Spring_**.
-* There you have to enter the **_stiffness_** and the **_length_** of the spring. For example we can enter $$\inline 350\, \frac{\text{N}}{\text{m}}$$ and $$\inline 0.1\,\text{m}$$.
+* There you have to enter the **_stiffness_** and the **_length_** of the spring. For example we can enter $350\, \frac{\text{N}}{\text{m}}$ and $0.1\,\text{m}$.
 ![Spring1Parameters](/Pictures/SpringParameters.png)
-* Press **_submit_**. Next you can enter the **_stiffness_** and the **_length_** for the second spring. For example $$\inline 550\, \frac{\text{N}}{\text{m}}$$ and $$\inline 0.15\,\text{m}$$.
+* Press **_submit_**. Next you can enter the **_stiffness_** and the **_length_** for the second spring. For example $550\, \frac{\text{N}}{\text{m}}$ and $0.15\,\text{m}$.
 ![Spring2Parameters](/Pictures/Spring2Parameters.png)
 * Press **_submit_** and close the **_Create Element_** window.
 * Now we created the mechanical system more precisely a **double mass oscillator**.
 * Next we have to enter the initial condition. So basically the initial positions and the initial velocities.
 * Click on **_I Conditions_**. The **_Initial Conditions_** window will pop up. Regarding the order of the entered masses you have to enter the initial position and initial velocity.
-* For the first mass we can use $$\inline -0.2\,\text{m}$$ and $$\inline 0\, \frac{\text{m}}{\text{s}}$$. The second mass can have a inital position of $$\inline -0.6\,\text{m}$$ and a initial velocity of $$\inline 0\, \frac{\text{m}}{\text{s}}$$.
+* For the first mass we can use $-0.2\,\text{m}$ and $0\, \frac{\text{m}}{\text{s}}$. The second mass can have a inital position of $-0.6\,\text{m}$ and a initial velocity of $0\, \frac{\text{m}}{\text{s}}$.
 ![InitalConditions](/Pictures/IC.png)
 * Press **_submit_** and close the **_Initial Condition_** window.
 * Now press **_Run Simulation_**. The system will be simulated. Afterwards the results are plotted and an animation of the system will occur. Additionally a new window will pop up that displays the equation of motions. In a third window you can enter a name to save the system and the simulated data.
@@ -78,29 +78,29 @@ In addition to single springs, it is also possible to build both parallel and se
 
 #### Parallel Springs
 Mechanically, parallel springs can be represented by a single spring. So if you want to set up parallel springs, the program will automatically compute the resulting single spring.
-The resulting spring constant $$ k_{res} $$ is computed by:
+The resulting spring constant $k_{res}$ is computed by:
 
 $$ k_{res}=\sum_{i=1}^{n}k_{i}. $$
 
-And $$ n $$ represents the number of parallel springs. 
+And $n$ represents the number of parallel springs. 
 As the parallel springs are the same length, the length of the replacement spring is the same as that of the parallel springs.
 
 
 #### Serial Springs
 Mechanically, serial springs can also be represented by a single spring. So if you want to set up single springs, the program will automatically compute the resulting single spring.
-The resulting inverse spring constant $$ k_{inv} $$ is computed by:
+The resulting inverse spring constant $k_{inv}$ is computed by:
 
 $$ {k_{inv}}=\sum_{i=1}^{n}\frac {1}{k_{i}}, $$
 
-with $$ n $$ as the number of serial springs. That means the spring constant $$ k_{res} $$ of the resulting single spring is given by:
+with $n$ as the number of serial springs. That means the spring constant $k_{res}$ of the resulting single spring is given by:
 
 $$ k_{res}=\frac {1}{k_{inv}}. $$
 
-In the case of the serial spring, the total length of the replacement spring also changes. Therefore the length of the resulting single spring $$ l_{res} $$ can be computed as:
+In the case of the serial spring, the total length of the replacement spring also changes. Therefore the length of the resulting single spring $l_{res}$ is computed as:
 
 $$ l_{res}=\sum_{i=1}^{n}l_{i}, $$
 
-with $$ n $$ as the number of serial springs.
+with $n$ as the number of serial springs.
 
 
 ## Help
