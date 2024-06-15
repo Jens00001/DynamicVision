@@ -36,6 +36,42 @@ TODO: step by step description how to use the programm
 python "PATH_TO_YOUR_DIRECTORY\Dynamic Vision\DynamicVision\GUI\GUI.py"
 ```
 
+### How to use the program
+An example is used to show how to use the app. A double mass oscillator is set up as an example.
+* After executing the GUI.py file, the main menu will open
+![MainMenu](/Pictures/MainMenu.png)
+* Click **_Create Model_** and then **_Create Element_**.
+![CreateElement](/Pictures/CreateElement.png)
+* Here you can add **_Masses_** and **_Springs_** to the system. It makes no difference whether you add the springs or the masses first.
+* Let's select **_Mass_** first. Click on **_Masspoint_** in the next window.
+* There you can enter the mass of the **_Masspoint_**. Let's enter **_2 kg_**.
+![Mass2Parameters](/Pictures/Mass2Parameters.png)
+* Press **_submit_** and close the **_Create Element_** window.
+* Now click on **_Create Element_** ⟶ **_Masses_** ⟶ **_Steady Body_**.
+* The steady body needs 4 parameters: **_density_**, **_length_**, **_height_** and **_width_**.
+* For example you can enter **_2710 kg/m^3_** for the **_density_**. The **_length_** is **_0.2 m_**, the height can be **_0.15 m_** and the **_width_** is **_0.1 m_**.
+![Mass1Parameters](/Pictures/Mass1Parameters.png)
+* Press **_submit_** and close the **_Create Element_** window.
+* Now click on **_Create Element_** ⟶ **_Spring_** ⟶ **_Single Spring_**.
+* There you have to enter the **_stiffness_** and the **_length_** of the spring. For example we can enter **_150 N/m_** and **_0.2 m_**.
+![Spring1Parameters](/Pictures/SpringParameters.png)
+* Press **_submit_**. Next you can enter the **_stiffness_** and the **_length_** for the second spring. For example **_100 N/m_** **_and 0.15 m_**.
+![Spring2Parameters](/Pictures/Spring2Parameters.png)
+* Press **_submit_** and close the **_Create Element_** window.
+* Now we created the mechanical system more precisely a **double mass oscillator**.
+* Next we have to enter the inital condition. So basically the initial positions and the initial velocities.
+* Click on **_I Conditions_**. The **_Initial Conditions_** window will pop up. Regarding the order of the entered masses you have to enter the initial position and initial velocity.
+* For the first mass we can use **_0.2 m_** and **_0 m/s_**. The second mass can have a inital position of **_0.5 m_** and a initial velocity of **_0 m/s_**.
+![InitalConditions](/Pictures/IC.png)
+* Press **_submit_** and close the **_Initial Condition_** window.
+* Now press **_Run Simulation_**. The system will be simulated. Afterwards the results are plotted and an animation of the system will occur. Additionally a new window will pop up that displays the equation of motions. In a second window you can enter a name to save the system and the simulated data.
+![Animation](/Pictures/Animation.gif)
+![Equations](/Pictures/EquationsOfMotion.png)
+* To save the simulation and the system enter the desired name and press **_save_**.
+![Save](/Pictures/SaveREsults.png)
+* Close the **_Save_** window.
+* To create a new system, you must restart the program in the current release.
+
 ## Help
 
 There are two possibilities to open the documentation. First you can start the app and click "Documentation".
