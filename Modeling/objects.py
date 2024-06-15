@@ -21,44 +21,44 @@ class Spring:
     :param lienwidth: the lienwidth of the spring in the animation, default is 2
     :type lienwidth: int or float
 
-    :ivar stiffness: Stiffness of the spring  in (N/m)
+    :ivar stiffness: stiffness of the spring  in (N/m)
     :vartype stiffness: int or float
     :ivar rest_length: the length of the spring in the rest position in (m)
     :vartype rest_length: int or float
-    :ivar index: Index of the spring which is used for the Notation of the symbolic vaules
+    :ivar index: index of the spring which is used for the Notation of the symbolic vaules
     :vartype index: int
-    :ivar type: Type of the spring (linear or cubic)
+    :ivar type: type of the spring (linear or cubic)
     :vartype type: str
-    :ivar color: Color of the spring in the animation
+    :ivar color: color of the spring in the animation
     :vartype color: str
     :ivar lw: linewidth of the spring in the animation
     :vartype lw: int or float
-    :ivar sym_rest_length: Symbolic rest length of the spring
+    :ivar sym_rest_length: symbolic rest length of the spring
     :vartype sym_rest_length: sympy.Symbol
-    :ivar sym_stiffness: Symbolic stiffness of the spring
+    :ivar sym_stiffness: symbolic stiffness of the spring
     :vartype sym_stiffness: sympy.Symbol
-    :ivar sym_Fx: Symbolic force in x direction
+    :ivar sym_Fx: symbolic force in x direction
     :vartype sym_Fx: sympy.Symbol
-    :ivar sym_Fy: Symbolic force in y direction
+    :ivar sym_Fy: symbolic force in y direction
     :vartype sym_Fy: sympy.Symbol
-    :ivar startingpoint: Startingpoint of the spring in m
+    :ivar startingpoint: startingpoint of the spring in (m)
     :vartype startingpoint: list of int or float
-    :ivar endpoint: Endpoint of the spring in m
+    :ivar endpoint: endpoint of the spring in (m)
     :vartype endpoint: list of int or float
-    :ivar velocity: Starting velocity of the spring in m/s
+    :ivar velocity: starting velocity of the spring in (m/s)
     :vartype velocity: list of float
-    :ivar length: Current length of the spring in m
+    :ivar length: current length of the spring in (m)
     :vartype length: float
-    :ivar prestretch: Prestretch of the spring in m
+    :ivar prestretch: prestretch of the spring in (m)
     :vartype prestretch: float
     """
     def __init__(self, stiffness, rest_length, index, type = "linear", color="black", lienwidth=2):
         """
         Initialize the Spring instance.
 
-        :param stiffness: Stiffness of the spring in (N/m)
+        :param stiffness: stiffness of the spring in (N/m)
         :type stiffness: int or float
-        :param rest_length: Rest length of the spring in (m)
+        :param rest_length: rest length of the spring in (m)
         :type rest_length: int or float
         :param index: Index of the spring
         :type index: int
@@ -115,7 +115,7 @@ class Spring:
         :type top_mass: object or None
         :param bottom_mass: the mass which is connected with the endpoint of the spring
         :type bottom_mass: object
-        :param velocity: the starting velocity of the spring
+        :param velocity: the starting velocity of the spring in (m/s)
         :type velocity: list of int or float
         """
         if top_mass == None:
@@ -157,7 +157,7 @@ class Spring:
         :type top_mass: object or None
         :param bottom_mass: the mass which is connected with the endpoint of the spring
         :type bottom_mass: object
-        :return: forces of the spring
+        :return: forces of the spring in (N)
         :rtype: list of sympy.Add or sympy.Mul
         """
        
@@ -208,7 +208,7 @@ class Spring:
         :type top_mass: object or None
         :param bottom_mass: the mass which is connected with the endpoint of the spring
         :type bottom_mass: object
-        :return: current startingpoint and endpoint of the spring 
+        :return: current startingpoint and endpoint of the spring in (m)
         :rtype: list of lists of int or float
         """
         if top_mass == None:
@@ -234,28 +234,52 @@ class Spring:
     
     def get_param_values(self):
         """
-        This method returns the numeric value to the corresponding symbolic value.
+        Get numeric values for symbolic representations
 
-        :return: numeric values to corresponding symbolic values
+        :return: dictionary of symbolic parameters and their values
         :rtype: dictionary
         """
         return {self.sym_rest_length: self.rest_length, self.sym_stiffness: self.stiffness}
 
 class Mass:
     """
-    Class for creating a mass object
-
-    :param position: position of the mass in (m)
-    :type position: list of float numbers with two elements [x,y]
-    :param mass: value of the mass in (kg)
-    :type mass: int or float
-    :param index: index of the mass in the system
+    Base class for different types of masses.
+    
+    :param index: index of the mass in the system which is used for the Notation of the symbolic vaules
     :type index: int
-    :param diameter: diameter of the mass in the animation
-    :param color: color of the mass in the animation, default is red
+    :param color: color of the mass in the animation, default is "red"
     :type color: str
+
+    :ivar index: index of the mass in the system which is used for the Notation of the symbolic vaules
+    :vartype index: int
+    :ivar color: color of the mass
+    :vartype color: str
+    :ivar yt: symbolic function for the position of the mass over the time
+    :vartype yt: sympy.Function
+    :ivar ydt: symbolic first derivative the position of the mass over the time
+    :vartype ydt: sympy.Basic
+    :ivar yddt: symbolic second derivative of the position of the mass over the time
+    :vartype yddt: sympy.Basic
+    :ivar sym_mass: symbolic mass
+    :vartype sym_mass: sympy.Symbol
+    :ivar sym_g: symbolic gravitational acceleration
+    :vartype sym_g: sympy.Symbol
+    :ivar sym_F: symbolic force
+    :vartype sym_F: sympy.Symbol
+    :ivar position: position of the mass in (m)
+    :vartype position: list of int or float
+    :ivar velocity: velocity of the mass in (m/s)
+    :vartype velocity: list of int or float
     """
     def __init__(self, index, color ="red"):
+        """
+        Initialize the Mass instance
+
+        :param index: index of the mass in the system which is used for the Notation of the symbolic vaules
+        :type index: int
+        :param color: color of the mass in the animation, default is red
+        :type color: str
+        """
         self.index = index
         self.color = color 
         
@@ -283,9 +307,11 @@ class Mass:
 
     def setInitialConditions(self, position, velocity):
         """"
-        :param position: the position of the mass point or the center of mass of a steady body
+        Method for setting the intial conditions for the mass.
+
+        :param position: the position of the mass point or the center of mass of a steady body in (m)
         :type position: list of int or float values
-        :param velocity: the starting velocity of the mass point or the center of mass of a steady body
+        :param velocity: the starting velocity of the mass point or the center of mass of a steady body in (m/s)
         :type velocity: list of int or float values
         """
         self.position = position
@@ -295,7 +321,7 @@ class Mass:
         """" 
         Method for computing the gravitational force of the mass
 
-        :return: gravitational force
+        :return: gravitational force in (N)
         :rtype: sympy.Add
         """  
              
@@ -305,38 +331,122 @@ class Mass:
     
     def move(self,x,y):
         """
-        :param attached_point: is the point where the mass is attached
-        :type attached_point: list
-        :return: position of the mass
-        :rtype: list
+        Move the mass to a new position
+
+        :param x: x-coordinate of the new position in (m)
+        :type x: int or float
+        :param y: y-coordinate of the new position in (m)
+        :type y: int or float
+        :return: new position of the mass in (m)
+        :rtype: list of int or float
         """
         self.position = [x,y]
 
         return self.position
     
     def get_param_values(self):
-        
+        """
+        Get numeric values for symbolic representations
+
+        :return: dictionary of symbolic parameters and their values
+        :rtype: dict
+        """
+
         return {self.sym_mass: self.mass}
     
 class Masspoint(Mass):
+    """
+    Class for creating a masspoint
+
+    :param mass: mass of the masspoint in (kg)
+    :type mass: int or float
+    :param index: index of the masspoint in the system which is used for the Notation of the symbolic vaules
+    :type index: int
+
+    :ivar mass: mass of the masspoint in (kg)
+    :vartype mass: int or float
+    :ivar type: type of the mass is "masspoint". It is used to differentiate between a masspoint and a steady body in the rest of the Code.
+    :vartype type: str
+    :ivar diameter: diameter of the masspoint in the animation
+    :vartype diameter: float
+    """
     def __init__(self, mass, index):
-        
+        """
+        Initialize the Masspoint instance
+
+        :param mass: mass of the masspoint in (kg)
+        :type mass: int or float
+        :param index: index of the masspoint in the system which is used for the Notation of the symbolic vaules
+        :type index: int
+        """
         self.mass = mass
         self.type = "masspoint"
         Mass.__init__(self, index)
 
     def set_diameter(self,y_range):
         """
+        Set the diameter of the masspoint based on the y-axis range in the subplot of the figure where the animation is shown
+
         :param y_range: Range of the y-axis
         :type y_range: int or float
         """
-        base_diameter = 0.06
+        base_diameter = 0.04
         exponent = 0.5
         self.diameter = base_diameter * (y_range**exponent)
 
 class SteadyBody(Mass):
+    """
+    Class for creating a steady body
+
+    :param x_dim: dimension of the steady body along the x-axis in (m)
+    :type x_dim: int or float
+    :param y_dim: dimension of the steady body along the y-axis in (m)
+    :type y_dim: int or float
+    :param z_dim: dimension of the steady body along the z-axis in (m)
+    :type z_dim: int or float
+    :param density: density of the material of the steady body in (kg/m^3)
+    :type density: int or float
+    :param index: index of the steady body in the system which is used for the Notation of the symbolic vaules
+    :type index: int
+
+    :ivar x_dim: dimension of the steady body along the x-axis in (m)
+    :vartype x_dim: int or float
+    :ivar y_dim: dimension of the steady body along the y-axis in (m)
+    :vartype y_dim: int or float
+    :ivar z_dim: dimension of the steady body along the z-axis in (m)
+    :vartype z_dim: int or float
+    :ivar density: density of the material of the steady body in (kg/m^3)
+    :vartype density: int or float
+    :ivar volume: volume of the body in (m^3)
+    :vartype volume: int or float
+    :ivar mass: mass of the body in (kg)
+    :vartype mass: int or float
+    :ivar position: position of the center of mass, only x- and y-dimension is set in (m)
+    :vartype position: list of int or float
+    :ivar type: type of the mass is "steady body". It is used to differentiate between a masspoint and a steady body in the rest of the Code.
+    :vartype type: str
+    :ivar sym_h: symbolic height of the steady body
+    :vartype sym_h: sympy.Symbol
+    :ivar sym_l: symbolic length of the steady body
+    :vartype sym_l: sympy.Symbol
+    :ivar sym_w: symbolic width of the steady body
+    :vartype sym_w: sympy.Symbol
+    """
     def __init__(self, x_dim, y_dim, z_dim, density, index):
-        
+        """
+        Initialize the SteadyBody instance
+
+        :param x_dim: dimension of the steady body along the x-axis in (m)
+        :type x_dim: int or float
+        :param y_dim: dimension of the steady body along the y-axis in (m)
+        :type y_dim: int or float
+        :param z_dim: dimension of the steady body along the z-axis in (m)
+        :type z_dim: int or float
+        :param density: density of the material of the steady body in (kg/m^3)
+        :type density: int or float
+        :param index: index of the steady body in the system which is used for the Notation of the symbolic vaules
+        :type index: int
+        """    
         self.x_dim = x_dim
         self.y_dim = y_dim
         self.z_dim = z_dim
@@ -352,6 +462,11 @@ class SteadyBody(Mass):
         Mass.__init__(self, index)
     
     def get_param_values(self):
-        
+        """
+        Get numeric values for the symbolic representations
+
+        :return: dictionary of symbolic parameters and their values
+        :rtype: dict
+        """    
         return {self.sym_mass: self.mass, self.sym_l: self.x_dim ,self.sym_h: self.y_dim, self.sym_w: self.z_dim}
 
