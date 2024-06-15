@@ -14,10 +14,11 @@ from additions import eq_to_latex, show_equations_of_motion, LoadedSystem
 def create_objects():
 
     m1 = objects.Masspoint(mass=2, index=1)
-    #m2 = objects.Masspoint(mass=2, index=2)
-    #m1 = objects.SteadyBody(x_dim= 0.2, y_dim=0.1, z_dim=0.03, density=2700, index=1)
+    # m2 = objects.Masspoint(mass=2, index=2)
+    # m1 = objects.SteadyBody(x_dim= 0.2, y_dim=0.1, z_dim=0.03, density=2700, index=1)
     m2 = objects.SteadyBody(x_dim= 0.2, y_dim=0.1, z_dim=0.03, density=2700, index=2)
-    m3 = objects.SteadyBody(x_dim= 0.2, y_dim=0.1, z_dim=0.03, density=2700, index=3)
+    # m3 = objects.SteadyBody(x_dim= 0.2, y_dim=0.1, z_dim=0.03, density=2700, index=3)
+    m3 = objects.Masspoint(mass=2, index=3)
     #print("mass 2 = "+str(m2.mass))
     s1 = objects.Spring(rest_length=0.5, stiffness=100, index=1, type="linear")
     s2 = objects.Spring(rest_length=0.4, stiffness=100, index=2, type="linear")
@@ -221,44 +222,53 @@ def load_list(name):
     masspoints = []
     steady_bodies = []
     springs = []
+    masses = {}
 
     # iterate through the list to check each pair of neighboring elements
-    for i in range(len(params_keys) - 1):
+    for i in range(len(params_keys) - 2):
         current_item = params_keys[i]
         next_item = params_keys[i + 1]
+        second_next_item = params_keys[i + 2]
 
-        if current_item.startswith('m') and next_item.startswith('l'):
+        if current_item.startswith('m') and next_item.startswith('l') and second_next_item.startswith("h"):
             steady_bodies.append(i)
+            masses[f'sb{i}'] = i
         elif current_item.startswith('m'):
             masspoints.append(i)
+            masses[f'm{i}'] = i
         elif current_item.startswith('l') and next_item.startswith('k'):
             springs.append(i+1)
 
     # reconstruct Masspoints objects and Steady Bodies objects
     list_of_mass = []
     i = 1
-    for mass in masspoints:
-        m = objects.Masspoint(mass=float(loaded_params[sp.Symbol(params_keys[mass])]), index=i)
-        list_of_mass.append(m)
-        i = i + 1
+    for key in masses:
+        if key.startswith('m'):
+            m = objects.Masspoint(mass=float(loaded_params[sp.Symbol(params_keys[masses[key]])]), index=i)
+            list_of_mass.append(m)
+            i = i + 1
+        elif key.startswith('sb'):
+            dens = (loaded_params[sp.Symbol(params_keys[masses[key]])] /
+                    (loaded_params[sp.Symbol(params_keys[masses[key] + 1])] *
+                    loaded_params[sp.Symbol(params_keys[masses[key] + 2])] *
+                    loaded_params[sp.Symbol(params_keys[masses[key] + 3])]))
+            b = objects.SteadyBody(x_dim=float(loaded_params[sp.Symbol(params_keys[masses[key] + 1])]),
+                                   y_dim=float(loaded_params[sp.Symbol(params_keys[masses[key] + 2])]),
+                                   z_dim=float(loaded_params[sp.Symbol(params_keys[masses[key] + 3])]),
+                                   density=float(dens), index=i)
 
-    for body in steady_bodies:
-        dens = loaded_params[sp.Symbol(params_keys[body])] / (loaded_params[sp.Symbol(params_keys[body+1])] *
-                                                              loaded_params[sp.Symbol(params_keys[body+2])] *
-                                                              loaded_params[sp.Symbol(params_keys[body+3])])
-        b = objects.SteadyBody(x_dim=float(loaded_params[sp.Symbol(params_keys[body+1])]),
-                               y_dim=float(loaded_params[sp.Symbol(params_keys[body+2])]),
-                               z_dim=float(loaded_params[sp.Symbol(params_keys[body+3])]),
-                               density=float(dens), index=i)
+            list_of_mass.append(b)
+            i = i + 1
+        else:
+            print(f'Unknown key{key}')
 
-        list_of_mass.append(b)
-        i = i + 1
 
     # set initial conditions of masses
     j = 0
     for m in list_of_mass:
         m.setInitialConditions([float(res_pos[j][0]), -float(res_pos[j+1][0])], [float(res_vel[j][0]), float(res_vel[j+1][0])])
         j = j + 2
+    # print(list_of_mass)
 
     # reconstruct Spring Objects
     list_of_spring = []
