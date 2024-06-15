@@ -219,8 +219,8 @@ def load_list(name):
     # print(loaded_params)
 
     # find Masspoints, Steady Body and Spring to reconstruct the list_of_object_lists for animation
-    masspoints = []
-    steady_bodies = []
+    masspoints = []         # for debugging purpose
+    steady_bodies = []      # for debugging purpose
     springs = []
     masses = {}
 
@@ -231,10 +231,10 @@ def load_list(name):
         second_next_item = params_keys[i + 2]
 
         if current_item.startswith('m') and next_item.startswith('l') and second_next_item.startswith("h"):
-            steady_bodies.append(i)
+            steady_bodies.append(i) # for debugging purpose
             masses[f'sb{i}'] = i
         elif current_item.startswith('m'):
-            masspoints.append(i)
+            masspoints.append(i)    # for debugging purpose
             masses[f'm{i}'] = i
         elif current_item.startswith('l') and next_item.startswith('k'):
             springs.append(i+1)
