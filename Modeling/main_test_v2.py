@@ -25,7 +25,7 @@ def create_objects():
     #m2 = objects.SteadyBody(x_dim= 0.2, y_dim=0.1, z_dim=0.03, density=2700, index=2)
     #m3 = objects.SteadyBody(x_dim= 0.2, y_dim=0.1, z_dim=0.03, density=2700, index=3)
     #print("mass 2 = "+str(m2.mass))
-    s1 = objects.Spring(rest_length=0.5, stiffness=100, index=1, type="linear")
+    s1 = objects.Spring(rest_length=0.5, stiffness=100, index=1, type="cubic")
     s2 = objects.Spring(rest_length=0.4, stiffness=100, index=2, type="linear")
     s3 = objects.Spring(rest_length=0.6, stiffness=100, index=3, type="linear")
 
@@ -163,7 +163,7 @@ def run_simulation(list_of_object_lists, simulation_points=10001):
     g = sp.Symbol('g')
     # ** unpacks the dictionary into positional arguments  
     system.param_values = {**param_values_mass, **param_values_spring, g: 9.81}
-    #print({**param_values_mass, **param_values_spring, g: 9.81})
+    print({**param_values_mass, **param_values_spring, g: 9.81})
 
     # geometric relationships
     # distance between global coordinate origin and first mass
