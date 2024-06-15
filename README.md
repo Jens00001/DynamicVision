@@ -8,7 +8,6 @@ Engineers develop complex systems that often need to be modeled and simulated be
 
 The DynamicVision project addresses this issue. Users can use a GUI to create simple mechanical systems from springs and masses, which are then modeled and simulated. Users are provided with the resulting equations of motion for the respective system and a visualization. Additionally, plots synchronized with the visualization are generated.
 
-TODO: step by step description how to use the programm
 
 ## Getting Started
 
@@ -21,6 +20,7 @@ TODO: step by step description how to use the programm
 * matplotlib
 * wx
 * netCDF4
+* Tested with Windows 11
 
 ### Installing
 
@@ -38,7 +38,7 @@ python "PATH_TO_YOUR_DIRECTORY\Dynamic Vision\DynamicVision\GUI\GUI.py"
 
 ### How to use the program
 An example is used to show how to use the app. A double mass oscillator is set up as an example.
-* After executing the GUI.py file, the main menu will open
+* After executing the GUI.py file, the main menu will open.
 ![MainMenu](/Pictures/MainMenu.png)
 * Click **_Create Model_** and then **_Create Element_**.
 ![CreateElement](/Pictures/CreateElement.png)
@@ -64,11 +64,11 @@ An example is used to show how to use the app. A double mass oscillator is set u
 * For the first mass we can use **_0.2 m_** and **_0 m/s_**. The second mass can have a inital position of **_0.5 m_** and a initial velocity of **_0 m/s_**.
 ![InitalConditions](/Pictures/IC.png)
 * Press **_submit_** and close the **_Initial Condition_** window.
-* Now press **_Run Simulation_**. The system will be simulated. Afterwards the results are plotted and an animation of the system will occur. Additionally a new window will pop up that displays the equation of motions. In a second window you can enter a name to save the system and the simulated data.
+* Now press **_Run Simulation_**. The system will be simulated. Afterwards the results are plotted and an animation of the system will occur. Additionally a new window will pop up that displays the equation of motions. In a third window you can enter a name to save the system and the simulated data.
 ![Animation](/Pictures/Animation.gif)
 ![Equations](/Pictures/EquationsOfMotion.png)
 * To save the simulation and the system enter the desired name and press **_save_**.
-![Save](/Pictures/SaveREsults.png)
+![Save](/Pictures/SaveResults.png)
 * Close the **_Save_** window.
 * To create a new system, you must restart the program in the current release.
 

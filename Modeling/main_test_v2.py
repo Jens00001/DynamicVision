@@ -244,7 +244,7 @@ def load_list(name):
     springs = []
     masses = {}
 
-    # Identify Masspoints, Steady Bodies, and Springs based on loaded parameters
+    # identify Masspoints, Steady Bodies, and Springs based on loaded parameters
     # iterate through the list to check each pair of neighboring elements
     for i in range(len(params_keys) - 2):
         current_item = params_keys[i]
@@ -297,7 +297,7 @@ def load_list(name):
     for spring in springs:
         s = objects.Spring(rest_length=float(loaded_params[sp.Symbol(params_keys[spring-1])]),
                            stiffness=float(loaded_params[sp.Symbol(params_keys[spring])]),
-                           index=n, type="linear")
+                           index=n, type=loaded_params[params_keys[spring+1]])
         list_of_spring.append(s)
         n = n + 1
 
@@ -403,13 +403,13 @@ def main():
     # Run the simulation
     list_of_object_lists=create_objects()
     res, system = run_simulation(list_of_object_lists, simulation_points=100001)
-
+    print(list_of_object_lists)
     #save system
     save_created_system("test3", res, system)
 
     # load list_of_object_lists with saved data
     loaded_list_of_object_lists = load_list('test3')
-
+    print(loaded_list_of_object_lists)
     # load system and simulation data
     loaded_res = load_sys('test3')
     loaded_system = loaded_res.loaded_system
@@ -419,8 +419,8 @@ def main():
     fig = plt.figure (figsize=(10,4))
     ax1 = fig.add_subplot(1,1,1)
     canvas = fig.canvas
-    plot_results(res, ax1)
-    generate_latex(system)
+    plot_results(loaded_res, ax1)
+    generate_latex(loaded_system)
     canvas.draw()
     plt.show(block=False)
 

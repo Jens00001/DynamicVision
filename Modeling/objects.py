@@ -81,6 +81,7 @@ class Spring:
         self.sym_stiffness = sp.Symbol("k"+str(self.index))
         self.sym_Fx = sp.Symbol("F_x"+str(self.index)) #force
         self.sym_Fy = sp.Symbol("F_y"+str(self.index)) #force
+        self.sym_type = f"spring_type{self.index}"
       
     def __repr__(self):
         return str(list(self.__dict__.items()))
@@ -239,7 +240,7 @@ class Spring:
         :return: dictionary of symbolic parameters and their values
         :rtype: dictionary
         """
-        return {self.sym_rest_length: self.rest_length, self.sym_stiffness: self.stiffness}
+        return {self.sym_rest_length: self.rest_length, self.sym_stiffness: self.stiffness, self.sym_type: self.type}
 
 class Mass:
     """
