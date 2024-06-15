@@ -391,7 +391,7 @@ class Masspoint(Mass):
         :param y_range: Range of the y-axis
         :type y_range: int or float
         """
-        base_diameter = 0.04
+        base_diameter = 0.05
         exponent = 0.5
         self.diameter = base_diameter * (y_range**exponent)
 

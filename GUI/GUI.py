@@ -237,6 +237,9 @@ class CreateModel(wx.Panel):
         list_of_mass = []
 
         self.timer.Stop()
+        self.ax1.cla()  # clear axis 1
+        self.ax2.cla()  # clear axis 2
+        self.canvas.draw()  # refresh the canvas
 
         popup = CreateElement(self)
         popup.Show()
@@ -267,6 +270,96 @@ class OpenModel(wx.Panel):
         wx.Panel.__init__(self, parent,size=(1200,800))
         self.SetBackgroundColour(wx.Colour(255, 255, 255))  # Set background color to white
         text = wx.StaticText(self, label="OpenModel", pos=(50, 50))  # Add a label to the panel
+
+        # Create a Matplotlib canvas to display the figure
+        self.figure=Figure(figsize=(10,4))
+        self.ax1 = self.figure.add_subplot(1,2,1)
+        self.ax2 = self.figure.add_subplot(1,2,2)
+        self.canvas = FigureCanvas(self, -1, self.figure)
+        
+        # Create a button to open the pop-up window to create a Element 
+        self.button_load_model = wx.Button(self,label="Load Model")
+        self.Bind(wx.EVT_BUTTON,self.on_load_model,self.button_load_model)             
+        self.button_load_model.SetPosition((1000,500))
+
+        self.num = 0  # Initialize num
+        self.paused = False 
+        self.updatetime = 100 # Initialize updatetime
+        self.skip_sim_steps = 1 # Intitalize the number of steps which are skiped in the animation
+        self.timer = wx.Timer(self)
+
+    def on_load_model(self,event):
+
+        self.timer.Stop()
+        self.ax1.cla()  # clear axis 1
+        self.ax2.cla()  # clear axis 2
+        self.canvas.draw()  # refresh the canvas
+        
+        folder_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))+"\Modeling\data"
+
+        # Create a file dialog
+        with wx.FileDialog(self, "Select the file to be loaded ", defaultDir=folder_path,
+                           wildcard="All files (*.*)|*.*",
+                           style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
+
+            # Show the dialog and get the response
+            if file_dialog.ShowModal() == wx.ID_CANCEL:
+                return  # User cancelled the dialog
+
+            # Get the selected file path
+            selected_file_path = file_dialog.GetPath()
+            loaded_list_of_object_lists = main_modeling.load_list(selected_file_path)
+            self.loaded_res = main_modeling.load_sys(selected_file_path)
+            self.loaded_system = self.loaded_res.loaded_system
+
+            self.plot_results(self.loaded_res, loaded_list_of_object_lists)
+            self.show_equations(self.loaded_system)
+            self.canvas.draw()
+            # Start animation
+            max_simulated_time = self.loaded_res.t[-1]
+            num_frames = len(self.loaded_res.t)
+            animation_time = max_simulated_time * 1000  # Convert to milliseconds
+            # computes the necessary steps that must be skipped to obtain an update time of 110 ms which allows 
+            # matching the simulated time in the animation quiet good wtih one spring mass oszillator
+            self.skip_sim_steps = round(110 * num_frames / animation_time)
+
+            self.Bind(wx.EVT_TIMER, self.update_animation, self.timer)
+            self.timer.Start(self.updatetime)  # Update time per frame
+
+    def show_equations(self, system):
+        # plot/show equations of motion
+        main_modeling.generate_latex(system)
+
+    def plot_results(self, res, list_of_object_lists):
+        # Plot results in ax1
+        main_modeling.plot_results(res, self.ax1)
+        self.animation = anim.Animation(res, list_of_object_lists, self.ax2)
+
+    def update_animation(self, event):
+        if not self.paused:
+            # Update animation with appropriate frame number
+            self.animation.update_frame(self.num)
+            self.num += self.skip_sim_steps  # Increment num for the next frame
+
+            # If num exceeds the length of y_pos, pause for a moment and restart
+            y = -self.animation.sol.y
+            pos = y[0:int(len(y)/2)]
+            y_pos = pos[1::2]
+            if self.num >= len(y_pos[0]):
+                #make sure that the animation stops at the last simulated point
+                self.num = len(y_pos[0])-1
+                self.animation.update_frame(self.num)
+
+                self.paused = True
+                self.timer.Stop()
+                wx.CallLater(2000, self.restart_animation)  # Pause for 2 seconds before restarting
+
+            self.canvas.draw()
+
+    def restart_animation(self):
+        self.paused = False
+        self.timer.Start(self.updatetime)  # Restart timer
+        self.num = 0  # Reset num
 
 # Create the Panel "ChooseElement"
 class ChooseElement(wx.Panel):
