@@ -44,33 +44,32 @@ An example is used to show how to use the app. A double mass oscillator is set u
 ![CreateElement](https://github.com/Jens00001/DynamicVision/blob/dev/Pictures/CreateElement.png)
 * Here you can add **_Masses_** and **_Springs_** to the system. It makes no difference whether you add the springs or the masses first.
 * Let's select **_Mass_** first. Click on **_Masspoint_** in the next window.
-* There you can enter the mass of the **_Masspoint_**. Let's enter $2 \ \text{kg}$.
+* There you can enter the mass of the **_Masspoint_** and an external force acting on that mass. Let's enter $2 \ \text{kg}$ for the mass and $0 \ \text{N}$ for the external force.
 ![Mass2Parameters](https://github.com/Jens00001/DynamicVision/blob/dev/Pictures/Mass2Parameters.png)
-* Press **_submit_** and close the **_Create Element_** window.
-* Now click on **_Create Element_** ⟶ **_Masses_** ⟶ **_Steady Body_**.
-* The steady body needs 4 parameters: **_density_**, **_length_**, **_height_** and **_width_**.
-* For example you can enter $2710 \ \frac{\text{kg}}{\text{m}^3}$ for the **_density_**. The **_length_** is $0.2 \ \text{m}$, the height can be $0.15 \ \text{m}$ and the **_width_** is $0.1 \ \text{m}$.
+* Press **_submit_**. The program returns to the **_Create Element_** window.
+* Now click on **_Mass_** ⟶ **_Steady Body_**.
+* The steady body needs 4 parameters: **_density_**, **_length_**, **_height_** and **_width_**. Additionally you can add an external force.
+* For example you can enter $2710 \ \frac{\text{kg}}{\text{m}^3}$ for the **_density_**. The **_length_** is $0.2 \ \text{m}$, the height can be $0.15 \ \text{m}$ and the **_width_** is $0.1 \ \text{m}$. The external force can be set to $0 \ \text{N}$.
 ![Mass1Parameters](https://github.com/Jens00001/DynamicVision/blob/dev/Pictures/Mass1Parameters.png)
-* Press **_submit_** and close the **_Create Element_** window.
-* Now click on **_Create Element_** ⟶ **_Spring_** ⟶ **_Single Spring_**.
-* There you have to enter the **_stiffness_** and the **_length_** of the spring. For example we can enter $350 \  \frac{\text{N}}{\text{m}}$ and $0.1 \ \text{m}$.
+* Press **_submit_**. The program returns to the **_Create Element_** window.
+* Now click on **_Spring_** ⟶ **_Single Spring_**.
+* There you have to enter the **_stiffness_** and the **_length_** of the spring. We can also choose between a **_linear_** or a **_cubic_** spring. For example we can enter $250 \  \frac{\text{N}}{\text{m}}$ and $0.2 \ \text{m}$. Select a **_linear_** spring.
 ![Spring1Parameters](https://github.com/Jens00001/DynamicVision/blob/dev/Pictures/SpringParameters.png)
-* Press **_submit_**. Next you can enter the **_stiffness_** and the **_length_** for the second spring. For example $550 \  \frac{\text{N}}{\text{m}}$ and $0.15 \ \text{m}$.
+* Press **_submit_**. We will return to the **_Create Element_** window.
+* Click on **_Spring_** ⟶ **_Single Spring_**.
+* Next you can enter the **_stiffness_** and the **_length_** for the second spring. For example $400 \  \frac{\text{N}}{\text{m}}$ and $0.15 \ \text{m}$. We use a linear spring again.
 ![Spring2Parameters](https://github.com/Jens00001/DynamicVision/blob/dev/Pictures/Spring2Parameters.png)
-* Press **_submit_** and close the **_Create Element_** window.
+* Press **_submit_** and the **_Finish_** window.
 * Now we created the mechanical system more precisely a **double mass oscillator**.
 * Next we have to enter the initial condition. So basically the initial positions and the initial velocities.
-* Click on **_I Conditions_**. The **_Initial Conditions_** window will pop up. Regarding the order of the entered masses you have to enter the initial position and initial velocity.
-* For the first mass we can use $-0.2 \ \text{m}$ and $0 \  \frac{\text{m}}{\text{s}}$. The second mass can have a inital position of $-0.6 \ \text{m}$ and a initial velocity of $0 \  \frac{\text{m}}{\text{s}}$.
+* Click on **_Set Initial Conditions_**. The **_Initial Conditions_** window will pop up. Regarding the order of the entered masses you have to enter the initial position and initial velocity.
+* For the first mass we can use $-0.3 \ \text{m}$ and $0 \  \frac{\text{m}}{\text{s}}$. After pressing **_submit_** we can enter the initial conditions for the second mass. The second mass can have a inital position of $-0.6 \ \text{m}$ and a initial velocity of $0 \  \frac{\text{m}}{\text{s}}$.
 ![InitalConditions](https://github.com/Jens00001/DynamicVision/blob/dev/Pictures/IC.png)
-* Press **_submit_** and close the **_Initial Condition_** window.
-* Now press **_Run Simulation_**. The system will be simulated. Afterwards the results are plotted and an animation of the system will occur. Additionally a new window will pop up that displays the equation of motions. In a third window you can enter a name to save the system and the simulated data.
+* Press **_submit_**. The **_Initial Condition_** window will close automatically.
+* Now press **_Run Simulation_**. The system will be simulated. Afterwards the results are plotted and an animation of the system will occur. Additionally a new window will pop up that displays the equation of motions. In a third window you can enter a name and a directory to save the system and the simulated data.
 ![Animation](https://github.com/Jens00001/DynamicVision/blob/dev/Pictures/Animation.gif)
 ![Equations](https://github.com/Jens00001/DynamicVision/blob/dev/Pictures/EquationsOfMotion.png)
-* To save the simulation and the system enter the desired name and press **_save_**.
-![Save](https://github.com/Jens00001/DynamicVision/blob/dev/Pictures/SaveResults.png)
-* Close the **_Save_** window.
-* To create a new system, you must restart the program in the current release.
+* To create a new system, just click on create Element and the current system is resetted.
 
 ### Additional Information
 In addition to single springs, it is also possible to build both parallel and serial springs.
