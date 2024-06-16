@@ -34,7 +34,7 @@ def eq_to_latex(system):
     # get equations from the system
     equ = system.generate_equations()
     sub_eq = system.substitute_parameters(equ, system.param_values)
-    expr_eq = system.rhs_of_equation(sub_eq)
+    expr_eq = system.rhs_of_equation(equ)
 
     # construct expression: a=F/m
     dd = [system.accelerations[m][c] for m in list(system.parameters.keys()) for c in ['x', 'y']]
