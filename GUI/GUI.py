@@ -642,7 +642,7 @@ class SteadyBody(wx.Panel):
         wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
         panel_size = self.GetSize()
-        x_offset = 90
+        x_offset = 70
 
         # Create the header for the panel 
         self.steady_body_text = wx.StaticText(self, label="SteadyBody", pos=(40, 50))  
@@ -664,26 +664,26 @@ class SteadyBody(wx.Panel):
         # Create the input field to define the length of the steady body 
         self.length_label = wx.StaticText(self,label = "What is the length of the Steady Body: (m)")
         length_label_size = self.length_label.GetSize()
-        x_pos_length_label = (panel_size[0]-2*length_label_size[0]-x_offset)//2
-        y_pos_length_label = (panel_size[1]-16*length_label_size[1])//1
+        x_pos_length_label = (panel_size[0]-2*density_label_size[0]-x_offset)//2
+        y_pos_length_label = (panel_size[1]-16*density_label_size[1])//1
         self.length_label.SetPosition((x_pos_length_label,y_pos_length_label))
-        self.length_input = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
+        self.length_input = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*density_label_size[1]), size=(200, -1))
 
         # Create the input field to define the height of the steady body 
         self.height_label = wx.StaticText(self,label = "What is the height of the Steady Body:(m)")
         height_label_size = self.height_label.GetSize()
-        x_pos_height_label = (panel_size[0]-2*height_label_size[0]-x_offset)//2
-        y_pos_height_label = (panel_size[1]-12*height_label_size[1])//1
+        x_pos_height_label = (panel_size[0]-2*density_label_size[0]-x_offset)//2
+        y_pos_height_label = (panel_size[1]-12*density_label_size[1])//1
         self.height_label.SetPosition((x_pos_height_label,y_pos_height_label))
-        self.height_input = wx.TextCtrl(self, pos=(x_pos_height_label, y_pos_height_label+1*height_label_size[1]), size=(200, -1))
+        self.height_input = wx.TextCtrl(self, pos=(x_pos_height_label, y_pos_height_label+1*density_label_size[1]), size=(200, -1))
 
         # Create the input field to define the width of the steady body 
         self.width_label = wx.StaticText(self,label = "What is the width of the Steady Body: (m)")
         width_label_size = self.width_label.GetSize()
-        x_pos_width_label = (panel_size[0]-2*width_label_size[0]-x_offset)//2
-        y_pos_width_label = (panel_size[1]-8*width_label_size[1])//1
+        x_pos_width_label = (panel_size[0]-2*density_label_size[0]-x_offset)//2
+        y_pos_width_label = (panel_size[1]-8*density_label_size[1])//1
         self.width_label.SetPosition((x_pos_width_label,y_pos_width_label))
-        self.width_input = wx.TextCtrl(self, pos=(x_pos_width_label, y_pos_width_label+1*width_label_size[1]), size=(200, -1))
+        self.width_input = wx.TextCtrl(self, pos=(x_pos_width_label, y_pos_width_label+1*density_label_size[1]), size=(200, -1))
 
         # Create the input field to add an external force on the steady body
         self.external_force_label = wx.StaticText(self,label = "What is the external force acting on \nthe Steady Body: (N)")
@@ -1312,7 +1312,7 @@ class MainFrame(wx.Frame):
     Class to create the Main Frame
     This frame is a parent for start menu, create model and open model.
     It opens when the application is started. 
-    """
+ja     """
     def __init__(self):
         wx.Frame.__init__(self,None,title="DynamicVision",size =(1200,800))
         self.SetBackgroundColour(wx.Colour(255,255,255))
