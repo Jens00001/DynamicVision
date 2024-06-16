@@ -59,7 +59,7 @@ An example is used to show how to use the app. A double mass oscillator is set u
 * Click on **_Spring_** ⟶ **_Single Spring_**.
 * Next you can enter the **_stiffness_** and the **_length_** for the second spring. For example $400 \  \frac{\text{N}}{\text{m}}$ and $0.15 \ \text{m}$. We use a linear spring again.
 ![Spring2Parameters](https://github.com/Jens00001/DynamicVision/blob/dev/Pictures/Spring2Parameters.png)
-* Press **_submit_** and the **_Finish_** window.
+* Press **_submit_** and **_Finish_** to close the **_Create Element_** window.
 * Now we created the mechanical system more precisely a **double mass oscillator**.
 * Next we have to enter the initial condition. So basically the initial positions and the initial velocities.
 * Click on **_Set Initial Conditions_**. The **_Initial Conditions_** window will pop up. Regarding the order of the entered masses you have to enter the initial position and initial velocity.
