@@ -95,11 +95,16 @@ class CreateModel(wx.Panel):
     """
     Class to create the panel on which one can create the model. 
     This panel is contained within the main frame.
-    It opens when the button "create model" ist clicked.
+    It opens when the button "create model" is clicked.
     It contains two figure canvases. One for the animation and the other one for the plot 
-    It contains 4 buttons ("Create Model","Open Model","Open Documentation","Close Application")
-    Here the positions and labels of the buttons are set.
-    The buttons are binded to events which allow to open the other panels. 
+    It contains 4 buttons ("Create Element","Set Intital Conditions","Run Simulation","Return")
+    First one have to the click the "Create Element" Button.
+    Then one have to initialize the initial conditions via the "Set Intital Conditions" Button.
+    Finaly one can run the simultion and save the simulated data and equations of motion with a click on the "Run Simulation" Button.
+    One can go back to the Main Menu when the "Retrun" button is clicked.
+
+    In the constructor the positions and labels of the buttons are set, as well as the two figure canvases.
+    The buttons are binded to events which allow to open the other panels.
 
     :param parent: The Main Frame
     :type parent: wx.Frame
@@ -120,13 +125,13 @@ class CreateModel(wx.Panel):
         self.Bind(wx.EVT_BUTTON,self.on_open_popup,self.button_create_element)             
 
         # Add the button to the sizer (also maybe imporve after the whole layout is done)
-        self.button_create_element.SetPosition((1000,500))
+        self.button_create_element.SetPosition((300,550))
 
         #Create a button to start the simultion
-        self.button_run = wx.Button(self, label="Run Simulation", pos=(400, 600))
+        self.button_run = wx.Button(self, label="Run Simulation", pos=(700, 550))
         self.button_run.Bind(wx.EVT_BUTTON, self.on_run_simulation)
 
-        self.button_IC = wx.Button(self, label="Set Inital Conditions", pos=(600, 600))
+        self.button_IC = wx.Button(self, label="Set Inital Conditions", pos=(500, 550))
         self.button_IC.Bind(wx.EVT_BUTTON, self.on_open_IC)
         
         self.num = 0  # Initialize num
@@ -151,7 +156,12 @@ class CreateModel(wx.Panel):
 
     def on_run_simulation(self, event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to run the simulation, plot, animate and save the simulated data.
+        After the simulation is completed the simulated data is plotted and the animation is initalized with the inital conditions.
+        In a next step the comuted equations of motion are shown in a seperat frame.
+        Then the user can save the simulated data via a file dialog.
+        After one cancled the diaglog or saved the data the animation starts.
+
         """
         #list_of_object_lists = main_modeling.create_objects()
         list_of_object_lists = [list_of_springs, list_of_mass]
@@ -166,11 +176,9 @@ class CreateModel(wx.Panel):
         # computes the necessary steps that must be skipped to obtain an update time of 110 ms which allows 
         # matching the simulated time in the animation quiet good wtih one spring mass oszillator
         self.skip_sim_steps = round(110 * num_frames / animation_time) 
-        print('Skipped Simulation Steps: ' + str(self.skip_sim_steps))
+        #print('Skipped Simulation Steps: ' + str(self.skip_sim_steps))
 
-        #self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update_animation, self.timer)
-        self.timer.Start(self.updatetime)  # Update time per frame
 
         folder_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))+"\Modeling\data"
  
@@ -181,27 +189,32 @@ class CreateModel(wx.Panel):
  
             # Show the dialog and get the response
             if save_dialog.ShowModal() == wx.ID_CANCEL:
+                self.timer.Start(self.updatetime)  # Update time per frame 
                 return  # User cancelled the dialog
  
             # Get the path for saving the file
             save_file_path = save_dialog.GetPath()
  
             # Call your custom save function with the selected file path 
-            print(save_file_path)
+            print(save_file_path+".nc")
             save_system(save_file_path, self.res ,self.system)
-            print("Data saved.")  
+            print("Data saved.") 
+
+        #self.timer = wx.Timer(self)
+        
+        self.timer.Start(self.updatetime)  # Update time per frame 
 
 
     def show_equations(self, system):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to generate and show the equations in a seperat frame
         """
         # plot/show equations of motion
         main_modeling.generate_latex(system)
 
     def plot_results(self, res, list_of_object_lists):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to plot the simulated data and initializes the animation with the intial conditions
         """
         # Plot results in ax1
         main_modeling.plot_results(res, self.ax1)
@@ -209,7 +222,11 @@ class CreateModel(wx.Panel):
 
     def update_animation(self, event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to update the animation every timer event.
+        If the animation is not paused the axis is updated with the values at the time with index self.num.
+        In the next step self.num is increadsed. 
+        Due to many simulation steps some steps the number in self.skip_sim_steps is skipped for better performance. 
+        If self.num exceeds the length of simulated data the last simulated point is shown and the animation is paused for 2 seconds before restarting.
         """
         if not self.paused:
             # Update animation with appropriate frame number
@@ -233,7 +250,7 @@ class CreateModel(wx.Panel):
 
     def restart_animation(self):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to restart the animation.
         """
         self.paused = False
         self.timer.Start(self.updatetime)  # Restart timer
@@ -248,6 +265,7 @@ class CreateModel(wx.Panel):
         global list_of_springs 
         global list_of_mass 
         
+        
         list_of_springs = []
         list_of_mass = []
 
@@ -255,6 +273,7 @@ class CreateModel(wx.Panel):
         self.ax1.cla()  # clear axis 1
         self.ax2.cla()  # clear axis 2
         self.canvas.draw()  # refresh the canvas
+        self.num = 0 
 
         popup = CreateElement(self)
         popup.Show()
@@ -270,13 +289,16 @@ class CreateModel(wx.Panel):
 # Create the panel "Open Model"
 class OpenModel(wx.Panel):
     """
-    Class to create the panel, which contains the start menu. 
+    Class to create the panel on which one can open a save model. 
     This panel is contained within the main frame.
-    It opens when the application is started.
-    It contains two logos, one header and the names of the authors. 
-    It contains 4 buttons ("Create Model","Open Model","Open Documentation","Close Application")
-    Here the positions and labels of the buttons are set.
-    The buttons are binded to events which allow to open the other panels. 
+    It opens when the button "open model" is clicked.
+    It contains two figure canvases. One for the animation and the other one for the plot 
+    It contains 2 buttons ("Load Model","Return")
+    A file dialog opens when the button "Load Model" is clicked where one can selected the file to be loaded.
+    One can go back to the Main Menu when the "Retrun" button is clicked.
+
+    In the constructor the positions and labels of the buttons are set, as well as the figure for plotting and showing the animation.
+    The buttons are binded to events which allow to open the other panels.
 
     :param parent: The Main Frame
     :type parent: wx.Frame
@@ -321,13 +343,18 @@ class OpenModel(wx.Panel):
 
     def on_load_model(self,event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to run the simulation, plot and animate loaded data.
+        A file dialog opens where one can select the file which should be loaded.
+        After that list of objects is recreated, as well as the saved system itself.
+        Then the loaded data is plotted and the animation starts.
+
         """
         self.timer.Stop()
         self.ax1.cla()  # clear axis 1
         self.ax2.cla()  # clear axis 2
         self.canvas.draw()  # refresh the canvas
-        
+        self.num = 0 
+
         folder_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))+"\Modeling\data"
 
         # Create a file dialog
@@ -361,14 +388,14 @@ class OpenModel(wx.Panel):
 
     def show_equations(self, system):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to generate and show the equations in a seperat frame
         """
         # plot/show equations of motion
         main_modeling.generate_latex(system)
 
     def plot_results(self, res, list_of_object_lists):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to plot the simulated data and initializes the animation with the intial conditions
         """
         # Plot results in ax1
         main_modeling.plot_results(res, self.ax1)
@@ -376,7 +403,11 @@ class OpenModel(wx.Panel):
 
     def update_animation(self, event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to update the animation every timer event.
+        If the animation is not paused the axis is updated with the values at the time with index self.num.
+        In the next step self.num is increadsed. 
+        Due to many simulation steps some steps the number in self.skip_sim_steps is skipped for better performance. 
+        If self.num exceeds the length of simulated data the last simulated point is shown and the animation is paused for 2 seconds before restarting.
         """
         if not self.paused:
             # Update animation with appropriate frame number
@@ -400,7 +431,7 @@ class OpenModel(wx.Panel):
 
     def restart_animation(self):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to restart the animation.
         """
         self.paused = False
         self.timer.Start(self.updatetime)  # Restart timer
