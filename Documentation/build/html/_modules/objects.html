@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>objects &#8212; Dynamic Vision 0.1 documentation</title>
+    <title>objects &#8212; Dynamic Vision 1.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
-    <script src="../_static/documentation_options.js?v=2709fde1"></script>
+    <script src="../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -36,121 +36,221 @@
 <div class="viewcode-block" id="Spring">
 <a class="viewcode-back" href="../objects.html#objects.Spring">[docs]</a>
 <span class="k">class</span> <span class="nc">Spring</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;</span>
-<span class="sd">    Class for creating a Spring object</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for creating a Spring object.</span>
+<span class="sd">    First the Spring itself is initialized. After that the initial conditions can be set.</span>
+<span class="sd">    There are also Methods to compute the related force or the movement of the spring.</span>
+<span class="sd">    A method for getting the values for each symbolic parameter as a dictionary is also implemented.</span>
 
-<span class="sd">    :param startingpoint: startingpoint of the spring in (m)</span>
-<span class="sd">    :type startingpoint: list of float numbers with two elements [x,y]</span>
+<span class="sd">    :param stiffness: stiffness of the spring in (N/m)</span>
+<span class="sd">    :type stiffness: int or float</span>
 <span class="sd">    :param rest_length: the length of the spring in the rest position in (m)</span>
 <span class="sd">    :type rest_length: int or float</span>
-<span class="sd">    :param inital_angle: the intital angle of the spring in (°)</span>
-<span class="sd">    :type inital_angle: int or float</span>
-<span class="sd">    :param stiffness: stifness of the spring in (N/m)</span>
-<span class="sd">    :type stiffness: int or float</span>
-<span class="sd">    :param index: index of the spring in the system</span>
+<span class="sd">    :param index: index of the spring in the system which is used for the Notation of the symbolic values</span>
 <span class="sd">    :type index: int</span>
-<span class="sd">    :param type: the type of the spring (linear or cubic), default is linear</span>
+<span class="sd">    :param type: the type of the spring (linear or cubic), default is &quot;linear&quot;</span>
 <span class="sd">    :type type: str</span>
-<span class="sd">    :param endpoint: endpoint of the spring in (m)</span>
-<span class="sd">    :type endpoint: list of float numbers with two elements [x,y]</span>
-<span class="sd">    :param color: color of the spring in the animation, default is black</span>
+<span class="sd">    :param color: color of the spring in the animation, default is &quot;black&quot;</span>
 <span class="sd">    :type color: str</span>
-<span class="sd">    :param lienwidth: the lienwidth of the spring in the animation</span>
-<span class="sd">    :type lienwidth: int or float</span>
+<span class="sd">    :param linewidth: the linewidth of the spring in the animation, default is 2</span>
+<span class="sd">    :type linewidth: int or float</span>
+
+<span class="sd">    :ivar stiffness: stiffness of the spring  in (N/m)</span>
+<span class="sd">    :vartype stiffness: int or float</span>
+<span class="sd">    :ivar rest_length: the length of the spring in the rest position in (m)</span>
+<span class="sd">    :vartype rest_length: int or float</span>
+<span class="sd">    :ivar index: index of the spring which is used for the Notation of the symbolic values</span>
+<span class="sd">    :vartype index: int</span>
+<span class="sd">    :ivar type: type of the spring (linear or cubic)</span>
+<span class="sd">    :vartype type: str</span>
+<span class="sd">    :ivar color: color of the spring in the animation</span>
+<span class="sd">    :vartype color: str</span>
+<span class="sd">    :ivar lw: linewidth of the spring in the animation</span>
+<span class="sd">    :vartype lw: int or float</span>
+<span class="sd">    :ivar sym_rest_length: symbolic rest length of the spring</span>
+<span class="sd">    :vartype sym_rest_length: sympy.Symbol</span>
+<span class="sd">    :ivar sym_stiffness: symbolic stiffness of the spring</span>
+<span class="sd">    :vartype sym_stiffness: sympy.Symbol</span>
+<span class="sd">    :ivar sym_Fx: symbolic force in x direction</span>
+<span class="sd">    :vartype sym_Fx: sympy.Symbol</span>
+<span class="sd">    :ivar sym_Fy: symbolic force in y direction</span>
+<span class="sd">    :vartype sym_Fy: sympy.Symbol</span>
+<span class="sd">    :ivar startingpoint: startingpoint of the spring in (m)</span>
+<span class="sd">    :vartype startingpoint: list</span>
+<span class="sd">    :ivar endpoint: endpoint of the spring in (m)</span>
+<span class="sd">    :vartype endpoint: list</span>
+<span class="sd">    :ivar velocity: starting velocity of the spring in (m/s)</span>
+<span class="sd">    :vartype velocity: list of float</span>
+<span class="sd">    :ivar length: current length of the spring in (m)</span>
+<span class="sd">    :vartype length: float</span>
+<span class="sd">    :ivar prestretch: prestretch of the spring in (m)</span>
+<span class="sd">    :vartype prestretch: float</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">startingpoint</span><span class="p">,</span> <span class="n">stiffness</span><span class="p">,</span> <span class="n">rest_length</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">inital_angle</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lienwidth</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span> <span class="o">=</span> <span class="n">startingpoint</span> <span class="c1"># in (m)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rest_length</span> <span class="o">=</span> <span class="n">rest_length</span> <span class="c1"># in (m)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest_length</span> <span class="c1"># in (m) </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">inital_angle</span> <span class="o">=</span> <span class="n">inital_angle</span> <span class="c1"># in °</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="n">inital_angle</span>      <span class="c1"># in ° </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stiffness</span> <span class="o">=</span> <span class="n">stiffness</span> <span class="c1"># in (N/m)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">)]</span> <span class="c1"># in (m)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lw</span> <span class="o">=</span><span class="n">lienwidth</span>
-
-        <span class="c1">#definiton of symbolic values </span>
-        <span class="n">t</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">xt</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">))(</span><span class="n">t</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">xdt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xt</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">xddt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xt</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">phit</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="s2">&quot;phi&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">))(</span><span class="n">t</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">phidt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phit</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">phiddt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phit</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;l&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_0&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sym_length</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;l&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;k&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sym_F</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;F&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">))</span> <span class="c1">#force</span>
-      
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
-    
-<div class="viewcode-block" id="Spring.check_attributes">
-<a class="viewcode-back" href="../objects.html#objects.Spring.check_attributes">[docs]</a>
-    <span class="k">def</span> <span class="nf">check_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stiffness</span><span class="p">,</span> <span class="n">rest_length</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Method for checking the type of input variable</span>
+<span class="sd">        Initialize the Spring instance.</span>
 
-<span class="sd">        :raises AssertionError: if the type of the input variable is wrong</span>
+<span class="sd">        :param stiffness: stiffness of the spring in (N/m)</span>
+<span class="sd">        :type stiffness: int or float</span>
+<span class="sd">        :param rest_length: rest length of the spring in (m)</span>
+<span class="sd">        :type rest_length: int or float</span>
+<span class="sd">        :param index: index of the spring</span>
+<span class="sd">        :type index: int</span>
+<span class="sd">        :param type: type of the spring, default is &quot;linear&quot;</span>
+<span class="sd">        :type type: str</span>
+<span class="sd">        :param color: color of the spring, default is &quot;black&quot;</span>
+<span class="sd">        :type color: str</span>
+<span class="sd">        :param linewidth: linewidth of the spring, default is 2</span>
+<span class="sd">        :type linewidth: int or float</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rest_length</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inital_angle</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stiffness</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lw</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span><span class="nb">float</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stiffness</span> <span class="o">=</span> <span class="n">stiffness</span> <span class="c1"># in (N/m)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rest_length</span> <span class="o">=</span> <span class="n">rest_length</span> <span class="c1"># in (m)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lw</span> <span class="o">=</span> <span class="n">linewidth</span>
 
+        <span class="c1"># definiton of symbolic values </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;l&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;k&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fx</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;F_x&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">))</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fy</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;F_y&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">))</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">sym_type</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;spring_type</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
         
+<div class="viewcode-block" id="Spring.setInitialConditions">
+<a class="viewcode-back" href="../objects.html#objects.Spring.setInitialConditions">[docs]</a>
+    <span class="k">def</span> <span class="nf">setInitialConditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">top_mass</span><span class="p">,</span> <span class="n">bottom_mass</span><span class="p">,</span> <span class="n">velocity</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method for setting the initial conditions of the spring. </span>
+<span class="sd">        The user have the choice weather he wants to input a mass point or a steady body as a mass.</span>
+<span class="sd">        Depending on the type of mass connected to the spring, the start and end point is set differently,</span>
+<span class="sd">        because the steady body has a dimension and the mass point does not.</span>
+<span class="sd">        If the inputs aren&#39;t correct an assertion error should be raised.</span>
+
+<span class="sd">        :param top_mass: the mass on which the spring is attached, if the created spring is the first spring in the system </span>
+<span class="sd">            it is usually attached to the origin instead of a mass. Therefore, the value should be None in this case.</span>
+<span class="sd">        :type top_mass: object or None</span>
+<span class="sd">        :param bottom_mass: the mass which is connected with the endpoint of the spring</span>
+<span class="sd">        :type bottom_mass: object</span>
+<span class="sd">        :param velocity: the starting velocity of the spring in (m/s)</span>
+<span class="sd">        :type velocity: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">top_mass</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;masspoint&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span> <span class="o">=</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">position</span>
+
+        <span class="k">elif</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;steady body&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span> <span class="o">=</span> <span class="p">[</span><span class="n">top_mass</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="n">top_mass</span><span class="o">.</span><span class="n">y_dim</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Please insert a mass or None, if the spring is not placed between two masses, as first argument of the method&quot;</span><span class="p">)</span>
+            
+
+        <span class="k">if</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;masspoint&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span> <span class="o">=</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">position</span>
+
+        <span class="k">elif</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;steady body&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span> <span class="o">=</span> <span class="p">[</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">y_dim</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Please insert a mass as second argument of the method&quot;</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span><span class="o">=</span> <span class="n">velocity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prestretch</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest_length</span></div>
+
+
 
 <div class="viewcode-block" id="Spring.force">
 <a class="viewcode-back" href="../objects.html#objects.Spring.force">[docs]</a>
-    <span class="k">def</span> <span class="nf">force</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xt_attached</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;&quot;</span>
-<span class="sd">        Method for computing the force of the spring in its current position</span>
+    <span class="k">def</span> <span class="nf">force</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_mass</span><span class="p">,</span> <span class="n">bottom_mass</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method for computing the force of the spring in its current position.</span>
+<span class="sd">        The force of the spring depends on the type of the spring. </span>
+<span class="sd">        Also, it depends on the type of mass connected to the spring, because the steady body has a dimension and the mass point does not.</span>
+<span class="sd">        If the inputs aren&#39;t correct an assertion error should be raised.</span>
 
-<span class="sd">        :param xt_attached: is the displacement of the object where the spring is attached</span>
-<span class="sd">        :type xt_attached: sympy.Function</span>
-<span class="sd">        :return: force of the spring</span>
-<span class="sd">        :rtype: sympy.Add or sympy.Mul</span>
+<span class="sd">        :param top_mass: the mass on which the spring is attached, if the created spring is the first spring in the system </span>
+<span class="sd">            it is usually attached to the origin instead of a mass. Therefore, the value should be None in this case.</span>
+<span class="sd">        :type top_mass: object or None</span>
+<span class="sd">        :param bottom_mass: the mass which is connected with the endpoint of the spring</span>
+<span class="sd">        :type bottom_mass: object</span>
+<span class="sd">        :return: forces of the spring in (N)</span>
+<span class="sd">        :rtype: list of sympy.Add or sympy.Mul</span>
 <span class="sd">        &quot;&quot;&quot;</span>
        
         <span class="k">match</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
             <span class="k">case</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sym_F</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xt</span><span class="o">-</span><span class="n">xt_attached</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span><span class="p">)</span>
-            
-            <span class="k">case</span> <span class="s2">&quot;rotational&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sym_F</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">phit</span>
-        
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_F</span></div>
+                <span class="k">if</span> <span class="n">top_mass</span><span class="o">==</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;masspoint&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">*</span> <span class="p">(</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">top_mass</span><span class="o">==</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;steady body&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">*</span> <span class="p">(</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">sym_h</span><span class="o">/</span><span class="mi">2</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;masspoint&quot;</span> <span class="ow">and</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;masspoint&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">*</span> <span class="p">(</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="n">top_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;masspoint&quot;</span> <span class="ow">and</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;steady body&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">*</span> <span class="p">(</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">sym_h</span><span class="o">/</span><span class="mi">2</span><span class="o">-</span><span class="n">top_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;steady body&quot;</span> <span class="ow">and</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;masspoint&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">*</span> <span class="p">(</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="n">top_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="n">top_mass</span><span class="o">.</span><span class="n">sym_h</span><span class="o">/</span><span class="mi">2</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;steady body&quot;</span> <span class="ow">and</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;steady body&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">*</span> <span class="p">(</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">sym_h</span><span class="o">/</span><span class="mi">2</span><span class="o">-</span><span class="n">top_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="n">top_mass</span><span class="o">.</span><span class="n">sym_h</span><span class="o">/</span><span class="mi">2</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Please insert a masspoint, a steady body or None as first argument of the method and a masspoint or a steady body as second argument of the method&quot;</span><span class="p">)</span>
+            <span class="k">case</span> <span class="s2">&quot;cubic&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">top_mass</span><span class="o">==</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;masspoint&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">*</span> <span class="p">(</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span>
+                <span class="k">elif</span> <span class="n">top_mass</span><span class="o">==</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;steady body&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">*</span> <span class="p">(</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">sym_h</span><span class="o">/</span><span class="mi">2</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span>
+                <span class="k">elif</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;masspoint&quot;</span> <span class="ow">and</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;masspoint&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">*</span> <span class="p">(</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="n">top_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span>
+                <span class="k">elif</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;masspoint&quot;</span> <span class="ow">and</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;steady body&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">*</span> <span class="p">(</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">sym_h</span><span class="o">/</span><span class="mi">2</span><span class="o">-</span><span class="n">top_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span>
+                <span class="k">elif</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;steady body&quot;</span> <span class="ow">and</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;masspoint&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">*</span> <span class="p">(</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="n">top_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="n">top_mass</span><span class="o">.</span><span class="n">sym_h</span><span class="o">/</span><span class="mi">2</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span>
+                <span class="k">elif</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;steady body&quot;</span> <span class="ow">and</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;steady body&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span> <span class="o">*</span> <span class="p">(</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">sym_h</span><span class="o">/</span><span class="mi">2</span><span class="o">-</span><span class="n">top_mass</span><span class="o">.</span><span class="n">yt</span><span class="o">-</span><span class="n">top_mass</span><span class="o">.</span><span class="n">sym_h</span><span class="o">/</span><span class="mi">2</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Please insert a masspoint, a steady body or None as first argument of the method and a masspoint or a steady body as second argument of the method&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fx</span><span class="o">=</span><span class="mi">0</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_Fx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fy</span><span class="p">]</span></div>
 
     
 <div class="viewcode-block" id="Spring.move">
 <a class="viewcode-back" href="../objects.html#objects.Spring.move">[docs]</a>
-    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">attached_point</span><span class="p">,</span> <span class="n">connected_point_below</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">top_mass</span><span class="p">,</span> <span class="n">bottom_mass</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Method for computing the new lenght and y-coordinate of the end point of the spring by a given change x</span>
+<span class="sd">        Method for computing the new start and end point of the spring depending on the positions of the masses.</span>
+<span class="sd">        The current length is also computed.</span>
+<span class="sd">        The computation depends on weather the connected mass is a masspoint or a steady body, because steady bodies have a dimension and masspoints do not</span>
 
-<span class="sd">        :param x: is the value of the change of the length</span>
-<span class="sd">        :type x: int or float</span>
-<span class="sd">        :param angle: is the value of the change of the angle</span>
-<span class="sd">        :type angle: int or float</span>
-<span class="sd">        :param attached_point: is the point where the spring is attached</span>
-<span class="sd">        :type attached_point: list</span>
-<span class="sd">        :return: current startingpoint, angle, length and endpoint of the spring </span>
-<span class="sd">        :rtype: list </span>
+<span class="sd">        :param top_mass: the mass on which the spring is attached, if the created spring is the first spring in the system </span>
+<span class="sd">            it is usually attached to the origin instead of a mass. Therefore, the value should be None in this case.</span>
+<span class="sd">        :type top_mass: object or None</span>
+<span class="sd">        :param bottom_mass: the mass which is connected with the endpoint of the spring</span>
+<span class="sd">        :type bottom_mass: object</span>
+<span class="sd">        :return: current startingpoint and endpoint of the spring in (m)</span>
+<span class="sd">        :rtype: list of lists of int or float</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span> <span class="o">=</span> <span class="n">attached_point</span>
-        <span class="c1"># self.angle += angle</span>
-        <span class="c1"># self.length += x</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span> <span class="o">=</span> <span class="n">connected_point_below</span>
+        <span class="k">if</span> <span class="n">top_mass</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">elif</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;masspoint&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span> <span class="o">=</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">position</span>
+
+        <span class="k">elif</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;steady body&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span> <span class="o">=</span> <span class="p">[</span><span class="n">top_mass</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">top_mass</span><span class="o">.</span><span class="n">y_dim</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>
+
+
+        <span class="k">if</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;masspoint&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span> <span class="o">=</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">position</span>
+
+        <span class="k">elif</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;steady body&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span> <span class="o">=</span> <span class="p">[</span><span class="n">bottom_mass</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">bottom_mass</span><span class="o">.</span><span class="n">y_dim</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">startingpoint</span><span class="p">,</span>  <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">]</span></div>
 
@@ -158,33 +258,67 @@
 <div class="viewcode-block" id="Spring.get_param_values">
 <a class="viewcode-back" href="../objects.html#objects.Spring.get_param_values">[docs]</a>
     <span class="k">def</span> <span class="nf">get_param_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
-        <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest_length</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">stiffness</span><span class="p">}</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get numeric values for symbolic representations</span>
+
+<span class="sd">        :return: dictionary of symbolic parameters and their values</span>
+<span class="sd">        :rtype: dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_rest_length</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest_length</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_stiffness</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">stiffness</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_type</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">}</span></div>
 </div>
+
 
 
 <div class="viewcode-block" id="Mass">
 <a class="viewcode-back" href="../objects.html#objects.Mass">[docs]</a>
 <span class="k">class</span> <span class="nc">Mass</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class for creating a mass object</span>
-
-<span class="sd">    :param position: position of the mass in (m)</span>
-<span class="sd">    :type position: list of float numbers with two elements [x,y]</span>
-<span class="sd">    :param mass: value of the mass in (kg)</span>
-<span class="sd">    :type mass: int or float</span>
-<span class="sd">    :param index: index of the mass in the system</span>
+<span class="sd">    Base class for different types of masses.</span>
+<span class="sd">    </span>
+<span class="sd">    :param index: index of the mass in the system which is used for the Notation of the symbolic values</span>
 <span class="sd">    :type index: int</span>
-<span class="sd">    :param diameter: diameter of the mass in the animation</span>
-<span class="sd">    :param color: color of the mass in the animation, default is red</span>
+<span class="sd">    :param color: color of the mass in the animation, default is &quot;red&quot;</span>
 <span class="sd">    :type color: str</span>
+<span class="sd">    :param external_force: the value of an external force acting on the mass in (N)</span>
+<span class="sd">    :type external_force: int or float</span>
+
+<span class="sd">    :ivar index: index of the mass in the system which is used for the Notation of the symbolic values</span>
+<span class="sd">    :vartype index: int</span>
+<span class="sd">    :ivar color: color of the mass</span>
+<span class="sd">    :vartype color: str</span>
+<span class="sd">    :ivar external_force: the value of an external force acting on the mass in (N)</span>
+<span class="sd">    :vartype external_force: int or float</span>
+<span class="sd">    :ivar yt: symbolic function for the position of the mass over the time</span>
+<span class="sd">    :vartype yt: sympy.Function</span>
+<span class="sd">    :ivar ydt: symbolic first derivative the position of the mass over the time</span>
+<span class="sd">    :vartype ydt: sympy.Basic</span>
+<span class="sd">    :ivar yddt: symbolic second derivative of the position of the mass over the time</span>
+<span class="sd">    :vartype yddt: sympy.Basic</span>
+<span class="sd">    :ivar sym_mass: symbolic mass</span>
+<span class="sd">    :vartype sym_mass: sympy.Symbol</span>
+<span class="sd">    :ivar sym_g: symbolic gravitational acceleration</span>
+<span class="sd">    :vartype sym_g: sympy.Symbol</span>
+<span class="sd">    :ivar sym_Fg: symbolic gravitational force</span>
+<span class="sd">    :vartype sym_Fg: sympy.Symbol</span>
+<span class="sd">    :ivar sym_F_ex: symbolic external force</span>
+<span class="sd">    :vartype sym_F_ex: sympy.Symbol</span>
+<span class="sd">    :ivar position: position of the mass in (m)</span>
+<span class="sd">    :vartype position: list</span>
+<span class="sd">    :ivar velocity: velocity of the mass in (m/s)</span>
+<span class="sd">    :vartype velocity: list</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">diameter</span><span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">position</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">mass</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">external_force</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the Mass instance</span>
+
+<span class="sd">        :param index: index of the mass in the system which is used for the Notation of the symbolic values</span>
+<span class="sd">        :type index: int</span>
+<span class="sd">        :param color: color of the mass in the animation, default is red</span>
+<span class="sd">        :type color: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span> <span class="o">=</span> <span class="n">diameter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">external_force</span> <span class="o">=</span> <span class="n">external_force</span> 
 
         <span class="c1"># definition of symbolic values</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">)</span>
@@ -193,45 +327,53 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">yddt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yt</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sym_mass</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sym_g</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;g&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sym_F</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;F&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fg</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;Fg_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sym_F_ex</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;F_ex_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
 
-<div class="viewcode-block" id="Mass.check_attributes">
-<a class="viewcode-back" href="../objects.html#objects.Mass.check_attributes">[docs]</a>
-    <span class="k">def</span> <span class="nf">check_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Mass.setInitialConditions">
+<a class="viewcode-back" href="../objects.html#objects.Mass.setInitialConditions">[docs]</a>
+    <span class="k">def</span> <span class="nf">setInitialConditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">velocity</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Method for checking the type of input variable</span>
+<span class="sd">        Method for setting the initial conditions for the mass.</span>
 
-<span class="sd">        :raises AssertionError: if the type of the input variable is wrong</span>
+<span class="sd">        :param position: the position of the mass point or the center of mass of a steady body in (m)</span>
+<span class="sd">        :type position: list</span>
+<span class="sd">        :param velocity: the starting velocity of the mass point or the center of mass of a steady body in (m/s)</span>
+<span class="sd">        :type velocity: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="p">,(</span><span class="nb">int</span><span class="p">,</span><span class="nb">float</span><span class="p">))</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diameter</span><span class="p">,(</span><span class="nb">int</span><span class="p">,</span><span class="nb">float</span><span class="p">))</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">position</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">velocity</span></div>
 
 
 <div class="viewcode-block" id="Mass.force">
 <a class="viewcode-back" href="../objects.html#objects.Mass.force">[docs]</a>
     <span class="k">def</span> <span class="nf">force</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;&quot; </span>
-<span class="sd">        Method for computing the gravitational force of the mass</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method for computing the gravitational force and an external acting on the mass</span>
 
-<span class="sd">        :return: gravitational force</span>
+<span class="sd">        :return: gravitational force in (N) or gravitational force and external force</span>
 <span class="sd">        :rtype: sympy.Add</span>
 <span class="sd">        &quot;&quot;&quot;</span>  
              
-        <span class="bp">self</span><span class="o">.</span><span class="n">sym_F</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_mass</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_g</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sym_Fg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_mass</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_g</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_F</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">external_force</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>   
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_Fg</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_Fg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_F_ex</span><span class="p">]</span></div>
 
     
 <div class="viewcode-block" id="Mass.move">
 <a class="viewcode-back" href="../objects.html#objects.Mass.move">[docs]</a>
     <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param attached_point: is the point where the mass is attached</span>
-<span class="sd">        :type attached_point: list</span>
-<span class="sd">        :return: position of the mass</span>
+<span class="sd">        Move the mass to a new position</span>
+
+<span class="sd">        :param x: x-coordinate of the new position in (m)</span>
+<span class="sd">        :type x: int or float</span>
+<span class="sd">        :param y: y-coordinate of the new position in (m)</span>
+<span class="sd">        :type y: int or float</span>
+<span class="sd">        :return: new position of the mass in (m)</span>
 <span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]</span>
@@ -242,8 +384,151 @@
 <div class="viewcode-block" id="Mass.get_param_values">
 <a class="viewcode-back" href="../objects.html#objects.Mass.get_param_values">[docs]</a>
     <span class="k">def</span> <span class="nf">get_param_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
-        <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_mass</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="p">}</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get numeric values for symbolic representations</span>
+
+<span class="sd">        :return: dictionary of symbolic parameters and their values</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_mass</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_F_ex</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">external_force</span><span class="p">}</span></div>
+</div>
+
+    
+<div class="viewcode-block" id="Masspoint">
+<a class="viewcode-back" href="../objects.html#objects.Masspoint">[docs]</a>
+<span class="k">class</span> <span class="nc">Masspoint</span><span class="p">(</span><span class="n">Mass</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for creating a masspoint</span>
+
+<span class="sd">    :param mass: mass of the masspoint in (kg)</span>
+<span class="sd">    :type mass: int or float</span>
+<span class="sd">    :param index: index of the masspoint in the system which is used for the Notation of the symbolic values</span>
+<span class="sd">    :type index: int</span>
+<span class="sd">    :param external_force: the value of an external force acting on the mass in (N)</span>
+<span class="sd">    :type external_force: int or float</span>
+
+<span class="sd">    :ivar mass: mass of the masspoint in (kg)</span>
+<span class="sd">    :vartype mass: int or float</span>
+<span class="sd">    :ivar type: type of the mass is &quot;masspoint&quot;. It is used to differentiate between a masspoint and a steady body in the rest of the code.</span>
+<span class="sd">    :vartype type: str</span>
+<span class="sd">    :ivar diameter: diameter of the masspoint in the animation</span>
+<span class="sd">    :vartype diameter: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">external_force</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the Masspoint instance</span>
+
+<span class="sd">        :param mass: mass of the masspoint in (kg)</span>
+<span class="sd">        :type mass: int or float</span>
+<span class="sd">        :param index: index of the masspoint in the system which is used for the Notation of the symbolic values</span>
+<span class="sd">        :type index: int</span>
+<span class="sd">        :param external_force: the value of an external force acting on the mass in (N)</span>
+<span class="sd">        :type external_force: int or float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">mass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;masspoint&quot;</span>
+        <span class="n">Mass</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">external_force</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Masspoint.set_diameter">
+<a class="viewcode-back" href="../objects.html#objects.Masspoint.set_diameter">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_diameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">y_range</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the diameter of the masspoint based on the y-axis range in the subplot of the figure where the animation is shown</span>
+
+<span class="sd">        :param y_range: Range of the y-axis</span>
+<span class="sd">        :type y_range: int or float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base_diameter</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">exponent</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span> <span class="o">=</span> <span class="n">base_diameter</span> <span class="o">*</span> <span class="p">(</span><span class="n">y_range</span><span class="o">**</span><span class="n">exponent</span><span class="p">)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="SteadyBody">
+<a class="viewcode-back" href="../objects.html#objects.SteadyBody">[docs]</a>
+<span class="k">class</span> <span class="nc">SteadyBody</span><span class="p">(</span><span class="n">Mass</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for creating a steady body</span>
+
+<span class="sd">    :param x_dim: dimension of the steady body along the x-axis in (m)</span>
+<span class="sd">    :type x_dim: int or float</span>
+<span class="sd">    :param y_dim: dimension of the steady body along the y-axis in (m)</span>
+<span class="sd">    :type y_dim: int or float</span>
+<span class="sd">    :param z_dim: dimension of the steady body along the z-axis in (m)</span>
+<span class="sd">    :type z_dim: int or float</span>
+<span class="sd">    :param density: density of the material of the steady body in (kg/m^3)</span>
+<span class="sd">    :type density: int or float</span>
+<span class="sd">    :param index: index of the steady body in the system which is used for the Notation of the symbolic values</span>
+<span class="sd">    :type index: int</span>
+<span class="sd">    :param external_force: the value of an external force acting on the mass in (N)</span>
+<span class="sd">    :type external_force: int or float</span>
+
+<span class="sd">    :ivar x_dim: dimension of the steady body along the x-axis in (m)</span>
+<span class="sd">    :vartype x_dim: int or float</span>
+<span class="sd">    :ivar y_dim: dimension of the steady body along the y-axis in (m)</span>
+<span class="sd">    :vartype y_dim: int or float</span>
+<span class="sd">    :ivar z_dim: dimension of the steady body along the z-axis in (m)</span>
+<span class="sd">    :vartype z_dim: int or float</span>
+<span class="sd">    :ivar density: density of the material of the steady body in (kg/m^3)</span>
+<span class="sd">    :vartype density: int or float</span>
+<span class="sd">    :ivar volume: volume of the body in (m^3)</span>
+<span class="sd">    :vartype volume: int or float</span>
+<span class="sd">    :ivar mass: mass of the body in (kg)</span>
+<span class="sd">    :vartype mass: int or float</span>
+<span class="sd">    :ivar position: position of the center of mass, only x- and y-dimension is set in (m)</span>
+<span class="sd">    :vartype position: list</span>
+<span class="sd">    :ivar type: type of the mass is &quot;steady body&quot;. It is used to differentiate between a masspoint and a steady body in the rest of the code.</span>
+<span class="sd">    :vartype type: str</span>
+<span class="sd">    :ivar sym_h: symbolic height of the steady body</span>
+<span class="sd">    :vartype sym_h: sympy.Symbol</span>
+<span class="sd">    :ivar sym_l: symbolic length of the steady body</span>
+<span class="sd">    :vartype sym_l: sympy.Symbol</span>
+<span class="sd">    :ivar sym_w: symbolic width of the steady body</span>
+<span class="sd">    :vartype sym_w: sympy.Symbol</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_dim</span><span class="p">,</span> <span class="n">y_dim</span><span class="p">,</span> <span class="n">z_dim</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">external_force</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the SteadyBody instance</span>
+
+<span class="sd">        :param x_dim: dimension of the steady body along the x-axis in (m)</span>
+<span class="sd">        :type x_dim: int or float</span>
+<span class="sd">        :param y_dim: dimension of the steady body along the y-axis in (m)</span>
+<span class="sd">        :type y_dim: int or float</span>
+<span class="sd">        :param z_dim: dimension of the steady body along the z-axis in (m)</span>
+<span class="sd">        :type z_dim: int or float</span>
+<span class="sd">        :param density: density of the material of the steady body in (kg/m^3)</span>
+<span class="sd">        :type density: int or float</span>
+<span class="sd">        :param index: index of the steady body in the system which is used for the Notation of the symbolic values</span>
+<span class="sd">        :type index: int</span>
+<span class="sd">        :param external_force: the value of an external force acting on the mass in (N)</span>
+<span class="sd">        :type external_force: int or float</span>
+<span class="sd">        &quot;&quot;&quot;</span>    
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_dim</span> <span class="o">=</span> <span class="n">x_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_dim</span> <span class="o">=</span> <span class="n">y_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z_dim</span> <span class="o">=</span> <span class="n">z_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">density</span> <span class="o">=</span> <span class="n">density</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_dim</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">y_dim</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">z_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">volume</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">density</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># is the position of the center of mass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;steady body&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sym_h</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;h_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sym_l</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;l_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sym_w</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;w_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+
+        <span class="n">Mass</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">external_force</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="SteadyBody.get_param_values">
+<a class="viewcode-back" href="../objects.html#objects.SteadyBody.get_param_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_param_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get numeric values for the symbolic representations</span>
+
+<span class="sd">        :return: dictionary of symbolic parameters and their values</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>    
+
+        <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_mass</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_l</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_dim</span> <span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_h</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_w</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_F_ex</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">external_force</span><span class="p">}</span></div>
 </div>
 
 </pre></div>
@@ -268,9 +553,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../additions.html">additions module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animation.html">animation module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../create_objects.html">create_objects module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../geometric_relation.html">geometric_relation module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../lagrange.html">lagrange module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animation_gui.html">animation_gui module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../main_modeling.html">main_modeling module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../newton.html">newton module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../objects.html">objects module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../simsave.html">simsave module</a></li>

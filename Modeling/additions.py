@@ -78,7 +78,7 @@ def show_equations_of_motion(latex_str, font_size=16):
     # compute the width based on the longest line length
     width = base_width * correction_term
     # compute the height based on the width to maintain a 16:9 aspect ratio
-    height = (width / 16) * 9
+    height = (width / base_width) * base_height
 
     # plot for LaTeX display
     plt.figure(figsize=(width, height))  # adjusted 16x9 format based on string length

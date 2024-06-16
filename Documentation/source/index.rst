@@ -12,9 +12,8 @@ Welcome to Dynamic Vision's documentation!
 
    additions
    animation
-   create_objects
-   geometric_relation
-   lagrange
+   animation_gui
+   main_modeling
    newton
    objects
    simsave

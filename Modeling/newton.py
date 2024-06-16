@@ -19,22 +19,22 @@ class Mechanics:
     As an addition there exists the possibility to compute the geometric constraints of the system.
     But it's not necessary for the simulation part.
 
-    :param parameters: store mass parameter needed for free-body principle/principle of intersection
-    :type parameters: dictionary
-    :param coordinates: coordinate of every mass
-    :type coordinates: dictionary
-    :param velocities: velocities of every mass
-    :type velocities: dictionary
-    :param accelerations: accelerations of every mass
-    :type accelerations: dictionary
-    :param forces: sum of force at every mass resulting the free-body principle/principle of intersection
-    :type forces: dictionary
-    :param constraints: geometric constraints/relationship between the masses and the global coordinate system
-    :type constraints: dictionary
-    :param param_values: Values of parameters like k, m, g,...
-    :type param_values: dictionary
-    :param t: time variable
-    :type t: sympy.Symbols
+    :ivar parameter: store mass parameter needed for free-body principle/principle of intersection
+    :vartype parameter: dictionary
+    :ivar coordinates: coordinate of every mass
+    :vartype coordinates: dictionary
+    :ivar velocities: velocities of every mass
+    :vartype velocities: dictionary
+    :ivar accelerations: accelerations of every mass
+    :vartype accelerations: dictionary
+    :ivar forces: sum of force at every mass resulting the free-body principle/principle of intersection
+    :vartype forces: dictionary
+    :ivar constraints: geometric constraints/relationship between the masses and the global coordinate system
+    :vartype constraints: dictionary
+    :ivar param_values: Values of parameters like k, m, g,...
+    :vartype param_values: dictionary
+    :ivar t: time variable
+    :vartype t: sympy.Symbols
     """
 
     def __init__(self):
@@ -109,6 +109,7 @@ class Mechanics:
         total_force = 0
         # loop through each (force, direction) tuple
         for force, direction in forces_with_directions:
+
             # sum up the force if the direction matches accordingly
             if direction == dir:
                 total_force += force
@@ -130,11 +131,6 @@ class Mechanics:
         :type dimension: sympy.Symbols
         """
 
-        '''
-        TODO:
-            Only two kinds of constraints exit for a 2-dimensional system. "Links" (eg. spring) and "angles" (eg. pendulum).
-            --> "angle" constraint type will be implemented at a later time.
-        '''
         if constraint_type == "link":
             # check if user wants to generate geometric relationship between mass and coordinate origin
             if start_point == end_point:
@@ -207,20 +203,20 @@ class Mechanics:
         """
         return [eq.rhs for eq in equations]
 
-    def simulate(self, param_values, init_cond, t_span, num_points=1001):
+    def simulate(self, param_values, init_cond, t_span, num_points=25001):
         """
         Method to simulate (integrate) the given system
 
         :param param_values: parameter of the given system. For example masses, spring constants,...)
         :type param_values: dictionary
         :param init_cond: initial conditions regarding the system (Initial state)
-        :type init_cond: list of int/float
+        :type init_cond: list
         :param t_span: Interval of integration (start time and end time)
-        :type t_span: tuple if int/float
-        :param num_points: number of time steps for numerical integration
+        :type t_span: tuple
+        :param num_points: number of time steps for numerical integration (default 25001)
         :type num_points: int
         :return: See documentation of solve_ivp()
-        :rtype: Bunch object
+        :rtype: scipy.integrate.OdeSolution
         """
         # get the equations of motion, substitute the parameters and store the right hand side of the equation
         eq = self.generate_equations()
@@ -245,6 +241,14 @@ class Mechanics:
 
         # function to convert a second order system to a first order system
         def sim_fun(t, z):
+            """
+            Method to convert a second order system to a first order system
+
+            :param t: time variable
+            :type t: float
+            :param z: list of current state of the system
+            :type z: list
+            """
             half = len(z) // 2
             positions = z[:half]
             velocities = z[half:]

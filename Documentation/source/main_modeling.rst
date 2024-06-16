@@ -1,7 +1,7 @@
-main\_test\_v2 module
+main\_modeling module
 =====================
 
-.. automodule:: main_test_v2
+.. automodule:: main_modeling
    :members:
    :undoc-members:
    :show-inheritance:

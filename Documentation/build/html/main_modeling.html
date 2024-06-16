@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>main_modeling module &#8212; Dynamic Vision 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="newton module" href="newton.html" />
+    <link rel="prev" title="animation_gui module" href="animation_gui.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-main_modeling">
+<span id="main-modeling-module"></span><h1>main_modeling module<a class="headerlink" href="#module-main_modeling" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="main_modeling.create_objects">
+<span class="sig-prename descclassname"><span class="pre">main_modeling.</span></span><span class="sig-name descname"><span class="pre">create_objects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/main_modeling.html#create_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main_modeling.create_objects" title="Link to this definition">¶</a></dt>
+<dd><p>Creates instances of Masspoint, SteadyBody, and Spring objects with specified parameters
+and initial conditions.
+For manual use without gui.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List containing lists of Spring and Mass objects</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of lists of objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main_modeling.generate_latex">
+<span class="sig-prename descclassname"><span class="pre">main_modeling.</span></span><span class="sig-name descname"><span class="pre">generate_latex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main_modeling.html#generate_latex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main_modeling.generate_latex" title="Link to this definition">¶</a></dt>
+<dd><p>Generates LaTeX representation of equations of motion for the given system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>system</strong> (<em>Newton object</em>) – System object containing simulation parameters and equations</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main_modeling.get_list_of_all_forces">
+<span class="sig-prename descclassname"><span class="pre">main_modeling.</span></span><span class="sig-name descname"><span class="pre">get_list_of_all_forces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_object_lists</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main_modeling.html#get_list_of_all_forces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main_modeling.get_list_of_all_forces" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates forces acting on each mass due to springs and the gravitation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>list_of_object_lists</strong> (<em>list</em><em> of </em><em>lists</em><em> of </em><em>objects</em>) – List containing lists of Spring and Mass objects</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of forces in x and y directions for each mass</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of lists of sympy.Add or sympy.Mul</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main_modeling.load_list">
+<span class="sig-prename descclassname"><span class="pre">main_modeling.</span></span><span class="sig-name descname"><span class="pre">load_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">savepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main_modeling.html#load_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main_modeling.load_list" title="Link to this definition">¶</a></dt>
+<dd><p>Loads a system configuration and initial conditions from a saved file, reconstructing Masspoint, Steady Body, and Spring objects for animation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>savepath</strong> (<em>str</em>) – path of the file to load</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List containing reconstructed Spring and Mass objects</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of lists of objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main_modeling.load_sys">
+<span class="sig-prename descclassname"><span class="pre">main_modeling.</span></span><span class="sig-name descname"><span class="pre">load_sys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">savepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main_modeling.html#load_sys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main_modeling.load_sys" title="Link to this definition">¶</a></dt>
+<dd><p>Loads a system configuration and equations of motion from a saved file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>savepath</strong> (<em>str</em>) – path of the file to load</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>LoadedSystem object containing time, results, and loaded system</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="additions.html#additions.LoadedSystem" title="additions.LoadedSystem">LoadedSystem</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main_modeling.main">
+<span class="sig-prename descclassname"><span class="pre">main_modeling.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/main_modeling.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main_modeling.main" title="Link to this definition">¶</a></dt>
+<dd><p>Main function to run simulation, save and load system data, plot results, generate LaTeX equations,
+and display the animation of the system. This function orchestrates the following steps:
+1. Creates a list of objects representing masses and springs.
+2. Runs a simulation using the created objects.
+3. Saves the simulation results and system configuration.
+4. Loads the system configuration and initial conditions from the saved file.
+5. Loads the system equations and simulation data from the saved file.
+6. Plots the positions of masses over time.
+7. Generates LaTeX representation of equations of motion.
+8. Displays an animation of the system.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main_modeling.plot_results">
+<span class="sig-prename descclassname"><span class="pre">main_modeling.</span></span><span class="sig-name descname"><span class="pre">plot_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main_modeling.html#plot_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main_modeling.plot_results" title="Link to this definition">¶</a></dt>
+<dd><p>Plots the position of masses over time from the simulation results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>res</strong> (<em>scipy.integrate.OdeSolution</em>) – Simulation results containing time and position data</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em>) – Matplotlib axis object to plot on</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main_modeling.run_simulation">
+<span class="sig-prename descclassname"><span class="pre">main_modeling.</span></span><span class="sig-name descname"><span class="pre">run_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_object_lists</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulation_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main_modeling.html#run_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main_modeling.run_simulation" title="Link to this definition">¶</a></dt>
+<dd><p>Runs simulation using Newton mechanics for the given system of masses and springs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list_of_object_lists</strong> (<em>list</em><em> of </em><em>lists</em><em> of </em><em>objects</em>) – List containing lists of Spring and Mass objects</p></li>
+<li><p><strong>simulation_points</strong> (<em>int</em>) – Number of points to simulate, default is 25001</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Result of simulation and system object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main_modeling.save_created_system">
+<span class="sig-prename descclassname"><span class="pre">main_modeling.</span></span><span class="sig-name descname"><span class="pre">save_created_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main_modeling.html#save_created_system"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main_modeling.save_created_system" title="Link to this definition">¶</a></dt>
+<dd><p>Saves the simulation results and system parameters to a NetCDF file with a given name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the file to save (without extension)</p></li>
+<li><p><strong>res</strong> (<em>scipy.integrate.OdeSolution</em>) – Simulation results to save</p></li>
+<li><p><strong>system</strong> (<em>Newton object</em>) – System object containing simulation parameters and equations</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Dynamic Vision</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="additions.html">additions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animation.html">animation module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animation_gui.html">animation_gui module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">main_modeling module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#main_modeling.create_objects"><code class="docutils literal notranslate"><span class="pre">create_objects()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#main_modeling.generate_latex"><code class="docutils literal notranslate"><span class="pre">generate_latex()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#main_modeling.get_list_of_all_forces"><code class="docutils literal notranslate"><span class="pre">get_list_of_all_forces()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#main_modeling.load_list"><code class="docutils literal notranslate"><span class="pre">load_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#main_modeling.load_sys"><code class="docutils literal notranslate"><span class="pre">load_sys()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#main_modeling.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#main_modeling.plot_results"><code class="docutils literal notranslate"><span class="pre">plot_results()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#main_modeling.run_simulation"><code class="docutils literal notranslate"><span class="pre">run_simulation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#main_modeling.save_created_system"><code class="docutils literal notranslate"><span class="pre">save_created_system()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="newton.html">newton module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="objects.html">objects module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simsave.html">simsave module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GUI.html">GUI module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="animation_gui.html" title="previous chapter">animation_gui module</a></li>
+      <li>Next: <a href="newton.html" title="next chapter">newton module</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Daniel Philippi, Jens Rößler, Nicolas Scherer.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/main_modeling.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

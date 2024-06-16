@@ -1,4 +1,3 @@
-import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.animation 
@@ -11,12 +10,12 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
     :type sol: scipy.integrate.OdeSolution
     :param list_of_object_lists: a list which contains lists of objects created in the system
     :type list_of_object_lists: list
-    :param skip_sim_steps: value of how many simulated steps are skiped before the next update of the animation, in case the animation is to slow because of too many frames
+    :param skip_sim_steps: value of how many simulated steps are skipped before the next update of the animation, in case the animation is to slow because of too many frames
     :type skip_sim_steps: int
     '''
     t = sol.t
     dt = t[-1]/ len(t)
-    y = - sol.y # - sign because the KOS is inverted in the simulated data 
+    y = - sol.y # - sign because the coordinate system (COS) is inverted in the simulated data
     pos = y[0:int(len(y)/2)]
     x_pos = pos[::2]
     x_max = max((max(x) for x in x_pos)) #finds the maximum value of all x positions
@@ -24,8 +23,6 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
     y_pos = pos[1::2]
     y_max = max((max(y) for y in y_pos)) #finds the maximum value of all y positions
     y_min = min((min(y) for y in y_pos)) #finds the minimum value of all y positions
-    # print("Länge y_0: "+str(len(y[0])))
-    # print(type(len(y[0])))
     list_of_springs, list_of_mass = list_of_object_lists
 
     y_range = y_max - y_min
@@ -57,16 +54,23 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
 
             case "steady body":
                 x, y = mass.position
-                # # calculate position of the rectangle's bottom-left corner
+
+                # calculate position of the rectangle's bottom-left corner
                 x_left = x - mass.x_dim / 2
                 y_bottom = y - mass.y_dim / 2
+
                 sb_rectangles.append(patches.Rectangle((x_left, y_bottom), mass.x_dim, mass.y_dim, color=mass.color, zorder=4))
                 ax.add_patch(sb_rectangles[-1]) # Add steady body rectangle to plot as a patch object
 
 
     # Function to update the animation
-    def update_system(num): 
+    def update_system(num):
+        """
+        Update the animation based on the current time step.
 
+        :param num: Current time step index
+        :type num: int
+        """
         sb_index = 0
         mp_index = 0
         for i in range(len(list_of_mass)):
@@ -75,7 +79,6 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
                     list_of_mass[i].move(x_pos[i][num],y_pos[i][num])   # Move masspoint to new coordinates
                     mass_circle[mp_index].set_center(list_of_mass[i].position)  # Update mass circle position
                     mp_index += 1
-                    #print(list_of_mass[i].position)
 
                 case "steady body":
                     list_of_mass[i].move(x_pos[i][num], y_pos[i][num])  # Move steady body to new coordinates
@@ -104,11 +107,9 @@ def animation(sol, list_of_object_lists,skip_sim_steps=150):
 
     # Create animation 
     # intervall is the delay in ms between frames
-    ani = matplotlib.animation.FuncAnimation(fig, update_system, frames= range(0, len(t), skip_sim_steps), interval=dt*100,repeat=True, cache_frame_data=True) 
-    
-    #plt.title('Animation\n Time:'+str(3))
+    ani=matplotlib.animation.FuncAnimation(fig, update_system, frames= range(0, len(t), skip_sim_steps), interval=dt*100,repeat=True, cache_frame_data=True)
+
     plt.xlabel('x')
     plt.ylabel('y')
 
-    plt.show()  #Display animation
-   
+    plt.show()  # Display animation

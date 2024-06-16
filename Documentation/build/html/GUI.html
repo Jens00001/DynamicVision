@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>GUI module &#8212; Dynamic Vision 0.1 documentation</title>
+    <title>GUI module &#8212; Dynamic Vision 1.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
-    <script src="_static/documentation_options.js?v=2709fde1"></script>
+    <script src="_static/documentation_options.js?v=f2a433a1"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -31,8 +31,511 @@
 
           <div class="body" role="main">
             
-  <section id="gui-module">
-<h1>GUI module<a class="headerlink" href="#gui-module" title="Link to this heading">¶</a></h1>
+  <section id="module-GUI">
+<span id="gui-module"></span><h1>GUI module<a class="headerlink" href="#module-GUI" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="GUI.ChooseElement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GUI.</span></span><span class="sig-name descname"><span class="pre">ChooseElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#ChooseElement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.ChooseElement" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Panel</span></code></p>
+<p>Class to create the panel, where the user can choose what kind of element to add
+This panel is child to the create element frame
+The panel has three buttons. One to finish creating a model and two to choose between a spring and a mass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>wx.Frame</em>) – The Create Element Frame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GUI.CreateElement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GUI.</span></span><span class="sig-name descname"><span class="pre">CreateElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateElement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateElement" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Frame</span></code></p>
+<p>Class to create the frame for Create Element
+This frame is opened with the button “Create Element” on the “Create Model” panel
+The frame is a parent for choose element, mass element, spring element, mass point, steady body, single spring, parallel spring and series spring.
+The methods to switch between the child panels are defined here.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateElement.on_finish">
+<span class="sig-name descname"><span class="pre">on_finish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateElement.on_finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateElement.on_finish" title="Link to this definition">¶</a></dt>
+<dd><p>Method to close the “Create Element” frame.
+Before that, it is checked if the number of springs is equal to the number of masses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateElement.on_mass">
+<span class="sig-name descname"><span class="pre">on_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateElement.on_mass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateElement.on_mass" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch between the “choose element” panel and the “mass element” panel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateElement.on_mass_point">
+<span class="sig-name descname"><span class="pre">on_mass_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateElement.on_mass_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateElement.on_mass_point" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch between the “mass element” panel and the “mass point” panel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateElement.on_mass_steady">
+<span class="sig-name descname"><span class="pre">on_mass_steady</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateElement.on_mass_steady"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateElement.on_mass_steady" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch between the “mass element” panel and the “steady body” panel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateElement.on_spring">
+<span class="sig-name descname"><span class="pre">on_spring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateElement.on_spring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateElement.on_spring" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch between the “choose element” panel and the “spring element” panel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateElement.on_spring_parallel">
+<span class="sig-name descname"><span class="pre">on_spring_parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateElement.on_spring_parallel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateElement.on_spring_parallel" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch between the “spring element” panel and the “several parallel springs” panel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateElement.on_spring_series">
+<span class="sig-name descname"><span class="pre">on_spring_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateElement.on_spring_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateElement.on_spring_series" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch between the “spring element” panel and the “several springs in series” panel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateElement.on_spring_single">
+<span class="sig-name descname"><span class="pre">on_spring_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateElement.on_spring_single"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateElement.on_spring_single" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch between the “spring element” panel and the “single spring” panel.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GUI.CreateModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GUI.</span></span><span class="sig-name descname"><span class="pre">CreateModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateModel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Panel</span></code></p>
+<p>Class to create the panel on which one can create the model.
+This panel is contained within the main frame.
+It opens when the button “create model” is clicked.
+It contains two figure canvases. One for the animation and the other one for the plot
+It contains 4 buttons (“Create Element”,”Set Initial Conditions”,”Run Simulation”,”Return”)
+First one have to the click the “Create Element” Button.
+Then one have to initialize the initial conditions via the “Set Initial Conditions” Button.
+Finally one can run the simulation and save the simulated data and equations of motion with a click on the “Run Simulation” Button.
+One can go back to the Main Menu when the “Return” button is clicked.</p>
+<p>In the constructor the positions and labels of the buttons are set, as well as the two figure canvases.
+The buttons are bound to events which allow to open the other panels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>wx.Frame</em>) – The Main Frame</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateModel.on_open_IC">
+<span class="sig-name descname"><span class="pre">on_open_IC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateModel.on_open_IC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateModel.on_open_IC" title="Link to this definition">¶</a></dt>
+<dd><p>Method to open the Initial Conditions frame as a popup window</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateModel.on_open_popup">
+<span class="sig-name descname"><span class="pre">on_open_popup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateModel.on_open_popup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateModel.on_open_popup" title="Link to this definition">¶</a></dt>
+<dd><p>Method to open the Create Element frame as a popup window
+This method also clears the plot and animation and stops the timer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateModel.on_return">
+<span class="sig-name descname"><span class="pre">on_return</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateModel.on_return"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateModel.on_return" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch back to the start menu</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateModel.on_run_simulation">
+<span class="sig-name descname"><span class="pre">on_run_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateModel.on_run_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateModel.on_run_simulation" title="Link to this definition">¶</a></dt>
+<dd><p>Method to run the simulation, plot, animate and save the simulated data.
+After the simulation is completed the simulated data is plotted and the animation is initialized with the initial conditions.
+In a next step the computed equations of motion are shown in a seperate frame.
+Then the user can save the simulated data via a file dialog.
+After one canceled the dialog or saved the data the animation starts.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateModel.plot_results">
+<span class="sig-name descname"><span class="pre">plot_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_of_object_lists</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateModel.plot_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateModel.plot_results" title="Link to this definition">¶</a></dt>
+<dd><p>Method to plot the simulated data and initializes the animation with the initial conditions
+:type res: 
+:param res: Results of simulation. Containing time, position and velocity.
+:type res: scipy.integrate.OdeSolution
+:type list_of_object_lists: 
+:param list_of_object_lists: list containing spring and mass objects
+:type list_of_object_lists: list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateModel.restart_animation">
+<span class="sig-name descname"><span class="pre">restart_animation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateModel.restart_animation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateModel.restart_animation" title="Link to this definition">¶</a></dt>
+<dd><p>Method to restart the animation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateModel.show_equations">
+<span class="sig-name descname"><span class="pre">show_equations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateModel.show_equations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateModel.show_equations" title="Link to this definition">¶</a></dt>
+<dd><p>Method to generate and show the equations in a seperate frame
+:type system: 
+:param system: The system object containing simulation parameters and equations
+:type system: Newton Object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.CreateModel.update_animation">
+<span class="sig-name descname"><span class="pre">update_animation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#CreateModel.update_animation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.CreateModel.update_animation" title="Link to this definition">¶</a></dt>
+<dd><p>Method to update the animation every timer event.
+If the animation is not paused the axis is updated with the values at the time with index self.num.
+In the next step self.num is increased.
+Due to many simulation steps some steps the number in self.skip_sim_steps is skipped for better performance.
+If self.num exceeds the length of simulated data the last simulated point is shown and the animation is paused for 2 seconds before restarting.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GUI.InitialCondition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GUI.</span></span><span class="sig-name descname"><span class="pre">InitialCondition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#InitialCondition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.InitialCondition" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Frame</span></code></p>
+<p>Class to create the Frame for the Initial Conditions
+It is opened by pressing the button “Set initial Conditions” on the panel “Create Model”
+This frame has no childs.
+On the frame there are two inputs: one for the position and one for the velocity
+There is also one submit button which saves the inputs</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.InitialCondition.on_submit_IC">
+<span class="sig-name descname"><span class="pre">on_submit_IC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#InitialCondition.on_submit_IC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.InitialCondition.on_submit_IC" title="Link to this definition">¶</a></dt>
+<dd><p>This method takes the input values for position and velocity.
+Then the initial values for the mass are set via the setInitialCondition function from objects
+Then the initial values for the spring are set via the setInitialCondition function from objects. Here the first spring has to get (0,0) as its first start position.
+The last if loop closes the frame when there are no more elements which need initial conditions.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GUI.MainFrame">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GUI.</span></span><span class="sig-name descname"><span class="pre">MainFrame</span></span><a class="reference internal" href="_modules/GUI.html#MainFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.MainFrame" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Frame</span></code></p>
+<p>Class to create the Main Frame
+This frame is a parent for start menu, create model and open model.
+It opens when the application is started.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.MainFrame.on_close_app">
+<span class="sig-name descname"><span class="pre">on_close_app</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#MainFrame.on_close_app"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.MainFrame.on_close_app" title="Link to this definition">¶</a></dt>
+<dd><p>Method to close the application by exiting the main loop which starts when starting the application.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.MainFrame.on_open_documentation">
+<span class="sig-name descname"><span class="pre">on_open_documentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#MainFrame.on_open_documentation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.MainFrame.on_open_documentation" title="Link to this definition">¶</a></dt>
+<dd><p>Method to open the documentation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.MainFrame.on_switch_create_model">
+<span class="sig-name descname"><span class="pre">on_switch_create_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#MainFrame.on_switch_create_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.MainFrame.on_switch_create_model" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch between the start menu and the “create model” panel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.MainFrame.on_switch_open_model">
+<span class="sig-name descname"><span class="pre">on_switch_open_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#MainFrame.on_switch_open_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.MainFrame.on_switch_open_model" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch between the start menu and the “open model” panel.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GUI.MassElement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GUI.</span></span><span class="sig-name descname"><span class="pre">MassElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#MassElement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.MassElement" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Panel</span></code></p>
+<p>Class to create the panel, where the user can choose what kind of mass to add
+This panel is child to the create element frame
+The panel has three buttons. One to get back to the previous panel. And the other two to choose between a mass point and a steady body.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>wx.Frame</em>) – The Create Element Frame</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.MassElement.on_back">
+<span class="sig-name descname"><span class="pre">on_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#MassElement.on_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.MassElement.on_back" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch back to the choose element panel</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GUI.MassPoint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GUI.</span></span><span class="sig-name descname"><span class="pre">MassPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#MassPoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.MassPoint" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Panel</span></code></p>
+<p>Class to create the panel, where the user can create a mass point
+This panel is child to the create element frame
+It has 2 input texts. One for the mass and the other one for an external force which is applied on the mass point.
+The panel has two buttons. One to submit the mass point and one to get back to the previous panel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>wx.Frame</em>) – The Create Element Frame</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.MassPoint.on_back">
+<span class="sig-name descname"><span class="pre">on_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#MassPoint.on_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.MassPoint.on_back" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch back to the mass element panel</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.MassPoint.on_submit">
+<span class="sig-name descname"><span class="pre">on_submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#MassPoint.on_submit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.MassPoint.on_submit" title="Link to this definition">¶</a></dt>
+<dd><p>Method to submit the mass point with the given inputs</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GUI.OpenModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GUI.</span></span><span class="sig-name descname"><span class="pre">OpenModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#OpenModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.OpenModel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Panel</span></code></p>
+<p>Class to create the panel on which one can open a saved model.
+This panel is contained within the main frame.
+It opens when the button “open model” is clicked.
+It contains two figure canvases. One for the animation and the other one for the plot
+It contains 2 buttons (“Load Model”,”Return”)
+A file dialog opens when the button “Load Model” is clicked where one can select the file to be loaded.
+One can go back to the Main Menu when the “Return” button is clicked.</p>
+<p>In the constructor the positions and labels of the buttons are set, as well as the figure for plotting and showing the animation.
+The buttons are bound to events which allow to open the other panels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>wx.Frame</em>) – The Main Frame</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.OpenModel.on_load_model">
+<span class="sig-name descname"><span class="pre">on_load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#OpenModel.on_load_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.OpenModel.on_load_model" title="Link to this definition">¶</a></dt>
+<dd><p>Method to run the simulation, plot and animate loaded data.
+A file dialog opens where one can select the file which should be loaded.
+After that list of objects is recreated, as well as the saved system itself.
+Then the loaded data is plotted and the animation starts.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.OpenModel.on_return">
+<span class="sig-name descname"><span class="pre">on_return</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#OpenModel.on_return"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.OpenModel.on_return" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch back to the start menu</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.OpenModel.plot_results">
+<span class="sig-name descname"><span class="pre">plot_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_of_object_lists</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#OpenModel.plot_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.OpenModel.plot_results" title="Link to this definition">¶</a></dt>
+<dd><p>Method to plot the simulated data and initializes the animation with the initial conditions
+:type res: 
+:param res: Results of simulation. Containing time, position and velocity.
+:type res: scipy.integrate.OdeSolution
+:type list_of_object_lists: 
+:param list_of_object_lists: list containing spring and mass objects
+:type list_of_object_lists: list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.OpenModel.restart_animation">
+<span class="sig-name descname"><span class="pre">restart_animation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#OpenModel.restart_animation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.OpenModel.restart_animation" title="Link to this definition">¶</a></dt>
+<dd><p>Method to restart the animation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.OpenModel.show_equations">
+<span class="sig-name descname"><span class="pre">show_equations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#OpenModel.show_equations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.OpenModel.show_equations" title="Link to this definition">¶</a></dt>
+<dd><p>Method to generate and show the equations in a seperate frame
+:type system: 
+:param system: The system object containing simulation parameters and equations
+:type system: Newton Object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.OpenModel.update_animation">
+<span class="sig-name descname"><span class="pre">update_animation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#OpenModel.update_animation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.OpenModel.update_animation" title="Link to this definition">¶</a></dt>
+<dd><p>Method to update the animation every timer event.
+If the animation is not paused the axis is updated with the values at the time with index self.num.
+In the next step self.num is increased.
+Due to many simulation steps some steps the number in self.skip_sim_steps is skipped for better performance.
+If self.num exceeds the length of simulated data the last simulated point is shown and the animation is paused for 2 seconds before restarting.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GUI.ParallelSpring">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GUI.</span></span><span class="sig-name descname"><span class="pre">ParallelSpring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#ParallelSpring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.ParallelSpring" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Panel</span></code></p>
+<p>Class to create the panel, where the user can create several parallel springs
+This panel is child to the create element frame
+It has two input texts. One for the stiffness and one for the length.
+It has three buttons: One to get back to the previous panel, one to add springs and one to submit the parallel springs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>wx.Frame</em>) – The Create Element Frame</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.ParallelSpring.on_add">
+<span class="sig-name descname"><span class="pre">on_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#ParallelSpring.on_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.ParallelSpring.on_add" title="Link to this definition">¶</a></dt>
+<dd><p>This method adds the input values in length and stiffness in a list.
+After that the input fields are emptied again</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.ParallelSpring.on_back">
+<span class="sig-name descname"><span class="pre">on_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#ParallelSpring.on_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.ParallelSpring.on_back" title="Link to this definition">¶</a></dt>
+<dd><p>Method to get back to the “spring element” panel</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.ParallelSpring.on_submit">
+<span class="sig-name descname"><span class="pre">on_submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#ParallelSpring.on_submit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.ParallelSpring.on_submit" title="Link to this definition">¶</a></dt>
+<dd><p>Method to calculate the resulting stiffness and length of several parallel springs
+With this method one spring is created which has this resulting stiffness and length
+By submitting this spring the list of springs from the add method is emptied.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GUI.SeriesSpring">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GUI.</span></span><span class="sig-name descname"><span class="pre">SeriesSpring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#SeriesSpring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.SeriesSpring" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Panel</span></code></p>
+<p>Class to create the panel, where the user can create several springs in series
+It has two input texts. One for the stiffness and one for the length.
+It has three buttons: One to get back to the previous panel, one to add springs and one to submit the series of springs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>wx.Frame</em>) – The Create Element Frame</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.SeriesSpring.on_add">
+<span class="sig-name descname"><span class="pre">on_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#SeriesSpring.on_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.SeriesSpring.on_add" title="Link to this definition">¶</a></dt>
+<dd><p>Method to add a spring to a list so that the user can have several springs in series</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.SeriesSpring.on_back">
+<span class="sig-name descname"><span class="pre">on_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#SeriesSpring.on_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.SeriesSpring.on_back" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch back to the “spring element” panel</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.SeriesSpring.on_submit">
+<span class="sig-name descname"><span class="pre">on_submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#SeriesSpring.on_submit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.SeriesSpring.on_submit" title="Link to this definition">¶</a></dt>
+<dd><p>Method to calculate the resulting stiffness and length of several springs in series.
+With this method one spring is created which has this resulting stiffness and length
+By submitting this spring the list of springs from the add method is emptied.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GUI.SingleSpring">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GUI.</span></span><span class="sig-name descname"><span class="pre">SingleSpring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#SingleSpring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.SingleSpring" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Panel</span></code></p>
+<p>Class to create the panel, where the user can create a single spring
+This panel is child to the create element frame
+It has two input texts. One for the stiffness and one for the length.
+It has two radio buttons to switch between a cubic and a linear spring.
+The panel has two buttons. One to submit the spring and one to get back to the previous panel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>wx.Frame</em>) – The Create Element Frame</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.SingleSpring.on_back">
+<span class="sig-name descname"><span class="pre">on_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#SingleSpring.on_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.SingleSpring.on_back" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch back to the “spring element” panel</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.SingleSpring.on_radio_button">
+<span class="sig-name descname"><span class="pre">on_radio_button</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#SingleSpring.on_radio_button"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.SingleSpring.on_radio_button" title="Link to this definition">¶</a></dt>
+<dd><p>Method to enable the user to decide between a cubic and a linear spring via radio buttons</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.SingleSpring.on_submit">
+<span class="sig-name descname"><span class="pre">on_submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#SingleSpring.on_submit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.SingleSpring.on_submit" title="Link to this definition">¶</a></dt>
+<dd><p>Method to create a Spring with the parameters defined in the input fields.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GUI.SpringElement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GUI.</span></span><span class="sig-name descname"><span class="pre">SpringElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#SpringElement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.SpringElement" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Panel</span></code></p>
+<p>Class to create the panel, where the user can choose what kind of spring to add
+This panel is child to the create element frame
+The panel has four buttons. One to get back to the previous panel. And three to choose between a single spring, several springs in series and several parallel springs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>wx.Frame</em>) – The Create Element Frame</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.SpringElement.on_back">
+<span class="sig-name descname"><span class="pre">on_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#SpringElement.on_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.SpringElement.on_back" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch back to the choose element panel</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GUI.StartMenu">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GUI.</span></span><span class="sig-name descname"><span class="pre">StartMenu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#StartMenu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.StartMenu" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Panel</span></code></p>
+<p>Class to create the panel, which contains the start menu.
+This panel is contained within the main frame.
+It opens when the application is started.
+It contains two logos, one header and the names of the authors.
+It contains 4 buttons (“Create Model”,”Open Model”,”Open Documentation”,”Close Application”)
+Here the positions and labels of the buttons are set.
+The buttons are bound to events which allow to open the other panels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>wx.Frame</em>) – The Main Frame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GUI.SteadyBody">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GUI.</span></span><span class="sig-name descname"><span class="pre">SteadyBody</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#SteadyBody"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.SteadyBody" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Panel</span></code></p>
+<p>Class to create the panel, where the user can create a steady body
+This panel is child to the create element frame
+It has 5 input texts. One for the density, one for the width, one for the length and one for the height of the steady body.
+The fifth input text ist to add an external force which is applied onto the steady body
+The panel has two buttons. One to submit the steady body and one to get back to the previous panel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>wx.Frame</em>) – The Create Element Frame</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.SteadyBody.on_back">
+<span class="sig-name descname"><span class="pre">on_back</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#SteadyBody.on_back"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.SteadyBody.on_back" title="Link to this definition">¶</a></dt>
+<dd><p>Method to switch back to the mass element panel</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GUI.SteadyBody.on_submit">
+<span class="sig-name descname"><span class="pre">on_submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GUI.html#SteadyBody.on_submit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GUI.SteadyBody.on_submit" title="Link to this definition">¶</a></dt>
+<dd><p>Method to create a steady body with the given inputs.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -56,13 +559,28 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="additions.html">additions module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animation.html">animation module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="create_objects.html">create_objects module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="geometric_relation.html">geometric_relation module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lagrange.html">lagrange module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animation_gui.html">animation_gui module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main_modeling.html">main_modeling module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="newton.html">newton module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="objects.html">objects module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="simsave.html">simsave module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">GUI module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">GUI module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#GUI.ChooseElement"><code class="docutils literal notranslate"><span class="pre">ChooseElement</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#GUI.CreateElement"><code class="docutils literal notranslate"><span class="pre">CreateElement</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#GUI.CreateModel"><code class="docutils literal notranslate"><span class="pre">CreateModel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#GUI.InitialCondition"><code class="docutils literal notranslate"><span class="pre">InitialCondition</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#GUI.MainFrame"><code class="docutils literal notranslate"><span class="pre">MainFrame</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#GUI.MassElement"><code class="docutils literal notranslate"><span class="pre">MassElement</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#GUI.MassPoint"><code class="docutils literal notranslate"><span class="pre">MassPoint</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#GUI.OpenModel"><code class="docutils literal notranslate"><span class="pre">OpenModel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#GUI.ParallelSpring"><code class="docutils literal notranslate"><span class="pre">ParallelSpring</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#GUI.SeriesSpring"><code class="docutils literal notranslate"><span class="pre">SeriesSpring</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#GUI.SingleSpring"><code class="docutils literal notranslate"><span class="pre">SingleSpring</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#GUI.SpringElement"><code class="docutils literal notranslate"><span class="pre">SpringElement</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#GUI.StartMenu"><code class="docutils literal notranslate"><span class="pre">StartMenu</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#GUI.SteadyBody"><code class="docutils literal notranslate"><span class="pre">SteadyBody</span></code></a></li>
+</ul>
+</li>
 </ul>
 
 <div class="relations">

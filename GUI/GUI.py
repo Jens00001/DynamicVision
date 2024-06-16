@@ -2,16 +2,13 @@ import wx
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))+"\Modeling")
-import numpy as np 
-import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
-import matplotlib.animation as animation 
 from matplotlib.figure import Figure
-import main_test_v2 as main_modeling
+import main_modeling as main_modeling
 import animation_gui as anim
 import objects
-from additions import eq_to_latex, show_equations_of_motion
-from simsave import save_system, tex_save
+from simsave import save_system
+import webbrowser
 
 list_of_springs= []
 list_of_mass = []
@@ -25,7 +22,7 @@ class StartMenu(wx.Panel):
     It contains two logos, one header and the names of the authors. 
     It contains 4 buttons ("Create Model","Open Model","Open Documentation","Close Application")
     Here the positions and labels of the buttons are set.
-    The buttons are binded to events which allow to open the other panels.
+    The buttons are bound to events which allow to open the other panels.
 
     :param parent: The Main Frame
     :type parent: wx.Frame
@@ -35,8 +32,8 @@ class StartMenu(wx.Panel):
         self.SetBackgroundColour(wx.Colour(255,255,255,0))
 
         # Create Images from the Univeristy Logo and the Logo of Systems Engineering 
-        image_left = wx.Image(os.path.dirname(os.path.realpath(__file__))+"\Image_uni.png",wx.BITMAP_TYPE_ANY)   # Load the Image of the Uni Logo
-        image_right = wx.Image(os.path.dirname(os.path.realpath(__file__))+"\Image_se.png",wx.BITMAP_TYPE_ANY)   # Load the Image of Systems Engineering
+        image_left = wx.Image(os.path.dirname(os.path.realpath(__file__))+"\Image_uni.png",wx.BITMAP_TYPE_ANY)
+        image_right = wx.Image(os.path.dirname(os.path.realpath(__file__))+"\Image_se.png",wx.BITMAP_TYPE_ANY)
         image_left = image_left.ConvertToBitmap()
         image_right = image_right.ConvertToBitmap()
         self.bitmap_left = wx.StaticBitmap(self,bitmap=image_left,pos=(10,10))
@@ -55,6 +52,7 @@ class StartMenu(wx.Panel):
 
         # Create Button to get to the documentation 
         self.button_documentation = wx.Button(self,label="Open Documentation",size = button_size)
+        self.Bind(wx.EVT_BUTTON, parent.on_open_documentation, self.button_documentation)
 
         # Create Button to close the App 
         self.close_button = wx.Button(self,label="Close Dynamic Vision",size = button_size)
@@ -72,10 +70,10 @@ class StartMenu(wx.Panel):
         self.close_button.SetPosition((x_pos_btn, y_pos_btn + 3*button_size[1]))
 
         # Create a Header 
-        header_font = wx.Font(24, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)  # Define font for header
-        self.header_text = wx.StaticText(self, label="DynamicVision")  # Create StaticText widget for header
-        self.header_text.SetFont(header_font)  # Apply font to header text
-        self.header_text.SetForegroundColour(wx.Colour(0, 0, 255))  # Set text color to blue
+        header_font = wx.Font(24, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        self.header_text = wx.StaticText(self, label="DynamicVision")
+        self.header_text.SetFont(header_font)
+        self.header_text.SetForegroundColour(wx.Colour(0, 0, 255))
         header_size = self.header_text.GetSize()
         x_pos_header = (panel_size[0]-header_size[0])//2
         self.header_text.SetPosition((x_pos_header,70))
@@ -85,7 +83,7 @@ class StartMenu(wx.Panel):
         author_size = self.author_text.GetSize()
         x_pos_author = (panel_size[0]-author_size[0])//2
         y_pos_author = (panel_size[1]-5*author_size[1])//1
-        self.author_text.SetForegroundColour(wx.Colour(0, 0, 255))  # Set text color to blue
+        self.author_text.SetForegroundColour(wx.Colour(0, 0, 255))
         self.author_text.SetPosition((x_pos_author,y_pos_author))
 
 
@@ -97,14 +95,14 @@ class CreateModel(wx.Panel):
     This panel is contained within the main frame.
     It opens when the button "create model" is clicked.
     It contains two figure canvases. One for the animation and the other one for the plot 
-    It contains 4 buttons ("Create Element","Set Intital Conditions","Run Simulation","Return")
+    It contains 4 buttons ("Create Element","Set Initial Conditions","Run Simulation","Return")
     First one have to the click the "Create Element" Button.
-    Then one have to initialize the initial conditions via the "Set Intital Conditions" Button.
-    Finaly one can run the simultion and save the simulated data and equations of motion with a click on the "Run Simulation" Button.
-    One can go back to the Main Menu when the "Retrun" button is clicked.
+    Then one have to initialize the initial conditions via the "Set Initial Conditions" Button.
+    Finally one can run the simulation and save the simulated data and equations of motion with a click on the "Run Simulation" Button.
+    One can go back to the Main Menu when the "Return" button is clicked.
 
     In the constructor the positions and labels of the buttons are set, as well as the two figure canvases.
-    The buttons are binded to events which allow to open the other panels.
+    The buttons are bound to events which allow to open the other panels.
 
     :param parent: The Main Frame
     :type parent: wx.Frame
@@ -131,7 +129,7 @@ class CreateModel(wx.Panel):
         self.button_run = wx.Button(self, label="Run Simulation", pos=(700, 550))
         self.button_run.Bind(wx.EVT_BUTTON, self.on_run_simulation)
 
-        self.button_IC = wx.Button(self, label="Set Inital Conditions", pos=(500, 550))
+        self.button_IC = wx.Button(self, label="Set Initial Conditions", pos=(500, 550))
         self.button_IC.Bind(wx.EVT_BUTTON, self.on_open_IC)
         
         self.num = 0  # Initialize num
@@ -140,11 +138,15 @@ class CreateModel(wx.Panel):
         self.skip_sim_steps = 1 # Intitalize the number of steps which are skiped in the animation
         self.timer = wx.Timer(self)
 
+        # define button size
         button_size = (300,25)
+
+        # create the button to return to the start menu
         self.button_return = wx.Button(self,label="Return",size = (button_size[0]/2,button_size[1]))
         self.Bind(wx.EVT_BUTTON,self.on_return,self.button_return)
         self.button_return.SetPosition(((panel_size[0]-button_size[0])/2,panel_size[1]-(75)))
 
+        # Passing the other child panel from the parent to this child panel
         self.start_menu = parent.start_menu
 
     def on_return(self,event):
@@ -157,26 +159,27 @@ class CreateModel(wx.Panel):
     def on_run_simulation(self, event):
         """
         Method to run the simulation, plot, animate and save the simulated data.
-        After the simulation is completed the simulated data is plotted and the animation is initalized with the inital conditions.
-        In a next step the comuted equations of motion are shown in a seperat frame.
+        After the simulation is completed the simulated data is plotted and the animation is initialized with the initial conditions.
+        In a next step the computed equations of motion are shown in a seperate frame.
         Then the user can save the simulated data via a file dialog.
-        After one cancled the diaglog or saved the data the animation starts.
+        After one canceled the dialog or saved the data the animation starts.
 
         """
-        #list_of_object_lists = main_modeling.create_objects()
+
         list_of_object_lists = [list_of_springs, list_of_mass]
         self.res, self.system = main_modeling.run_simulation(list_of_object_lists, simulation_points=25001)
         self.plot_results(self.res, list_of_object_lists)
         self.show_equations(self.system)
         self.canvas.draw()
+
         # Start animation
         max_simulated_time = self.res.t[-1]
         num_frames = len(self.res.t)
         animation_time = max_simulated_time * 1000  # Convert to milliseconds
+
         # computes the necessary steps that must be skipped to obtain an update time of 110 ms which allows 
-        # matching the simulated time in the animation quiet good wtih one spring mass oszillator
-        self.skip_sim_steps = round(110 * num_frames / animation_time) 
-        #print('Skipped Simulation Steps: ' + str(self.skip_sim_steps))
+        # matching the simulated time in the animation quiet good with one spring mass oscillator
+        self.skip_sim_steps = round(110 * num_frames / animation_time)
 
         self.Bind(wx.EVT_TIMER, self.update_animation, self.timer)
 
@@ -197,25 +200,31 @@ class CreateModel(wx.Panel):
  
             # Call your custom save function with the selected file path 
             print(save_file_path+".nc")
-            save_system(save_file_path, self.res ,self.system)
-            print("Data saved.") 
-
-        #self.timer = wx.Timer(self)
+            save_system(save_file_path, self.res, self.system)
+            print("Data saved.")
         
         self.timer.Start(self.updatetime)  # Update time per frame 
 
 
     def show_equations(self, system):
         """
-        Method to generate and show the equations in a seperat frame
+        Method to generate and show the equations in a seperate frame
+        :param system: The system object containing simulation parameters and equations
+        :type system: Newton Object
         """
+
         # plot/show equations of motion
         main_modeling.generate_latex(system)
 
     def plot_results(self, res, list_of_object_lists):
         """
-        Method to plot the simulated data and initializes the animation with the intial conditions
+        Method to plot the simulated data and initializes the animation with the initial conditions
+        :param res: Results of simulation. Containing time, position and velocity.
+        :type res: scipy.integrate.OdeSolution
+        :param list_of_object_lists: list containing spring and mass objects
+        :type list_of_object_lists: list
         """
+
         # Plot results in ax1
         main_modeling.plot_results(res, self.ax1)
         self.animation = anim.Animation(res, list_of_object_lists, self.ax2)
@@ -224,10 +233,11 @@ class CreateModel(wx.Panel):
         """
         Method to update the animation every timer event.
         If the animation is not paused the axis is updated with the values at the time with index self.num.
-        In the next step self.num is increadsed. 
+        In the next step self.num is increased.
         Due to many simulation steps some steps the number in self.skip_sim_steps is skipped for better performance. 
         If self.num exceeds the length of simulated data the last simulated point is shown and the animation is paused for 2 seconds before restarting.
         """
+
         if not self.paused:
             # Update animation with appropriate frame number
             self.animation.update_frame(self.num)
@@ -284,6 +294,12 @@ class CreateModel(wx.Panel):
         """
         Method to open the Initial Conditions frame as a popup window
         """
+        self.timer.Stop()
+        self.ax1.cla()  # clear axis 1
+        self.ax2.cla()  # clear axis 2
+        self.canvas.draw()  # refresh the canvas
+        self.num = 0
+
         IC_popup = InitialCondition(self)
         IC_popup.Show()
 
@@ -295,11 +311,11 @@ class OpenModel(wx.Panel):
     It opens when the button "open model" is clicked.
     It contains two figure canvases. One for the animation and the other one for the plot 
     It contains 2 buttons ("Load Model","Return")
-    A file dialog opens when the button "Load Model" is clicked where one can selected the file to be loaded.
-    One can go back to the Main Menu when the "Retrun" button is clicked.
+    A file dialog opens when the button "Load Model" is clicked where one can select the file to be loaded.
+    One can go back to the Main Menu when the "Return" button is clicked.
 
     In the constructor the positions and labels of the buttons are set, as well as the figure for plotting and showing the animation.
-    The buttons are binded to events which allow to open the other panels.
+    The buttons are bound to events which allow to open the other panels.
 
     :param parent: The Main Frame
     :type parent: wx.Frame
@@ -324,15 +340,17 @@ class OpenModel(wx.Panel):
         self.num = 0  # Initialize num
         self.paused = False 
         self.updatetime = 100 # Initialize updatetime
-        self.skip_sim_steps = 1 # Intitalize the number of steps which are skiped in the animation
+        self.skip_sim_steps = 1 # Initialize the number of steps which are skipped in the animation
         self.timer = wx.Timer(self)
 
-        # Create Button to get back to the start menu 
+        # Define button size
         button_size = (300,25)
+        # Create Button to get back to the start menu
         self.button_return = wx.Button(self,label="Return",size = (button_size[0]/2,button_size[1]))
         self.Bind(wx.EVT_BUTTON,self.on_return,self.button_return)
         self.button_return.SetPosition(((panel_size[0]-button_size[0])/2,panel_size[1]-(75)))
 
+        # Passing the other child panel from the parent to this child panel
         self.start_menu = parent.start_menu
 
     def on_return(self,event):
@@ -348,7 +366,6 @@ class OpenModel(wx.Panel):
         A file dialog opens where one can select the file which should be loaded.
         After that list of objects is recreated, as well as the saved system itself.
         Then the loaded data is plotted and the animation starts.
-
         """
         self.timer.Stop()
         self.ax1.cla()  # clear axis 1
@@ -376,12 +393,14 @@ class OpenModel(wx.Panel):
             self.plot_results(self.loaded_res, loaded_list_of_object_lists)
             self.show_equations(self.loaded_system)
             self.canvas.draw()
+
             # Start animation
             max_simulated_time = self.loaded_res.t[-1]
             num_frames = len(self.loaded_res.t)
             animation_time = max_simulated_time * 1000  # Convert to milliseconds
+
             # computes the necessary steps that must be skipped to obtain an update time of 110 ms which allows 
-            # matching the simulated time in the animation quiet good wtih one spring mass oszillator
+            # matching the simulated time in the animation quiet good with one spring mass oscillator
             self.skip_sim_steps = round(110 * num_frames / animation_time)
 
             self.Bind(wx.EVT_TIMER, self.update_animation, self.timer)
@@ -389,14 +408,20 @@ class OpenModel(wx.Panel):
 
     def show_equations(self, system):
         """
-        Method to generate and show the equations in a seperat frame
+        Method to generate and show the equations in a seperate frame
+        :param system: The system object containing simulation parameters and equations
+        :type system: Newton Object
         """
         # plot/show equations of motion
         main_modeling.generate_latex(system)
 
     def plot_results(self, res, list_of_object_lists):
         """
-        Method to plot the simulated data and initializes the animation with the intial conditions
+        Method to plot the simulated data and initializes the animation with the initial conditions
+        :param res: Results of simulation. Containing time, position and velocity.
+        :type res: scipy.integrate.OdeSolution
+        :param list_of_object_lists: list containing spring and mass objects
+        :type list_of_object_lists: list
         """
         # Plot results in ax1
         main_modeling.plot_results(res, self.ax1)
@@ -406,7 +431,7 @@ class OpenModel(wx.Panel):
         """
         Method to update the animation every timer event.
         If the animation is not paused the axis is updated with the values at the time with index self.num.
-        In the next step self.num is increadsed. 
+        In the next step self.num is increased.
         Due to many simulation steps some steps the number in self.skip_sim_steps is skipped for better performance. 
         If self.num exceeds the length of simulated data the last simulated point is shown and the animation is paused for 2 seconds before restarting.
         """
@@ -420,7 +445,7 @@ class OpenModel(wx.Panel):
             pos = y[0:int(len(y)/2)]
             y_pos = pos[1::2]
             if self.num >= len(y_pos[0]):
-                #make sure that the animation stops at the last simulated point
+                # make sure that the animation stops at the last simulated point
                 self.num = len(y_pos[0])-1
                 self.animation.update_frame(self.num)
 
@@ -487,7 +512,7 @@ class MassElement(wx.Panel):
     """
     Class to create the panel, where the user can choose what kind of mass to add
     This panel is child to the create element frame
-    The panel has three buttons. One to get back to the previous panel. And the other two to choose bewteen a mass point and a steady body. 
+    The panel has three buttons. One to get back to the previous panel. And the other two to choose between a mass point and a steady body.
 
     :param parent: The Create Element Frame
     :type parent: wx.Frame
@@ -557,15 +582,15 @@ class MassPoint(wx.Panel):
         panel_size = self.GetSize()
 
         # Create a label to the panel 
-        self.mass_point_text = wx.StaticText(self, label="Mass Point")  # Add a static text to the panel
-        text_mass_point_font = wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)  # Define font for header
+        self.mass_point_text = wx.StaticText(self, label="Mass Point")
+        text_mass_point_font = wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         self.mass_point_text.SetFont(text_mass_point_font) 
         mass_point_size = self.mass_point_text.GetSize()
         x_pos_mass_point = (panel_size[0]-mass_point_size[0])//2
         y_pos_mass_point = (2*mass_point_size[1])//1
         self.mass_point_text.SetPosition((x_pos_mass_point,y_pos_mass_point))
 
-        # Create the input field to add a external force on the mass point
+        # Create the input field to add an external force on the mass point
         self.external_force_label = wx.StaticText(self,label = "What is the external force acting on the Mass Point: (N)")
         external_force_label_size = self.external_force_label.GetSize()
         x_pos_external_force_label = (panel_size[0]-1*external_force_label_size[0])//2
@@ -615,7 +640,6 @@ class MassPoint(wx.Panel):
             self.external_force = 0
             self.mass_mass_point = float(self.mass.GetValue())
             self.external_force = float(self.input_external_force.GetValue())
-            #wx.MessageBox(f"{self.mass_mass_point}")
             m = objects.Masspoint(mass=self.mass_mass_point, index = (len(list_of_mass)+1), external_force= self.external_force)
             list_of_mass.append(m)
 
@@ -632,7 +656,7 @@ class SteadyBody(wx.Panel):
     Class to create the panel, where the user can create a steady body 
     This panel is child to the create element frame
     It has 5 input texts. One for the density, one for the width, one for the length and one for the height of the steady body.
-    The fifth input text ist to add a external force which is applied onto the steady body
+    The fifth input text ist to add an external force which is applied onto the steady body
     The panel has two buttons. One to submit the steady body and one to get back to the previous panel.
 
     :param parent: The Create Element Frame
@@ -722,7 +746,7 @@ class SteadyBody(wx.Panel):
         """
         Method to create a steady body with the given inputs. 
         """
-        if self.density_input:
+        if self.density_input and self.width_input and self.height_input and self.length_input:
             self.external_force = 0
             self.density = float(self.density_input.GetValue())
             self.width = float(self.width_input.GetValue())
@@ -750,7 +774,7 @@ class SpringElement(wx.Panel):
     """
     Class to create the panel, where the user can choose what kind of spring to add
     This panel is child to the create element frame
-    The panel has four buttons. One to get back to the previous panel. And three to choose between a single spring, severla springs in series and several parallel springs. 
+    The panel has four buttons. One to get back to the previous panel. And three to choose between a single spring, several springs in series and several parallel springs.
 
     :param parent: The Create Element Frame
     :type parent: wx.Frame
@@ -758,7 +782,6 @@ class SpringElement(wx.Panel):
     def __init__(self,parent):
         wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
-        #text = wx.StaticText(self, label="Spring", pos=(50, 50))  # Add a static text to the panel
 
         # Define Button Size  
         button_size_element = (200,25)
@@ -768,7 +791,7 @@ class SpringElement(wx.Panel):
         self.Bind(wx.EVT_BUTTON,parent.on_spring_single,self.button_spring_single)
 
         # Create Button to Switch to Parallel Springs
-        self.button_spring_parallel= wx.Button(self,label="Several Paralell Springs",size = button_size_element)
+        self.button_spring_parallel= wx.Button(self,label="Several Parallel Springs",size = button_size_element)
         self.Bind(wx.EVT_BUTTON,parent.on_spring_parallel,self.button_spring_parallel)
 
         # Create Button to Switch to Series Springs
@@ -889,7 +912,7 @@ class SingleSpring(wx.Panel):
         Method to create a Spring with the parameters defined in the input fields. 
         """
         # Process the list of spring lengths
-        if self.length_spring_single:
+        if self.length_spring_single and self.stiffness_spring_single:
             self.spring_length = 0
             self.spring_length = float(self.length_spring_single.GetValue())
 
@@ -995,11 +1018,11 @@ class ParallelSpring(wx.Panel):
     def on_submit(self, event):
         """
         Method to calculate the resulting stiffness and length of several parallel springs
-        With this method one spring is created which has this resulting siffness and length
+        With this method one spring is created which has this resulting stiffness and length
         By submitting this spring the list of springs from the add method is emptied. 
         """
         # Process the list of spring lengths
-        if self.spring_lengths_parallel:
+        if self.spring_lengths_parallel and self.spring_stiffness_parallel:
             self.spring_length = 0
             for length in self.spring_lengths_parallel:
                 self.spring_length +=length
@@ -1039,7 +1062,7 @@ class SeriesSpring(wx.Panel):
         panel_size = self.GetSize()
 
         # Create the header for the panel 
-        self.series_spring_text = wx.StaticText(self, label="Series of Springs", pos=(50, 50))  # Add a static text to the panel
+        self.series_spring_text = wx.StaticText(self, label="Series of Springs", pos=(50, 50))
         text_series_spring_font = wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         self.series_spring_text.SetFont(text_series_spring_font) 
         series_spring_size = self.series_spring_text.GetSize()
@@ -1107,21 +1130,19 @@ class SeriesSpring(wx.Panel):
     def on_submit(self, event):
         """
         Method to calculate the resulting stiffness and length of several springs in series.
-        With this method one spring is created which has this resulting siffness and length
+        With this method one spring is created which has this resulting stiffness and length
         By submitting this spring the list of springs from the add method is emptied. 
         """
         # Process the list of spring lengths
-        if self.spring_lengths_series:
+        if self.spring_lengths_series and self.spring_stiffness_series:
             self.spring_length = 0
             for length in self.spring_lengths_series:
                 self.spring_length +=length
-            #wx.MessageBox(f"{list_of_springs_length}")
 
             self.spring_stiffness = 0
             for stiffness in self.spring_stiffness_series:
                 self.spring_stiffness += (1/stiffness)
             self.spring_stiffness = (1/self.spring_stiffness)
-            #wx.MessageBox(f"{list_of_springs_stiffness}")
 
             s = objects.Spring(rest_length = self.spring_length,stiffness=self.spring_stiffness,index =(len(list_of_springs)+1))
             list_of_springs.append(s)
@@ -1170,30 +1191,33 @@ class InitialCondition(wx.Frame):
 
     def on_submit_IC(self,event):
         """
-        This method takes the input vlaues for position and velocity. 
+        This method takes the input values for position and velocity.
         Then the initial values for the mass are set via the setInitialCondition function from objects
-        Then the initali values for the spring are set via the setInitialCondition function from objects. Here the first spring has to get (0,0) as its first start position.
+        Then the initial values for the spring are set via the setInitialCondition function from objects. Here the first spring has to get (0,0) as its first start position.
         The last if loop closes the frame when there are no more elements which need initial conditions.
         """
-        self.position = 0
-        self.velocity = 0
-        self.position = float(self.position_input.GetValue())
-        self.velocity = float(self.velocity_input.GetValue())
+        if self.position_input and self.velocity_input:
+            self.position = 0
+            self.velocity = 0
+            self.position = float(self.position_input.GetValue())
+            self.velocity = float(self.velocity_input.GetValue())
 
-    
-        list_of_mass[self.i].setInitialConditions([0,self.position],[0,self.velocity])
-        if self.i == 0:
-            list_of_springs[self.i].setInitialConditions(None,list_of_mass[self.i],[0,0])
-        else: 
-            list_of_springs[self.i].setInitialConditions(list_of_mass[self.i-1],list_of_mass[self.i],[0,0])
+            list_of_mass[self.i].setInitialConditions([0,self.position],[0,self.velocity])
+            if self.i == 0:
+                list_of_springs[self.i].setInitialConditions(None,list_of_mass[self.i],[0,0])
+            else:
+                list_of_springs[self.i].setInitialConditions(list_of_mass[self.i-1],list_of_mass[self.i],[0,0])
 
-        self.position_input.Clear()
-        self.velocity_input.Clear()
+            self.position_input.Clear()
+            self.velocity_input.Clear()
 
-        self.i += 1 
+            self.i += 1
 
-        if self.i >= len(list_of_mass):
-            self.Close()
+            if self.i >= len(list_of_mass):
+                self.Close()
+
+        else:
+            wx.MessageBox("No initial conditions to submit.", "Warning", wx.OK | wx.ICON_WARNING)
 
 
 # Create The Frame for the Create Element 
@@ -1201,7 +1225,7 @@ class CreateElement(wx.Frame):
     """
     Class to create the frame for Create Element
     This frame is opened with the button "Create Element" on the "Create Model" panel
-    The frame is a parent for choose element, mass element, spring element, mass point, steady body, sinlge spring, parallel spring and series spring.
+    The frame is a parent for choose element, mass element, spring element, mass point, steady body, single spring, parallel spring and series spring.
     The methods to switch between the child panels are defined here.
     """
     def __init__(self,parent):
@@ -1265,7 +1289,7 @@ class CreateElement(wx.Frame):
         # Method to switch to Single Springs 
     def on_spring_single(self,event):
         """
-        Method to switch between the "spring element" panel and the "singel spring" panel.
+        Method to switch between the "spring element" panel and the "single spring" panel.
         """        
         self.spring_element.Hide()
         self.spring_single.Show()
@@ -1292,7 +1316,7 @@ class CreateElement(wx.Frame):
     def on_finish(self,event):
         """
         Method to close the "Create Element" frame.
-        Before that it is checke if the number of springs is equal to the number of masses. 
+        Before that, it is checked if the number of springs is equal to the number of masses.
         """
         global list_of_mass
         global list_of_springs
@@ -1301,9 +1325,6 @@ class CreateElement(wx.Frame):
             self.Close()
         else: 
             wx.MessageBox(f"There are {len(list_of_springs)} springs and {len(list_of_mass)} masses. In this version of DynamicVision, there have to be an equal amount of both elements. Please check and try again")    
-        
-
-
 
 
 # Create the Main Frame 
@@ -1311,8 +1332,8 @@ class MainFrame(wx.Frame):
     """
     Class to create the Main Frame
     This frame is a parent for start menu, create model and open model.
-    It opens when the application is started. 
-ja     """
+    It opens when the application is started.
+    """
     def __init__(self):
         wx.Frame.__init__(self,None,title="DynamicVision",size =(1200,800))
         self.SetBackgroundColour(wx.Colour(255,255,255))
@@ -1349,6 +1370,14 @@ ja     """
         Method to close the application by exiting the main loop which starts when starting the application.
         """
         wx.GetApp().ExitMainLoop()
+
+    # Create the Method that closes the App
+    def on_open_documentation(self,event):
+        """
+        Method to open the documentation
+        """
+        doc_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "\Documentation\\build\\html\\index.html"
+        webbrowser.open(doc_path)
         
 # Entry point of the application
 if __name__ == "__main__":

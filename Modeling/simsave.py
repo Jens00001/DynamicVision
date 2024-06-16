@@ -14,11 +14,11 @@ def save(file_name="data.nc", data=None, names=None):
     The given input data is appended to a list which is saved in a binary table.
 
     :param file_name: name of the wanted file (with or without .nc)
-    :type file_name: string
+    :type file_name: str
     :param data: data to save
-    :type data: list of int or list of float or list of str
+    :type data: list
     :param names: names of the corresponding data (like keys for python dictionaries)
-    :type names: list of strings
+    :type names: list
     """
 
     # check if ".nc" is already in file name
@@ -62,13 +62,13 @@ def save_system(file_name="data.nc", sim_res=None, system=None,  names=None):
     (that are needed to reconstruct the system) and saves the data by creating a list that is passed to the save() function.
 
     :param file_name: name of the wanted file (with or without .nc)
-    :type file_name: string
+    :type file_name: str
     :param sim_res: simulation results
-    :type sim_res: string
+    :type sim_res: str
     :param system: mechanical system
     :type system: Newton System
     :param names: names of the corresponding data (like keys for python dictionaries)
-    :type names: list of strings
+    :type names: list
     """
     tex_save(file_name, system)
 
@@ -82,6 +82,7 @@ def save_system(file_name="data.nc", sim_res=None, system=None,  names=None):
 
     # save time
     save_data = [sim_res.t]
+
     # save simulation result
     save_data.extend(sim_res.y)
     save_data.append(sym_data)
@@ -99,7 +100,7 @@ def load(file_name="data.nc", num_data=(0,)):
     The method loads each column in sequence and saves them in a list.
 
     :param file_name: name of the file you want to load (with or without .nc)
-    :type file_name: string
+    :type file_name: str
     :param num_data: Which data should be loaded?
                      Default value loads all data inside file.
                      One Value loads one column: (x,). "x" corresponds to the index of the data you want to load.
@@ -107,7 +108,7 @@ def load(file_name="data.nc", num_data=(0,)):
                      "x" and "y" corresponds to the indices of the data you want to load (and the data between these indices).
     :type num_data: tuple of int
     :return: data loaded from file
-    :rtype: list of lists (of int, float or string)
+    :rtype: list
     """
 
     # check if ".nc" is already in file name
@@ -157,7 +158,7 @@ def load_system(file_name="data.nc"):
     can be plotted and the mechanical system can be reconstructed.
 
     :param file_name: name of the file you want to load (with or without .nc)
-    :type file_name: string
+    :type file_name: str
     :return: data loaded from file {time,results,system}
     :rtype: dictionary
     """
@@ -184,9 +185,9 @@ def tex_save(file_name="tex_equation.txt", system=None):
     to convert the equations of motion of the given system into LaTeX notion.
 
     :param file_name: name of the wanted file (with or without .txt)
-    :type file_name: string
+    :type file_name: str
     :param system: system to save (equations of motions)
-    :type system: newton.Mechanics Class
+    :type system: Newton object
     """
     # check if ".txt" is already in file name
     if "_tex_equation.txt" in file_name:

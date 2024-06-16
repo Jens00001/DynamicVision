@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>animation_gui &#8212; Dynamic Vision 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for animation_gui</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">patches</span>
+
+<div class="viewcode-block" id="Animation">
+<a class="viewcode-back" href="../animation_gui.html#animation_gui.Animation">[docs]</a>
+<span class="k">class</span> <span class="nc">Animation</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for creating an animation of a system of springs and masses.</span>
+
+<span class="sd">    :param sol: Solution object containing the time, position and velocity data</span>
+<span class="sd">    :type sol: scipy.integrate.OdeSolution</span>
+<span class="sd">    :param list_of_object_lists: List containing lists of Spring and Mass objects</span>
+<span class="sd">    :type list_of_object_lists: list of lists of objects</span>
+<span class="sd">    :param ax: Matplotlib axis object to plot the animation</span>
+<span class="sd">    :type ax: matplotlib.axes.Axes</span>
+
+<span class="sd">    :ivar sol: Solution object containing the time, position and velocity data</span>
+<span class="sd">    :vartype sol: scipy.integrate.OdeSolution</span>
+<span class="sd">    :ivar list_of_object_lists: List containing lists of Spring and Mass objects</span>
+<span class="sd">    :vartype list_of_object_lists: list of lists of objects</span>
+<span class="sd">    :ivar ax: Matplotlib axis object to plot the animation</span>
+<span class="sd">    :vartype ax: matplotlib.axes.Axes</span>
+<span class="sd">    :ivar spring_lines: List to store the plotted spring lines in the animation</span>
+<span class="sd">    :vartype spring_lines: list of matplotlib.lines.Line2D</span>
+<span class="sd">    :ivar mass_circles: List to store the plotted mass circles in the animation</span>
+<span class="sd">    :vartype mass_circles: list of matplotlib.patches.Circle</span>
+<span class="sd">    :ivar sb_rectangles: List to store the plotted steady body rectangles in the animation</span>
+<span class="sd">    :vartype sb_rectangles: list of matplotlib.patches.Rectangle</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sol</span><span class="p">,</span> <span class="n">list_of_object_lists</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the Animation instance.</span>
+
+<span class="sd">        :param sol: Solution object containing the time, position and velocity data</span>
+<span class="sd">        :type sol: scipy.integrate.OdeSolution</span>
+<span class="sd">        :param list_of_object_lists: List containing lists of Spring and Mass objects</span>
+<span class="sd">        :type list_of_object_lists: list of lists of objects</span>
+<span class="sd">        :param ax: Matplotlib axis object to plot the animation</span>
+<span class="sd">        :type ax: matplotlib.axes.Axes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sol</span> <span class="o">=</span> <span class="n">sol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_of_object_lists</span> <span class="o">=</span> <span class="n">list_of_object_lists</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spring_lines</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List to store spring line objects for updating animation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass_circles</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List to store mass circle objects for updating animation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sb_rectangles</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># List to store steady body rectangle objects for updating animation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_animation</span><span class="p">()</span>   <span class="c1"># Call initialization method to set up the initial animation</span>
+
+<div class="viewcode-block" id="Animation.init_animation">
+<a class="viewcode-back" href="../animation_gui.html#animation_gui.Animation.init_animation">[docs]</a>
+    <span class="k">def</span> <span class="nf">init_animation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the animation by setting up the plot with springs and masses in the starting configuration, </span>
+<span class="sd">        which refers to the initial conditions of the Spring and Mass objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sol</span><span class="o">.</span><span class="n">y</span>    <span class="c1"># - sign because the COS is inverted in the simulated data</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span>
+        <span class="n">x_pos</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">x_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_pos</span><span class="p">))</span>    <span class="c1">#finds the maximum value of all x positions</span>
+        <span class="n">x_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">((</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_pos</span><span class="p">))</span>    <span class="c1">#finds the minimum value of all x positions</span>
+        <span class="n">y_pos</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">y_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="nb">max</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">y_pos</span><span class="p">))</span>    <span class="c1">#finds the maximum value of all y positions</span>
+        <span class="n">y_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">((</span><span class="nb">min</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">y_pos</span><span class="p">))</span>    <span class="c1">#finds the minimum value of all y positions</span>
+        <span class="n">y_range</span> <span class="o">=</span> <span class="n">y_max</span> <span class="o">-</span> <span class="n">y_min</span>
+
+        <span class="c1"># Set plot limits and aspect ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">y_min</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">x_min</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Animation&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+
+        <span class="n">list_of_springs</span><span class="p">,</span> <span class="n">list_of_mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_of_object_lists</span>
+
+        <span class="c1"># zorder is use in matplotlib to control the drawing order, the grid have a zorder of 2.5 by default</span>
+        <span class="c1"># we want that the masses are plotted above the spring lines, so the zorder of the masses must have a higer values than the zorder of the spring lines</span>
+        <span class="c1"># and both zorders must have a higher value than the zorder of the grid, because we want that the objects are shown over the grid</span>
+
+        <span class="c1"># Create springs</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_of_springs</span><span class="p">)):</span>
+            <span class="n">x_sp</span><span class="p">,</span> <span class="n">y_sp</span> <span class="o">=</span> <span class="n">list_of_springs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">startingpoint</span>
+            <span class="n">x_ep</span><span class="p">,</span> <span class="n">y_ep</span> <span class="o">=</span> <span class="n">list_of_springs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">endpoint</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spring_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x_sp</span><span class="p">,</span> <span class="n">x_ep</span><span class="p">],</span> <span class="p">[</span><span class="n">y_sp</span><span class="p">,</span> <span class="n">y_ep</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">list_of_springs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">color</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># Create masses</span>
+        <span class="k">for</span> <span class="n">mass</span> <span class="ow">in</span> <span class="n">list_of_mass</span><span class="p">:</span>
+            <span class="k">match</span> <span class="n">mass</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+                <span class="k">case</span> <span class="s2">&quot;masspoint&quot;</span><span class="p">:</span>
+                    <span class="n">mass</span><span class="o">.</span><span class="n">set_diameter</span><span class="p">(</span><span class="n">y_range</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mass_circles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">Circle</span><span class="p">(</span><span class="n">mass</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="n">mass</span><span class="o">.</span><span class="n">diameter</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">mass</span><span class="o">.</span><span class="n">color</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mass_circles</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>    <span class="c1"># Add mass circle to the plot as a patch object</span>
+
+                <span class="k">case</span> <span class="s2">&quot;steady body&quot;</span><span class="p">:</span>
+                    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">mass</span><span class="o">.</span><span class="n">position</span>
+
+                    <span class="c1"># calculate position of the rectangle&#39;s bottom-left corner</span>
+                    <span class="n">x_left</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">mass</span><span class="o">.</span><span class="n">x_dim</span> <span class="o">/</span> <span class="mi">2</span>
+                    <span class="n">y_bottom</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">mass</span><span class="o">.</span><span class="n">y_dim</span> <span class="o">/</span> <span class="mi">2</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sb_rectangles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patches</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">((</span><span class="n">x_left</span><span class="p">,</span> <span class="n">y_bottom</span><span class="p">),</span> <span class="n">mass</span><span class="o">.</span><span class="n">x_dim</span><span class="p">,</span> <span class="n">mass</span><span class="o">.</span><span class="n">y_dim</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">mass</span><span class="o">.</span><span class="n">color</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sb_rectangles</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>    <span class="c1"># Add steady body rectangle to the plot as a patch object</span></div>
+
+
+<div class="viewcode-block" id="Animation.update_frame">
+<a class="viewcode-back" href="../animation_gui.html#animation_gui.Animation.update_frame">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the animation frame based on the current time step.</span>
+
+<span class="sd">        :param num: Current time step index</span>
+<span class="sd">        :type num: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sol</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span>
+        <span class="n">x_pos</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">y_pos</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">list_of_springs</span><span class="p">,</span> <span class="n">list_of_mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_of_object_lists</span>
+
+        <span class="c1"># Ensure num is within the range of positions</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">num</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+
+            <span class="n">sb_index</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">mp_index</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_of_mass</span><span class="p">)):</span>
+                <span class="k">match</span> <span class="n">list_of_mass</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+                    <span class="k">case</span> <span class="s2">&quot;masspoint&quot;</span><span class="p">:</span>
+                        <span class="n">list_of_mass</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">x_pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">num</span><span class="p">],</span><span class="n">y_pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">num</span><span class="p">])</span>   <span class="c1"># Move masspoint to new coordinates</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">mass_circles</span><span class="p">[</span><span class="n">mp_index</span><span class="p">]</span><span class="o">.</span><span class="n">set_center</span><span class="p">(</span><span class="n">list_of_mass</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>    <span class="c1"># Update mass circle position</span>
+                        <span class="n">mp_index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                    <span class="k">case</span> <span class="s2">&quot;steady body&quot;</span><span class="p">:</span>
+                        <span class="n">list_of_mass</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">x_pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">num</span><span class="p">],</span> <span class="n">y_pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">num</span><span class="p">])</span>  <span class="c1"># Move steady body to new coordinates</span>
+                        <span class="n">x_center</span><span class="p">,</span> <span class="n">y_center</span> <span class="o">=</span> <span class="n">list_of_mass</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
+                        <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">list_of_mass</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">x_dim</span><span class="p">,</span> <span class="n">list_of_mass</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">y_dim</span>
+                        <span class="n">bottom_left</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_center</span> <span class="o">-</span> <span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">y_center</span> <span class="o">-</span> <span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">sb_rectangles</span><span class="p">[</span><span class="n">sb_index</span><span class="p">]</span><span class="o">.</span><span class="n">set_xy</span><span class="p">(</span><span class="n">bottom_left</span><span class="p">)</span>    <span class="c1"># Update steady body rectangle position</span>
+                        <span class="n">sb_index</span> <span class="o">+=</span> <span class="mi">1</span>
+                    
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_of_springs</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">list_of_springs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">startingpoint</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">list_of_springs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">list_of_mass</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="n">x_sp</span><span class="p">,</span> <span class="n">y_sp</span> <span class="o">=</span> <span class="n">list_of_springs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">startingpoint</span>
+                    <span class="n">x_ep</span><span class="p">,</span> <span class="n">y_ep</span> <span class="o">=</span> <span class="n">list_of_springs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">endpoint</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">spring_lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_data</span><span class="p">([</span><span class="n">x_sp</span><span class="p">,</span> <span class="n">x_ep</span><span class="p">],</span> <span class="p">[</span><span class="n">y_sp</span><span class="p">,</span> <span class="n">y_ep</span><span class="p">])</span>   <span class="c1"># Update spring line coordinates</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">list_of_springs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">list_of_mass</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">list_of_mass</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="n">x_sp</span><span class="p">,</span> <span class="n">y_sp</span> <span class="o">=</span> <span class="n">list_of_springs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">startingpoint</span>
+                    <span class="n">x_ep</span><span class="p">,</span> <span class="n">y_ep</span> <span class="o">=</span> <span class="n">list_of_springs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">endpoint</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">spring_lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_data</span><span class="p">([</span><span class="n">x_sp</span><span class="p">,</span> <span class="n">x_ep</span><span class="p">],</span> <span class="p">[</span><span class="n">y_sp</span><span class="p">,</span> <span class="n">y_ep</span><span class="p">])</span>   <span class="c1"># Update spring line coordinates</span>
+        
+        <span class="c1"># Update plot title with current time   </span>
+        <span class="n">time</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">[</span><span class="n">num</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Animation </span><span class="se">\n</span><span class="s1">Time: &#39;</span><span class="o">+</span><span class="n">time</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Dynamic Vision</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../additions.html">additions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animation.html">animation module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animation_gui.html">animation_gui module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../main_modeling.html">main_modeling module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../newton.html">newton module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../objects.html">objects module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simsave.html">simsave module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GUI.html">GUI module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Daniel Philippi, Jens Rößler, Nicolas Scherer.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

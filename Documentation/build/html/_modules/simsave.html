@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>simsave &#8212; Dynamic Vision 0.1 documentation</title>
+    <title>simsave &#8212; Dynamic Vision 1.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
-    <script src="../_static/documentation_options.js?v=2709fde1"></script>
+    <script src="../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -40,14 +40,19 @@
 <a class="viewcode-back" href="../simsave.html#simsave.save">[docs]</a>
 <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;data.nc&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Method for saving the simulated data (and symbolic equation)</span>
+<span class="sd">    Method for saving the simulated data (and symbolic equation). To save data it uses the netCDF4 library</span>
+<span class="sd">    that is based on HDF5. HDF5 uses optimized structures and algorithms to allow an efficient saving</span>
+<span class="sd">    and reading of one- and multidimensional tables.</span>
+<span class="sd">    The data is saved in a binary format. So it is machine-independent and the possibility of compression enables an</span>
+<span class="sd">    easy and efficient way to save data.</span>
+<span class="sd">    The given input data is appended to a list which is saved in a binary table.</span>
 
 <span class="sd">    :param file_name: name of the wanted file (with or without .nc)</span>
-<span class="sd">    :type file_name: string</span>
+<span class="sd">    :type file_name: str</span>
 <span class="sd">    :param data: data to save</span>
-<span class="sd">    :type data: list of int or list of float or list of str</span>
+<span class="sd">    :type data: list</span>
 <span class="sd">    :param names: names of the corresponding data (like keys for python dictionaries)</span>
-<span class="sd">    :type names: list of strings</span>
+<span class="sd">    :type names: list</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># check if &quot;.nc&quot; is already in file name</span>
@@ -88,17 +93,21 @@
 <a class="viewcode-back" href="../simsave.html#simsave.save_system">[docs]</a>
 <span class="k">def</span> <span class="nf">save_system</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;data.nc&quot;</span><span class="p">,</span> <span class="n">sim_res</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">system</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Method for saving the simulated data and the mechanical system</span>
+<span class="sd">    Method for saving the simulated data and the mechanical system. This method is based on the save() function</span>
+<span class="sd">    that uses the netCDF4 library. It is optimized to save simulation data and the simulated system itself.</span>
+<span class="sd">    It takes the simulated data and the important properties of the mechanical system</span>
+<span class="sd">    (that are needed to reconstruct the system) and saves the data by creating a list that is passed to the save() function.</span>
 
 <span class="sd">    :param file_name: name of the wanted file (with or without .nc)</span>
-<span class="sd">    :type file_name: string</span>
+<span class="sd">    :type file_name: str</span>
 <span class="sd">    :param sim_res: simulation results</span>
-<span class="sd">    :type sim_res: string</span>
+<span class="sd">    :type sim_res: str</span>
 <span class="sd">    :param system: mechanical system</span>
 <span class="sd">    :type system: Newton System</span>
 <span class="sd">    :param names: names of the corresponding data (like keys for python dictionaries)</span>
-<span class="sd">    :type names: list of strings</span>
+<span class="sd">    :type names: list</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tex_save</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">system</span><span class="p">)</span>
 
     <span class="c1"># get masses to save forces</span>
     <span class="n">masses</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;mass&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">parameters</span><span class="p">]</span>
@@ -110,6 +119,7 @@
 
     <span class="c1"># save time</span>
     <span class="n">save_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">sim_res</span><span class="o">.</span><span class="n">t</span><span class="p">]</span>
+
     <span class="c1"># save simulation result</span>
     <span class="n">save_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">sim_res</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
     <span class="n">save_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sym_data</span><span class="p">)</span>
@@ -122,10 +132,15 @@
 <a class="viewcode-back" href="../simsave.html#simsave.load">[docs]</a>
 <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;data.nc&quot;</span><span class="p">,</span> <span class="n">num_data</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,)):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Method for loading the simulated data in the current workspace</span>
+<span class="sd">    Method for loading the simulated data in the current workspace. The file to be loaded must be saved in .nc format.</span>
+<span class="sd">    To save data you can use the netCDF4 library that is based on HDF5. HDF5 uses optimized structures</span>
+<span class="sd">    and algorithms to allow an efficient saving and reading of one- and multidimensional tables.</span>
+<span class="sd">    The data is saved in a binary format. So it is machine-independent and the possibility of compression enables an</span>
+<span class="sd">    easy and efficient way to save data. As long as this criterion is met, the data can be loaded with the load() function.</span>
+<span class="sd">    The method loads each column in sequence and saves them in a list.</span>
 
 <span class="sd">    :param file_name: name of the file you want to load (with or without .nc)</span>
-<span class="sd">    :type file_name: string</span>
+<span class="sd">    :type file_name: str</span>
 <span class="sd">    :param num_data: Which data should be loaded?</span>
 <span class="sd">                     Default value loads all data inside file.</span>
 <span class="sd">                     One Value loads one column: (x,). &quot;x&quot; corresponds to the index of the data you want to load.</span>
@@ -133,7 +148,7 @@
 <span class="sd">                     &quot;x&quot; and &quot;y&quot; corresponds to the indices of the data you want to load (and the data between these indices).</span>
 <span class="sd">    :type num_data: tuple of int</span>
 <span class="sd">    :return: data loaded from file</span>
-<span class="sd">    :rtype: list of lists (of int, float or string)</span>
+<span class="sd">    :rtype: list</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># check if &quot;.nc&quot; is already in file name</span>
@@ -179,10 +194,14 @@
 <a class="viewcode-back" href="../simsave.html#simsave.load_system">[docs]</a>
 <span class="k">def</span> <span class="nf">load_system</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;data.nc&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Method for loading the simulation results and the simulated system</span>
+<span class="sd">    Method for loading the simulation results and the simulated system.</span>
+<span class="sd">    This method is based on the load() function that uses the netCDF4 library.</span>
+<span class="sd">    It is optimized to load simulation data and the simulated system itself. It exports the simulated results</span>
+<span class="sd">    and the properties of mechanical system to a dictionary for an easy access. After that the simulation results</span>
+<span class="sd">    can be plotted and the mechanical system can be reconstructed.</span>
 
 <span class="sd">    :param file_name: name of the file you want to load (with or without .nc)</span>
-<span class="sd">    :type file_name: string</span>
+<span class="sd">    :type file_name: str</span>
 <span class="sd">    :return: data loaded from file {time,results,system}</span>
 <span class="sd">    :rtype: dictionary</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -190,13 +209,13 @@
     <span class="n">data</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">num_data</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
     <span class="n">loaded_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][:],</span>
                    <span class="s1">&#39;results&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">d</span><span class="p">[:]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
-                   <span class="s1">&#39;system&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;param_values&#39;</span><span class="p">:</span> <span class="n">sympify</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">9</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-                              <span class="s1">&#39;masses&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">sympify</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">9</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
-                              <span class="s1">&#39;coordinates&#39;</span><span class="p">:</span> <span class="n">sympify</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">9</span><span class="p">][</span><span class="mi">2</span><span class="p">]),</span>
-                              <span class="s1">&#39;velocities&#39;</span><span class="p">:</span> <span class="n">sympify</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">9</span><span class="p">][</span><span class="mi">3</span><span class="p">]),</span>
-                              <span class="s1">&#39;accelerations&#39;</span><span class="p">:</span> <span class="n">sympify</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">9</span><span class="p">][</span><span class="mi">4</span><span class="p">]),</span>
-                              <span class="s1">&#39;forces&#39;</span><span class="p">:</span> <span class="n">sympify</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">9</span><span class="p">][</span><span class="mi">5</span><span class="p">]),</span>
-                              <span class="s1">&#39;constraints&#39;</span><span class="p">:</span> <span class="n">sympify</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">9</span><span class="p">][</span><span class="mi">6</span><span class="p">])</span>
+                   <span class="s1">&#39;system&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;param_values&#39;</span><span class="p">:</span> <span class="n">sympify</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+                              <span class="s1">&#39;masses&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">sympify</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                              <span class="s1">&#39;coordinates&#39;</span><span class="p">:</span> <span class="n">sympify</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]),</span>
+                              <span class="s1">&#39;velocities&#39;</span><span class="p">:</span> <span class="n">sympify</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]),</span>
+                              <span class="s1">&#39;accelerations&#39;</span><span class="p">:</span> <span class="n">sympify</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">4</span><span class="p">]),</span>
+                              <span class="s1">&#39;forces&#39;</span><span class="p">:</span> <span class="n">sympify</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">5</span><span class="p">]),</span>
+                              <span class="s1">&#39;constraints&#39;</span><span class="p">:</span> <span class="n">sympify</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">6</span><span class="p">])</span>
                               <span class="p">}</span>
                    <span class="p">}</span>
     <span class="k">return</span> <span class="n">loaded_data</span></div>
@@ -207,19 +226,20 @@
 <a class="viewcode-back" href="../simsave.html#simsave.tex_save">[docs]</a>
 <span class="k">def</span> <span class="nf">tex_save</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;tex_equation.txt&quot;</span><span class="p">,</span> <span class="n">system</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Method for saving the symbolic equation in latex format</span>
+<span class="sd">    Method for saving the symbolic equation in latex format. It takes a mechanical system as an input and saves its</span>
+<span class="sd">    equations of motion in LaTex format to a .txt file. It uses the eq_to_latex() function of the addition library</span>
+<span class="sd">    to convert the equations of motion of the given system into LaTeX notion.</span>
 
 <span class="sd">    :param file_name: name of the wanted file (with or without .txt)</span>
-<span class="sd">    :type file_name: string</span>
+<span class="sd">    :type file_name: str</span>
 <span class="sd">    :param system: system to save (equations of motions)</span>
-<span class="sd">    :type system: newton.Mechanics Class</span>
+<span class="sd">    :type system: Newton object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="c1"># check if &quot;.txt&quot; is already in file name</span>
-    <span class="k">if</span> <span class="s2">&quot;.txt&quot;</span> <span class="ow">in</span> <span class="n">file_name</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;_tex_equation.txt&quot;</span> <span class="ow">in</span> <span class="n">file_name</span><span class="p">:</span>
         <span class="n">name_str</span> <span class="o">=</span> <span class="n">file_name</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">name_str</span> <span class="o">=</span> <span class="n">file_name</span> <span class="o">+</span> <span class="s2">&quot;.txt&quot;</span>
+        <span class="n">name_str</span> <span class="o">=</span> <span class="n">file_name</span> <span class="o">+</span> <span class="s2">&quot;_tex_equation.txt&quot;</span>
 
     <span class="c1"># check if file already exits and delete it</span>
     <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">name_str</span><span class="p">):</span>
@@ -259,9 +279,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../additions.html">additions module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animation.html">animation module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../create_objects.html">create_objects module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../geometric_relation.html">geometric_relation module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../lagrange.html">lagrange module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animation_gui.html">animation_gui module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../main_modeling.html">main_modeling module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../newton.html">newton module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../objects.html">objects module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../simsave.html">simsave module</a></li>

@@ -6,13 +6,9 @@ Modeling
 
    additions
    animation
-   create_objects
-   geometric_relation
-   gr_test
-   lagrange
-   main_test
-   main_test_v2
+   animation_gui
+   main_modeling
    newton
-   newton_test
    objects
    simsave
+   GUI

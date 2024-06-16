@@ -1,4 +1,3 @@
-import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
@@ -49,10 +48,10 @@ class Animation:
     def init_animation(self):
         """
         Initialize the animation by setting up the plot with springs and masses in the starting configuration, 
-        which refers to the inital conditions of the Spring and Mass objects.
+        which refers to the initial conditions of the Spring and Mass objects.
         """
         t = self.sol.t
-        y = -self.sol.y    # - sign because the KOS is inverted in the simulated data 
+        y = -self.sol.y    # - sign because the COS is inverted in the simulated data
         pos = y[0:int(len(y)/2)]
         x_pos = pos[::2]
         x_max = max((max(x) for x in x_pos))    #finds the maximum value of all x positions
@@ -93,9 +92,11 @@ class Animation:
 
                 case "steady body":
                     x, y = mass.position
+
                     # calculate position of the rectangle's bottom-left corner
                     x_left = x - mass.x_dim / 2
                     y_bottom = y - mass.y_dim / 2
+
                     self.sb_rectangles.append(patches.Rectangle((x_left, y_bottom), mass.x_dim, mass.y_dim, color=mass.color, zorder=4))
                     self.ax.add_patch(self.sb_rectangles[-1])    # Add steady body rectangle to the plot as a patch object
 
@@ -123,7 +124,6 @@ class Animation:
                         list_of_mass[i].move(x_pos[i][num],y_pos[i][num])   # Move masspoint to new coordinates
                         self.mass_circles[mp_index].set_center(list_of_mass[i].position)    # Update mass circle position
                         mp_index += 1
-                        #print(list_of_mass[i].position)
 
                     case "steady body":
                         list_of_mass[i].move(x_pos[i][num], y_pos[i][num])  # Move steady body to new coordinates
