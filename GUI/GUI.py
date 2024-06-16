@@ -107,6 +107,7 @@ class CreateModel(wx.Panel):
     def __init__(self,parent):
         wx.Panel.__init__(self,parent,size=(1200,800))
         self.SetBackgroundColour(wx.Colour(255,255,255))
+        panel_size = self.GetSize()
 
         # Create a Matplotlib canvas to display the figure
         self.figure=Figure(figsize=(10,4))
@@ -133,6 +134,20 @@ class CreateModel(wx.Panel):
         self.updatetime = 100 # Initialize updatetime
         self.skip_sim_steps = 1 # Intitalize the number of steps which are skiped in the animation
         self.timer = wx.Timer(self)
+
+        button_size = (300,25)
+        self.button_return = wx.Button(self,label="Return",size = (button_size[0]/2,button_size[1]))
+        self.Bind(wx.EVT_BUTTON,self.on_return,self.button_return)
+        self.button_return.SetPosition(((panel_size[0]-button_size[0])/2,panel_size[1]-(75)))
+
+        self.start_menu = parent.start_menu
+
+    def on_return(self,event):
+        """
+        Method to switch between the start menu and the "create model" menu
+        """
+        self.Hide()
+        self.start_menu.Show()
 
     def on_run_simulation(self, event):
         """
@@ -270,6 +285,7 @@ class OpenModel(wx.Panel):
         wx.Panel.__init__(self, parent,size=(1200,800))
         self.SetBackgroundColour(wx.Colour(255, 255, 255))  # Set background color to white
         text = wx.StaticText(self, label="OpenModel", pos=(50, 50))  # Add a label to the panel
+        panel_size = self.GetSize()
 
         # Create a Matplotlib canvas to display the figure
         self.figure=Figure(figsize=(10,4))
@@ -288,8 +304,25 @@ class OpenModel(wx.Panel):
         self.skip_sim_steps = 1 # Intitalize the number of steps which are skiped in the animation
         self.timer = wx.Timer(self)
 
-    def on_load_model(self,event):
+        # Create Button to get back to the start menu 
+        button_size = (300,25)
+        self.button_return = wx.Button(self,label="Return",size = (button_size[0]/2,button_size[1]))
+        self.Bind(wx.EVT_BUTTON,self.on_return,self.button_return)
+        self.button_return.SetPosition(((panel_size[0]-button_size[0])/2,panel_size[1]-(75)))
 
+        self.start_menu = parent.start_menu
+
+    def on_return(self,event):
+        """
+        Method to switch between the start menu and the "create model" menu
+        """
+        self.Hide()
+        self.start_menu.Show()
+
+    def on_load_model(self,event):
+        """
+        Method to switch between the start menu and the "create model" menu
+        """
         self.timer.Stop()
         self.ax1.cla()  # clear axis 1
         self.ax2.cla()  # clear axis 2
@@ -327,15 +360,24 @@ class OpenModel(wx.Panel):
             self.timer.Start(self.updatetime)  # Update time per frame
 
     def show_equations(self, system):
+        """
+        Method to switch between the start menu and the "create model" menu
+        """
         # plot/show equations of motion
         main_modeling.generate_latex(system)
 
     def plot_results(self, res, list_of_object_lists):
+        """
+        Method to switch between the start menu and the "create model" menu
+        """
         # Plot results in ax1
         main_modeling.plot_results(res, self.ax1)
         self.animation = anim.Animation(res, list_of_object_lists, self.ax2)
 
     def update_animation(self, event):
+        """
+        Method to switch between the start menu and the "create model" menu
+        """
         if not self.paused:
             # Update animation with appropriate frame number
             self.animation.update_frame(self.num)
@@ -357,9 +399,14 @@ class OpenModel(wx.Panel):
             self.canvas.draw()
 
     def restart_animation(self):
+        """
+        Method to switch between the start menu and the "create model" menu
+        """
         self.paused = False
         self.timer.Start(self.updatetime)  # Restart timer
         self.num = 0  # Reset num
+
+    
 
 # Create the Panel "ChooseElement"
 class ChooseElement(wx.Panel):
@@ -765,8 +812,27 @@ class SingleSpring(wx.Panel):
         self.Bind(wx.EVT_BUTTON,self.on_back,self.button_back)
         self.button_back.SetPosition((panel_size[0]-100,panel_size[1]-(75)))
 
+        # Create the radio buttons to switch between linear and cubic spring 
+
+        self.cubic = wx.RadioButton(self,label="cubic")
+        self.linear = wx.RadioButton(self,label="linear")
+        self.cubic.Bind(wx.EVT_RADIOBUTTON,self.on_radio_button)
+        self.linear.Bind(wx.EVT_RADIOBUTTON,self.on_radio_button)
+        self.cubic.SetPosition(((panel_size[0])-350,panel_size[1]-(150)))
+        self.linear.SetPosition(((panel_size[0])-450,panel_size[1]-(150)))
+
         self.choose_element = parent.choose_element
         self.spring_element = parent.spring_element
+
+    def on_radio_button(self,event):
+        """
+        Method to switch between the start menu and the "create model" menu
+        """
+        if self.cubic.GetValue():
+            self.type = "cubic"
+        elif self.linear.GetValue():
+            self.type = "linear"
+
 
     def on_back(self,event):
         """
@@ -789,7 +855,7 @@ class SingleSpring(wx.Panel):
             self.spring_stiffness = float(self.stiffness_spring_single.GetValue())
            
 
-            s = objects.Spring(rest_length = self.spring_length,stiffness=self.spring_stiffness,index =(len(list_of_springs)+1))
+            s = objects.Spring(rest_length = self.spring_length,stiffness=self.spring_stiffness,index =(len(list_of_springs)+1),type = self.type)
             list_of_springs.append(s)
             #wx.MessageBox(f"{list_of_springs}")
             
