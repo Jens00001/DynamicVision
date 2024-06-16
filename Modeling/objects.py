@@ -250,11 +250,15 @@ class Mass:
     :type index: int
     :param color: color of the mass in the animation, default is "red"
     :type color: str
+    :param external_force: the value of a external force acting on the mass in (N)
+    :type external_force: int or float
 
     :ivar index: index of the mass in the system which is used for the Notation of the symbolic vaules
     :vartype index: int
     :ivar color: color of the mass
     :vartype color: str
+    :ivar external_force: the value of a external force acting on the mass in (N)
+    :vartype external_force: int or float
     :ivar yt: symbolic function for the position of the mass over the time
     :vartype yt: sympy.Function
     :ivar ydt: symbolic first derivative the position of the mass over the time
@@ -265,14 +269,16 @@ class Mass:
     :vartype sym_mass: sympy.Symbol
     :ivar sym_g: symbolic gravitational acceleration
     :vartype sym_g: sympy.Symbol
-    :ivar sym_F: symbolic force
-    :vartype sym_F: sympy.Symbol
+    :ivar sym_Fg: symbolic gravitational force
+    :vartype sym_Fg: sympy.Symbol
+    :ivar sym_F_ex: symbolic external force
+    :vartype sym_F_ex: sympy.Symbol
     :ivar position: position of the mass in (m)
     :vartype position: list of int or float
     :ivar velocity: velocity of the mass in (m/s)
     :vartype velocity: list of int or float
     """
-    def __init__(self, index, color ="red"):
+    def __init__(self, index, external_force, color ="red"):
         """
         Initialize the Mass instance
 
@@ -282,7 +288,8 @@ class Mass:
         :type color: str
         """
         self.index = index
-        self.color = color 
+        self.color = color
+        self.external_force = external_force 
         
 
         # definition of symbolic values
@@ -292,7 +299,8 @@ class Mass:
         self.yddt = self.yt.diff(t,2)
         self.sym_mass = sp.Symbol("m"+str(self.index))
         self.sym_g = sp.Symbol("g")
-        self.sym_F = sp.Symbol("F"+str(self.index))
+        self.sym_Fg = sp.Symbol("Fg_"+str(self.index))
+        self.sym_F_ex = sp.Symbol("F_ex_"+str(self.index))
 
     def check_attributes(self):
         """
@@ -326,9 +334,12 @@ class Mass:
         :rtype: sympy.Add
         """  
              
-        self.sym_F = self.sym_mass*self.sym_g
+        self.sym_Fg = self.sym_mass*self.sym_g
 
-        return self.sym_F
+        if self.external_force == 0:   
+            return [self.sym_Fg]
+        else:
+            return [self.sym_Fg, self.sym_F_ex]
     
     def move(self,x,y):
         """
@@ -353,7 +364,7 @@ class Mass:
         :rtype: dict
         """
 
-        return {self.sym_mass: self.mass}
+        return {self.sym_mass: self.mass, self.sym_F_ex: self.external_force}
     
 class Masspoint(Mass):
     """
@@ -363,6 +374,8 @@ class Masspoint(Mass):
     :type mass: int or float
     :param index: index of the masspoint in the system which is used for the Notation of the symbolic vaules
     :type index: int
+    :param external_force: the value of a external force acting on the mass in (N)
+    :type external_force: int or float
 
     :ivar mass: mass of the masspoint in (kg)
     :vartype mass: int or float
@@ -371,7 +384,7 @@ class Masspoint(Mass):
     :ivar diameter: diameter of the masspoint in the animation
     :vartype diameter: float
     """
-    def __init__(self, mass, index):
+    def __init__(self, mass, index, external_force=0):
         """
         Initialize the Masspoint instance
 
@@ -379,10 +392,12 @@ class Masspoint(Mass):
         :type mass: int or float
         :param index: index of the masspoint in the system which is used for the Notation of the symbolic vaules
         :type index: int
+        :param external_force: the value of a external force acting on the mass in (N)
+        :type external_force: int or float
         """
         self.mass = mass
         self.type = "masspoint"
-        Mass.__init__(self, index)
+        Mass.__init__(self, index, external_force)
 
     def set_diameter(self,y_range):
         """
@@ -409,6 +424,8 @@ class SteadyBody(Mass):
     :type density: int or float
     :param index: index of the steady body in the system which is used for the Notation of the symbolic vaules
     :type index: int
+    :param external_force: the value of a external force acting on the mass in (N)
+    :type external_force: int or float
 
     :ivar x_dim: dimension of the steady body along the x-axis in (m)
     :vartype x_dim: int or float
@@ -433,7 +450,7 @@ class SteadyBody(Mass):
     :ivar sym_w: symbolic width of the steady body
     :vartype sym_w: sympy.Symbol
     """
-    def __init__(self, x_dim, y_dim, z_dim, density, index):
+    def __init__(self, x_dim, y_dim, z_dim, density, index, external_force=0):
         """
         Initialize the SteadyBody instance
 
@@ -447,6 +464,8 @@ class SteadyBody(Mass):
         :type density: int or float
         :param index: index of the steady body in the system which is used for the Notation of the symbolic vaules
         :type index: int
+        :param external_force: the value of a external force acting on the mass in (N)
+        :type external_force: int or float
         """    
         self.x_dim = x_dim
         self.y_dim = y_dim
@@ -460,7 +479,7 @@ class SteadyBody(Mass):
         self.sym_l = sp.Symbol("l_"+str(index))
         self.sym_w = sp.Symbol("w_"+str(index))
 
-        Mass.__init__(self, index)
+        Mass.__init__(self, index, external_force)
     
     def get_param_values(self):
         """
@@ -469,5 +488,7 @@ class SteadyBody(Mass):
         :return: dictionary of symbolic parameters and their values
         :rtype: dict
         """    
-        return {self.sym_mass: self.mass, self.sym_l: self.x_dim ,self.sym_h: self.y_dim, self.sym_w: self.z_dim}
+
+        return {self.sym_mass: self.mass, self.sym_l: self.x_dim ,self.sym_h: self.y_dim, self.sym_w: self.z_dim, self.sym_F_ex: self.external_force} 
+       
 

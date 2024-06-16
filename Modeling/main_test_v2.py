@@ -18,14 +18,14 @@ def create_objects():
     :return: List containing lists of Spring and Mass objects
     :rtype: list of lists of objects
     """
-    m1 = objects.Masspoint(mass=2, index=1)
-    m2 = objects.Masspoint(mass=2, index=2)
-    m3 = objects.Masspoint(mass=2, index=3)
-    m1 = objects.SteadyBody(x_dim= 0.2, y_dim=0.1, z_dim=0.03, density=2700, index=1)
+    #m1 = objects.Masspoint(mass=2, index=1, external_force=0)
+    m2 = objects.Masspoint(mass=2, index=2, external_force=0)
+    m3 = objects.Masspoint(mass=2, index=3, external_force=0)
+    m1 = objects.SteadyBody(x_dim= 0.2, y_dim=0.1, z_dim=0.03, density=2700, index=1, external_force=40)
     #m2 = objects.SteadyBody(x_dim= 0.2, y_dim=0.1, z_dim=0.03, density=2700, index=2)
     #m3 = objects.SteadyBody(x_dim= 0.2, y_dim=0.1, z_dim=0.03, density=2700, index=3)
     #print("mass 2 = "+str(m2.mass))
-    s1 = objects.Spring(rest_length=0.5, stiffness=100, index=1, type="cubic")
+    s1 = objects.Spring(rest_length=0.5, stiffness=100, index=1, type="linear")
     s2 = objects.Spring(rest_length=0.4, stiffness=100, index=2, type="linear")
     s3 = objects.Spring(rest_length=0.6, stiffness=100, index=3, type="linear")
     s4 = objects.Spring(rest_length=0.5, stiffness=100, index=4, type="linear")
@@ -60,7 +60,7 @@ def get_list_of_all_forces(list_of_object_lists):
 
     for i in range(len(list_of_mass)):
         pos = list_of_mass[i].position 
-        list_of_force_y = [list_of_mass[i].force()]  #initializes the list of force for each mass with the gravitational force of each mass
+        list_of_force_y = list(list_of_mass[i].force())  #initializes the list of force for each mass with the gravitational force of each mass and an external force if acting on the mass
         list_of_force_x = []
         #print(i)
         match list_of_mass[i].type:
@@ -112,7 +112,7 @@ def get_list_of_all_forces(list_of_object_lists):
         list_of_forces_all_y.append(list_of_force_y) # write the list of forces attached to each mass in the list of all forces
         list_of_forces_all_x.append(list_of_force_x)
     #print("forces x:"+str(list_of_forces_all_x))
-    #print("forces y:"+str(list_of_forces_all_y))
+    print("forces y:"+str(list_of_forces_all_y))
 
     return [list_of_forces_all_x, list_of_forces_all_y]
 
@@ -266,7 +266,9 @@ def load_list(savepath):
     i = 1
     for key in masses:
         if key.startswith('m'):
-            m = objects.Masspoint(mass=float(loaded_params[sp.Symbol(params_keys[masses[key]])]), index=i)
+            m = objects.Masspoint(mass=float(loaded_params[sp.Symbol(params_keys[masses[key]])]), 
+                                  index=i,
+                                  external_force=float(loaded_params[sp.Symbol(params_keys[masses[key]+1])]))
             list_of_mass.append(m)
             i = i + 1
         elif key.startswith('sb'):
@@ -277,7 +279,9 @@ def load_list(savepath):
             b = objects.SteadyBody(x_dim=float(loaded_params[sp.Symbol(params_keys[masses[key] + 1])]),
                                    y_dim=float(loaded_params[sp.Symbol(params_keys[masses[key] + 2])]),
                                    z_dim=float(loaded_params[sp.Symbol(params_keys[masses[key] + 3])]),
-                                   density=float(dens), index=i)
+                                   density=float(dens), 
+                                   index=i, 
+                                   external_force=float(loaded_params[sp.Symbol(params_keys[masses[key] + 4])]))
 
             list_of_mass.append(b)
             i = i + 1
@@ -413,7 +417,8 @@ def main():
     # load list_of_object_lists with saved data
     savepath = os.path.dirname(os.path.realpath(__file__)) + "\data\\" + name + ".nc"
     loaded_list_of_object_lists = load_list(savepath)
-    #print(loaded_list_of_object_lists)
+    print(loaded_list_of_object_lists)
+    print(loaded_list_of_object_lists[1][1].external_force)
     # load system and simulation data
     loaded_res = load_sys(savepath)
     loaded_system = loaded_res.loaded_system

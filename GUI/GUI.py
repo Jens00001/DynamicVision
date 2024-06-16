@@ -533,7 +533,6 @@ class MassPoint(wx.Panel):
         wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
         self.mass_point_text = wx.StaticText(self, label="Mass Point")  # Add a static text to the panel
-        self.mass_label = wx.StaticText(self,label = "What is the mass of the Mass Point:")
         text_mass_point_font = wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)  # Define font for header
         self.mass_point_text.SetFont(text_mass_point_font) 
         mass_point_size = self.mass_point_text.GetSize()
@@ -542,13 +541,21 @@ class MassPoint(wx.Panel):
         y_pos_mass_point = (2*mass_point_size[1])//1
         self.mass_point_text.SetPosition((x_pos_mass_point,y_pos_mass_point))
 
-        mass_point_label_size = self.mass_label.GetSize()
+        self.external_force_label = wx.StaticText(self,label = "What is the external force acting on the Mass Point:")
+        external_force_label_size = self.external_force_label.GetSize()
+        x_pos_external_force_label = (panel_size[0]-1*external_force_label_size[0])//2
+        y_pos_external_force_label = (panel_size[1]-12*external_force_label_size[1])//1
+        self.external_force_label.SetPosition((x_pos_external_force_label,y_pos_external_force_label))
+        
+        self.mass_label = wx.StaticText(self,label = "What is the mass of the Mass Point:")
+        mass_point_label_size = self.external_force_label.GetSize()
         x_pos_mass_point_label = (panel_size[0]-1*mass_point_label_size[0])//2
         y_pos_mass_point_label = (panel_size[1]-15*mass_point_label_size[1])//1
         self.mass_label.SetPosition((x_pos_mass_point_label,y_pos_mass_point_label))
 
-        self.mass = wx.TextCtrl(self, pos=(x_pos_mass_point_label,y_pos_mass_point_label+1*mass_point_label_size[1]), size=(200, -1))
+        self.mass = wx.TextCtrl(self, pos=(x_pos_mass_point_label,y_pos_mass_point_label+1*mass_point_label_size[1]), size=(280, -1))
         self.input_mass = None
+        self.input_external_force = wx.TextCtrl(self, pos=(x_pos_external_force_label,y_pos_external_force_label+1*external_force_label_size[1]), size=(280, -1))
 
         button_size_element = (100,25)
 
@@ -580,9 +587,11 @@ class MassPoint(wx.Panel):
         # Process the list of spring lengths
         if self.mass:
             self.mass_mass_point = 0
+            self.external_force = 0
             self.mass_mass_point = float(self.mass.GetValue())
+            self.external_force = float(self.input_external_force.GetValue())
             #wx.MessageBox(f"{self.mass_mass_point}")
-            m = objects.Masspoint(mass=self.mass_mass_point, index = (len(list_of_mass)+1))
+            m = objects.Masspoint(mass=self.mass_mass_point, index = (len(list_of_mass)+1), external_force= self.external_force)
             list_of_mass.append(m)
 
             self.mass.Clear()
@@ -609,7 +618,7 @@ class SteadyBody(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
-        self.steady_body_text = wx.StaticText(self, label="SteadyBody", pos=(50, 50))  # Add a static text to the panel
+        self.steady_body_text = wx.StaticText(self, label="SteadyBody", pos=(40, 50))  # Add a static text to the panel
         text_steady_body_font = wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         self.steady_body_text.SetFont(text_steady_body_font) 
         steady_body_size = self.steady_body_text.GetSize()
@@ -618,33 +627,41 @@ class SteadyBody(wx.Panel):
         y_pos_steady_body = (panel_size[1]-15*steady_body_size[1])//1
         self.steady_body_text.SetPosition((x_pos_steady_body,y_pos_steady_body))
 
+        x_offset = 90
         self.density_label = wx.StaticText(self,label = "What is the density of the Steady Body:")
         density_label_size = self.density_label.GetSize()
-        x_pos_density_label = (panel_size[0]-2*density_label_size[0])//2
+        x_pos_density_label = (panel_size[0]-2*density_label_size[0]-x_offset)//2
         y_pos_density_label = (panel_size[1]-20*density_label_size[1])//1
         self.density_label.SetPosition((x_pos_density_label,y_pos_density_label))
         self.density_input = wx.TextCtrl(self, pos=(x_pos_density_label, y_pos_density_label+1*density_label_size[1]), size=(200, -1))
 
         self.length_label = wx.StaticText(self,label = "What is the length of the Steady Body:")
         length_label_size = self.length_label.GetSize()
-        x_pos_length_label = (panel_size[0]-2*length_label_size[0])//2
+        x_pos_length_label = (panel_size[0]-2*length_label_size[0]-x_offset)//2
         y_pos_length_label = (panel_size[1]-16*length_label_size[1])//1
         self.length_label.SetPosition((x_pos_length_label,y_pos_length_label))
         self.length_input = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
 
         self.height_label = wx.StaticText(self,label = "What is the height of the Steady Body:")
         height_label_size = self.height_label.GetSize()
-        x_pos_height_label = (panel_size[0]-2*height_label_size[0])//2
+        x_pos_height_label = (panel_size[0]-2*height_label_size[0]-x_offset)//2
         y_pos_height_label = (panel_size[1]-12*height_label_size[1])//1
         self.height_label.SetPosition((x_pos_height_label,y_pos_height_label))
         self.height_input = wx.TextCtrl(self, pos=(x_pos_height_label, y_pos_height_label+1*height_label_size[1]), size=(200, -1))
 
         self.width_label = wx.StaticText(self,label = "What is the width of the Steady Body:")
         width_label_size = self.width_label.GetSize()
-        x_pos_width_label = (panel_size[0]-2*width_label_size[0])//2
+        x_pos_width_label = (panel_size[0]-2*width_label_size[0]-x_offset)//2
         y_pos_width_label = (panel_size[1]-8*width_label_size[1])//1
         self.width_label.SetPosition((x_pos_width_label,y_pos_width_label))
         self.width_input = wx.TextCtrl(self, pos=(x_pos_width_label, y_pos_width_label+1*width_label_size[1]), size=(200, -1))
+
+        self.external_force_label = wx.StaticText(self,label = "What is the external force acting on \nthe Steady Body:")
+        external_force_label_size = self.density_label.GetSize()
+        x_pos_external_force_label = (panel_size[0]-0*external_force_label_size[0]+45)//2
+        y_pos_external_force_label = (panel_size[1]-20*external_force_label_size[1])//1
+        self.external_force_label.SetPosition((x_pos_external_force_label,y_pos_external_force_label-15))
+        self.input_external_force = wx.TextCtrl(self, pos=(x_pos_external_force_label,y_pos_external_force_label+1*external_force_label_size[1]), size=(200, -1))
 
         button_size_element = (100,25)
 
@@ -676,12 +693,14 @@ class SteadyBody(wx.Panel):
         # Process the list of spring lengths
         if self.density_input:
             self.mass_steady_body = 0
+            self.external_force = 0
             self.density = float(self.density_input.GetValue())
             self.width = float(self.width_input.GetValue())
             self.height = float(self.height_input.GetValue())
             self.length = float(self.length_input.GetValue())
+            self.external_force = float(self.input_external_force.GetValue())
             self.mass_steady_body = self.height*self.width*self.length*self.density
-            m = objects.SteadyBody(self.length,self.height,self.width,self.density, index = (len(list_of_mass)+1))
+            m = objects.SteadyBody(self.length,self.height,self.width,self.density, index = (len(list_of_mass)+1), external_force=self.external_force)
             list_of_mass.append(m)
             #wx.MessageBox(f"{self.mass_steady_body}")
 
