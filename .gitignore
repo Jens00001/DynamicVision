@@ -1,6 +1,7 @@
 /Modeling/.idea/
 /Modeling/__pycache__/
-/Modeling/data/
+/Modeling/data/*.txt
+/Modeling/data/*.nc
 /GUI/.idea/
 /GUI/__pycache__/
 /.idea/
