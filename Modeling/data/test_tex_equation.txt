@@ -1,0 +1,2 @@
+\ddot{x}_{1} = 0
+\ddot{y}_{1} = \frac{g m_{1} - k_{1} \left(- l_{1 0} + y_{1}\right)}{m_{1}}
