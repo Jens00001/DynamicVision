@@ -95,8 +95,8 @@ class CreateModel(wx.Panel):
     """
     Class to create the panel on which one can create the model. 
     This panel is contained within the main frame.
-    It opens when the button "create model" ist clicked on.
-    It contains two logos, one header and the names of the authors. 
+    It opens when the button "create model" ist clicked.
+    It contains two figure canvases. One for the animation and the other one for the plot 
     It contains 4 buttons ("Create Model","Open Model","Open Documentation","Close Application")
     Here the positions and labels of the buttons are set.
     The buttons are binded to events which allow to open the other panels. 
@@ -932,14 +932,15 @@ class ParallelSpring(wx.Panel):
 
     def on_back(self,event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to get back to the "spring element" panel
         """
         self.Hide()
         self.spring_element.Show()
 
     def on_add(self, event):
         """
-        Method to switch between the start menu and the "create model" menu
+        This method adds the input values in length and stiffness in a list. 
+        After that the input fields are emptied again
         """
         length = float(self.length_spring_parallel.GetValue())
         if length:
@@ -1127,7 +1128,9 @@ class InitialCondition(wx.Frame):
 
     def on_submit_IC(self,event):
         """
-        Method to switch between the start menu and the "create model" menu
+        This method takes the input vlaues for position and velocity. 
+        Then the initial values for the mass are set via the setInitialCondition function from objects
+        Then the initali values for the spring are set via the setInitialCondition function from objects. Here the first spring has to get (0,0) as its first start position 
         """
         self.position = 0
         self.velocity = 0
@@ -1248,7 +1251,8 @@ class CreateElement(wx.Frame):
 
     def on_finish(self,event):
         """
-        Method to close the application by exiting the main loop which starts when starting the application.
+        Method to close the "Create Element" frame.
+        Before that it is checke if the number of springs is equal to the number of masses. 
         """
         global list_of_mass
         global list_of_springs
