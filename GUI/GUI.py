@@ -149,7 +149,7 @@ class CreateModel(wx.Panel):
 
     def on_return(self,event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to switch back to the start menu
         """
         self.Hide()
         self.start_menu.Show()
@@ -259,7 +259,8 @@ class CreateModel(wx.Panel):
     # Create Method to open the Pop-Up 
     def on_open_popup(self,event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to open the Create Element frame as a popup window
+        This method also clears the plot and animation and stops the timer
         """
 
         global list_of_springs 
@@ -281,7 +282,7 @@ class CreateModel(wx.Panel):
 
     def on_open_IC(self,event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to open the Initial Conditions frame as a popup window
         """
         IC_popup = InitialCondition(self)
         IC_popup.Show()
@@ -289,7 +290,7 @@ class CreateModel(wx.Panel):
 # Create the panel "Open Model"
 class OpenModel(wx.Panel):
     """
-    Class to create the panel on which one can open a save model. 
+    Class to create the panel on which one can open a saved model. 
     This panel is contained within the main frame.
     It opens when the button "open model" is clicked.
     It contains two figure canvases. One for the animation and the other one for the plot 
@@ -336,7 +337,7 @@ class OpenModel(wx.Panel):
 
     def on_return(self,event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to switch back to the start menu
         """
         self.Hide()
         self.start_menu.Show()
@@ -442,13 +443,9 @@ class OpenModel(wx.Panel):
 # Create the Panel "ChooseElement"
 class ChooseElement(wx.Panel):
     """
-    Class to create the panel, which contains the start menu. 
-    This panel is contained within the main frame.
-    It opens when the application is started.
-    It contains two logos, one header and the names of the authors. 
-    It contains 4 buttons ("Create Model","Open Model","Open Documentation","Close Application")
-    Here the positions and labels of the buttons are set.
-    The buttons are binded to events which allow to open the other panels. 
+    Class to create the panel, where the user can choose what kind of element to add
+    This panel is child to the create element frame
+    The panel has three buttons. One to finish creating a model and two to choose between a spring and a mass. 
 
     :param parent: The Create Element Frame
     :type parent: wx.Frame
@@ -488,13 +485,9 @@ class ChooseElement(wx.Panel):
 # Create the Panel "Mass"
 class MassElement(wx.Panel):
     """
-    Class to create the panel, which contains the start menu. 
-    This panel is contained within the main frame.
-    It opens when the application is started.
-    It contains two logos, one header and the names of the authors. 
-    It contains 4 buttons ("Create Model","Open Model","Open Documentation","Close Application")
-    Here the positions and labels of the buttons are set.
-    The buttons are binded to events which allow to open the other panels. 
+    Class to create the panel, where the user can choose what kind of mass to add
+    This panel is child to the create element frame
+    The panel has three buttons. One to get back to the previous panel. And the other two to choose bewteen a mass point and a steady body. 
 
     :param parent: The Create Element Frame
     :type parent: wx.Frame
@@ -502,16 +495,16 @@ class MassElement(wx.Panel):
     def __init__(self,parent):
         wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
-        self.text_mass = wx.StaticText(self, label="Mass")  # Add a static text to the panel
-        text_mass_font = wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)  # Define font for header
+
+        # Create a header for the panel
+        self.text_mass = wx.StaticText(self, label="Mass")  
+        text_mass_font = wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)  
         self.text_mass.SetFont(text_mass_font) 
         mass_size = self.text_mass.GetSize()
         panel_size = self.GetSize()
         x_pos_mass = (panel_size[0]-mass_size[0])//2
         y_pos_mass = (2*mass_size[1])//1
         self.text_mass.SetPosition((x_pos_mass,y_pos_mass))
-
-
 
         # Define Button Size  
         button_size_element = (200,25)
@@ -538,24 +531,22 @@ class MassElement(wx.Panel):
         self.button_steady_body.SetPosition((x_pos_btn, y_pos_btn + button_size_element[1]))
         self.button_back.SetPosition((panel_size[0]-100,panel_size[1]-(75)))
 
+        # Passing the other child panels from the parent to this child panel
         self.choose_element = parent.choose_element
 
     def on_back(self,event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to switch back to the choose element panel
         """
         self.Hide()
         self.choose_element.Show()
 
 class MassPoint(wx.Panel):
     """
-    Class to create the panel, which contains the start menu. 
-    This panel is contained within the main frame.
-    It opens when the application is started.
-    It contains two logos, one header and the names of the authors. 
-    It contains 4 buttons ("Create Model","Open Model","Open Documentation","Close Application")
-    Here the positions and labels of the buttons are set.
-    The buttons are binded to events which allow to open the other panels. 
+    Class to create the panel, where the user can create a mass point
+    This panel is child to the create element frame
+    It has 2 input texts. One for the mass and the other one for an external force which is applied on the mass point.
+    The panel has two buttons. One to submit the mass point and one to get back to the previous panel.
 
     :param parent: The Create Element Frame
     :type parent: wx.Frame
@@ -563,31 +554,34 @@ class MassPoint(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
+        panel_size = self.GetSize()
+
+        # Create a label to the panel 
         self.mass_point_text = wx.StaticText(self, label="Mass Point")  # Add a static text to the panel
         text_mass_point_font = wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)  # Define font for header
         self.mass_point_text.SetFont(text_mass_point_font) 
         mass_point_size = self.mass_point_text.GetSize()
-        panel_size = self.GetSize()
         x_pos_mass_point = (panel_size[0]-mass_point_size[0])//2
         y_pos_mass_point = (2*mass_point_size[1])//1
         self.mass_point_text.SetPosition((x_pos_mass_point,y_pos_mass_point))
 
-        self.external_force_label = wx.StaticText(self,label = "What is the external force acting on the Mass Point:")
+        # Create the input field to add a external force on the mass point
+        self.external_force_label = wx.StaticText(self,label = "What is the external force acting on the Mass Point: (N)")
         external_force_label_size = self.external_force_label.GetSize()
         x_pos_external_force_label = (panel_size[0]-1*external_force_label_size[0])//2
         y_pos_external_force_label = (panel_size[1]-12*external_force_label_size[1])//1
         self.external_force_label.SetPosition((x_pos_external_force_label,y_pos_external_force_label))
+        self.input_external_force = wx.TextCtrl(self, pos=(x_pos_external_force_label,y_pos_external_force_label+1*external_force_label_size[1]), size=(280, -1))
         
-        self.mass_label = wx.StaticText(self,label = "What is the mass of the Mass Point:")
+        # Create the input field to give the mass point a mass 
+        self.mass_label = wx.StaticText(self,label = "What is the mass of the Mass Point: (kg)")
         mass_point_label_size = self.external_force_label.GetSize()
         x_pos_mass_point_label = (panel_size[0]-1*mass_point_label_size[0])//2
         y_pos_mass_point_label = (panel_size[1]-15*mass_point_label_size[1])//1
         self.mass_label.SetPosition((x_pos_mass_point_label,y_pos_mass_point_label))
-
         self.mass = wx.TextCtrl(self, pos=(x_pos_mass_point_label,y_pos_mass_point_label+1*mass_point_label_size[1]), size=(280, -1))
-        self.input_mass = None
-        self.input_external_force = wx.TextCtrl(self, pos=(x_pos_external_force_label,y_pos_external_force_label+1*external_force_label_size[1]), size=(280, -1))
-
+   
+        # Define Button Size  
         button_size_element = (100,25)
 
         # Create submit Button
@@ -600,20 +594,20 @@ class MassPoint(wx.Panel):
         self.Bind(wx.EVT_BUTTON,self.on_back,self.button_back)
         self.button_back.SetPosition((panel_size[0]-100,panel_size[1]-(75)))
 
-    
+        # Passing the other child panels from the parent to this child panel
         self.choose_element = parent.choose_element
         self.mass_element = parent.mass_element
 
     def on_back(self,event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to switch back to the mass element panel
         """
         self.Hide()
         self.mass_element.Show()
 
     def on_submit(self, event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to submit the mass point with the given inputs
         """
         # Process the list of spring lengths
         if self.mass:
@@ -631,17 +625,15 @@ class MassPoint(wx.Panel):
             self.choose_element.Show()
 
         else:
-            wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
+            wx.MessageBox("No mass point to submit", "Warning", wx.OK | wx.ICON_WARNING)
 
 class SteadyBody(wx.Panel):
     """
-    Class to create the panel, which contains the start menu. 
-    This panel is contained within the main frame.
-    It opens when the application is started.
-    It contains two logos, one header and the names of the authors. 
-    It contains 4 buttons ("Create Model","Open Model","Open Documentation","Close Application")
-    Here the positions and labels of the buttons are set.
-    The buttons are binded to events which allow to open the other panels. 
+    Class to create the panel, where the user can create a steady body 
+    This panel is child to the create element frame
+    It has 5 input texts. One for the density, one for the width, one for the length and one for the height of the steady body.
+    The fifth input text ist to add a external force which is applied onto the steady body
+    The panel has two buttons. One to submit the steady body and one to get back to the previous panel.
 
     :param parent: The Create Element Frame
     :type parent: wx.Frame
@@ -649,51 +641,59 @@ class SteadyBody(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
-        self.steady_body_text = wx.StaticText(self, label="SteadyBody", pos=(40, 50))  # Add a static text to the panel
+        panel_size = self.GetSize()
+        x_offset = 90
+
+        # Create the header for the panel 
+        self.steady_body_text = wx.StaticText(self, label="SteadyBody", pos=(40, 50))  
         text_steady_body_font = wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         self.steady_body_text.SetFont(text_steady_body_font) 
         steady_body_size = self.steady_body_text.GetSize()
-        panel_size = self.GetSize()
         x_pos_steady_body = (panel_size[0]-1*steady_body_size[0])//2
         y_pos_steady_body = (panel_size[1]-15*steady_body_size[1])//1
         self.steady_body_text.SetPosition((x_pos_steady_body,y_pos_steady_body))
 
-        x_offset = 90
-        self.density_label = wx.StaticText(self,label = "What is the density of the Steady Body:")
+        # Create the input field to define the density of the steady body 
+        self.density_label = wx.StaticText(self,label = "What is the density of the Steady Body: (kg/m^3)")
         density_label_size = self.density_label.GetSize()
         x_pos_density_label = (panel_size[0]-2*density_label_size[0]-x_offset)//2
         y_pos_density_label = (panel_size[1]-20*density_label_size[1])//1
         self.density_label.SetPosition((x_pos_density_label,y_pos_density_label))
         self.density_input = wx.TextCtrl(self, pos=(x_pos_density_label, y_pos_density_label+1*density_label_size[1]), size=(200, -1))
-
-        self.length_label = wx.StaticText(self,label = "What is the length of the Steady Body:")
+        
+        # Create the input field to define the length of the steady body 
+        self.length_label = wx.StaticText(self,label = "What is the length of the Steady Body: (m)")
         length_label_size = self.length_label.GetSize()
         x_pos_length_label = (panel_size[0]-2*length_label_size[0]-x_offset)//2
         y_pos_length_label = (panel_size[1]-16*length_label_size[1])//1
         self.length_label.SetPosition((x_pos_length_label,y_pos_length_label))
         self.length_input = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
 
-        self.height_label = wx.StaticText(self,label = "What is the height of the Steady Body:")
+        # Create the input field to define the height of the steady body 
+        self.height_label = wx.StaticText(self,label = "What is the height of the Steady Body:(m)")
         height_label_size = self.height_label.GetSize()
         x_pos_height_label = (panel_size[0]-2*height_label_size[0]-x_offset)//2
         y_pos_height_label = (panel_size[1]-12*height_label_size[1])//1
         self.height_label.SetPosition((x_pos_height_label,y_pos_height_label))
         self.height_input = wx.TextCtrl(self, pos=(x_pos_height_label, y_pos_height_label+1*height_label_size[1]), size=(200, -1))
 
-        self.width_label = wx.StaticText(self,label = "What is the width of the Steady Body:")
+        # Create the input field to define the width of the steady body 
+        self.width_label = wx.StaticText(self,label = "What is the width of the Steady Body: (m)")
         width_label_size = self.width_label.GetSize()
         x_pos_width_label = (panel_size[0]-2*width_label_size[0]-x_offset)//2
         y_pos_width_label = (panel_size[1]-8*width_label_size[1])//1
         self.width_label.SetPosition((x_pos_width_label,y_pos_width_label))
         self.width_input = wx.TextCtrl(self, pos=(x_pos_width_label, y_pos_width_label+1*width_label_size[1]), size=(200, -1))
 
-        self.external_force_label = wx.StaticText(self,label = "What is the external force acting on \nthe Steady Body:")
+        # Create the input field to add an external force on the steady body
+        self.external_force_label = wx.StaticText(self,label = "What is the external force acting on \nthe Steady Body: (N)")
         external_force_label_size = self.density_label.GetSize()
         x_pos_external_force_label = (panel_size[0]-0*external_force_label_size[0]+45)//2
         y_pos_external_force_label = (panel_size[1]-20*external_force_label_size[1])//1
         self.external_force_label.SetPosition((x_pos_external_force_label,y_pos_external_force_label-15))
         self.input_external_force = wx.TextCtrl(self, pos=(x_pos_external_force_label,y_pos_external_force_label+1*external_force_label_size[1]), size=(200, -1))
 
+        # Define the button size 
         button_size_element = (100,25)
 
         # Create submit Button
@@ -706,12 +706,13 @@ class SteadyBody(wx.Panel):
         self.Bind(wx.EVT_BUTTON,self.on_back,self.button_back)
         self.button_back.SetPosition((panel_size[0]-100,panel_size[1]-(75)))
 
+        # Passing the other child panels from the parent to this child panel
         self.choose_element = parent.choose_element
         self.mass_element = parent.mass_element
 
     def on_back(self,event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to switch back to the mass element panel
         """
         self.Hide()
         self.mass_element.Show()
@@ -719,21 +720,17 @@ class SteadyBody(wx.Panel):
     
     def on_submit(self, event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to create a steady body with the given inputs. 
         """
-        # Process the list of spring lengths
         if self.density_input:
-            self.mass_steady_body = 0
             self.external_force = 0
             self.density = float(self.density_input.GetValue())
             self.width = float(self.width_input.GetValue())
             self.height = float(self.height_input.GetValue())
             self.length = float(self.length_input.GetValue())
             self.external_force = float(self.input_external_force.GetValue())
-            self.mass_steady_body = self.height*self.width*self.length*self.density
             m = objects.SteadyBody(self.length,self.height,self.width,self.density, index = (len(list_of_mass)+1), external_force=self.external_force)
             list_of_mass.append(m)
-            #wx.MessageBox(f"{self.mass_steady_body}")
 
             self.height_input.Clear()
             self.width_input.Clear()
@@ -745,19 +742,15 @@ class SteadyBody(wx.Panel):
             
 
         else:
-            wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
+            wx.MessageBox("No steady body to submit.", "Warning", wx.OK | wx.ICON_WARNING)
 
 
 # Create the Panel "Spring"
 class SpringElement(wx.Panel):
     """
-    Class to create the panel, which contains the start menu. 
-    This panel is contained within the main frame.
-    It opens when the application is started.
-    It contains two logos, one header and the names of the authors. 
-    It contains 4 buttons ("Create Model","Open Model","Open Documentation","Close Application")
-    Here the positions and labels of the buttons are set.
-    The buttons are binded to events which allow to open the other panels. 
+    Class to create the panel, where the user can choose what kind of spring to add
+    This panel is child to the create element frame
+    The panel has four buttons. One to get back to the previous panel. And three to choose between a single spring, severla springs in series and several parallel springs. 
 
     :param parent: The Create Element Frame
     :type parent: wx.Frame
@@ -797,11 +790,12 @@ class SpringElement(wx.Panel):
         self.Bind(wx.EVT_BUTTON,self.on_back,self.button_back)
         self.button_back.SetPosition((panel_size[0]-100,panel_size[1]-(75)))
 
+        # Passing the other child panel from the parent to this child panel
         self.choose_element = parent.choose_element
 
     def on_back(self,event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to switch back to the choose element panel
         """
         self.Hide()
         self.choose_element.Show()
@@ -810,13 +804,11 @@ class SpringElement(wx.Panel):
 
 class SingleSpring(wx.Panel):
     """
-    Class to create the panel, which contains the start menu. 
-    This panel is contained within the main frame.
-    It opens when the application is started.
-    It contains two logos, one header and the names of the authors. 
-    It contains 4 buttons ("Create Model","Open Model","Open Documentation","Close Application")
-    Here the positions and labels of the buttons are set.
-    The buttons are binded to events which allow to open the other panels. 
+    Class to create the panel, where the user can create a single spring
+    This panel is child to the create element frame
+    It has two input texts. One for the stiffness and one for the length.
+    It has two radio buttons to switch between a cubic and a linear spring.
+    The panel has two buttons. One to submit the spring and one to get back to the previous panel.
 
     :param parent: The Create Element Frame
     :type parent: wx.Frame
@@ -824,9 +816,10 @@ class SingleSpring(wx.Panel):
     def __init__(self,parent):
         wx.Panel.__init__(self,parent,size=(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
-
         panel_size = self.GetSize()
-        self.single_spring_text = wx.StaticText(self, label="Single Spring", pos=(50, 50))  # Add a static text to the panel
+
+        #Create the header for this panel
+        self.single_spring_text = wx.StaticText(self, label="Single Spring", pos=(50, 50))  
         text_single_spring_font = wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         self.single_spring_text.SetFont(text_single_spring_font) 
         single_spring_size = self.single_spring_text.GetSize()
@@ -834,24 +827,24 @@ class SingleSpring(wx.Panel):
         y_pos_parallel_spring = (panel_size[1]-15*single_spring_size[1])//1
         self.single_spring_text.SetPosition((x_pos_parallel_spring,y_pos_parallel_spring))
 
-        self.stiffness_label = wx.StaticText(self,label = "What is the stiffness of the Spring:")
+        # Create the input field for the stiffness of the spring
+        self.stiffness_label = wx.StaticText(self,label = "What is the stiffness of the Spring: (N/m)")
         stiffness_label_size = self.stiffness_label.GetSize()
         x_pos_stiffness_label = (panel_size[0]-2*stiffness_label_size[0])//2
         y_pos_stiffness_label = (panel_size[1]-20*stiffness_label_size[1])//1
         self.stiffness_label.SetPosition((x_pos_stiffness_label,y_pos_stiffness_label))
         self.stiffness_spring_single = wx.TextCtrl(self, pos=(x_pos_stiffness_label, y_pos_stiffness_label+1*stiffness_label_size[1]), size=(200, -1))
      
-
-        self.length_label = wx.StaticText(self,label = "What is the length of the Spring:")
-        length_label_size = self.length_label.GetSize()
-        x_pos_length_label = (panel_size[0]-2*length_label_size[0])//2
-        y_pos_length_label = (panel_size[1]-16*length_label_size[1])//1
+        # Create the input field for the length of the spring 
+        self.length_label = wx.StaticText(self,label = "What is the length of the Spring: (m)")
+        x_pos_length_label = (panel_size[0]-2*stiffness_label_size[0])//2
+        y_pos_length_label = (panel_size[1]-16*stiffness_label_size[1])//1
         self.length_label.SetPosition((x_pos_length_label,y_pos_length_label))
-        self.length_spring_single = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
+        self.length_spring_single = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*stiffness_label_size[1]), size=(200, -1))
         
-    
+        #Define a button size 
         button_size_element = (100,25)
-
+        
         # Create submit Button
         self.button_spring_single_submit= wx.Button(self,label="submit",size = button_size_element)
         self.Bind(wx.EVT_BUTTON,self.on_submit,self.button_spring_single_submit)
@@ -863,7 +856,6 @@ class SingleSpring(wx.Panel):
         self.button_back.SetPosition((panel_size[0]-100,panel_size[1]-(75)))
 
         # Create the radio buttons to switch between linear and cubic spring 
-
         self.cubic = wx.RadioButton(self,label="cubic")
         self.linear = wx.RadioButton(self,label="linear")
         self.cubic.Bind(wx.EVT_RADIOBUTTON,self.on_radio_button)
@@ -871,12 +863,13 @@ class SingleSpring(wx.Panel):
         self.cubic.SetPosition(((panel_size[0])-350,panel_size[1]-(150)))
         self.linear.SetPosition(((panel_size[0])-450,panel_size[1]-(150)))
 
+        # Passing the other child panels from the parent to this child panel
         self.choose_element = parent.choose_element
         self.spring_element = parent.spring_element
 
     def on_radio_button(self,event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to enable the user to decide between a cubic and a linear spring via radio buttons
         """
         if self.cubic.GetValue():
             self.type = "cubic"
@@ -886,28 +879,25 @@ class SingleSpring(wx.Panel):
 
     def on_back(self,event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to switch back to the "spring element" panel 
         """
         self.Hide()
         self.spring_element.Show()
     
     def on_submit(self, event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to create a Spring with the parameters defined in the input fields. 
         """
         # Process the list of spring lengths
         if self.length_spring_single:
             self.spring_length = 0
             self.spring_length = float(self.length_spring_single.GetValue())
-            #wx.MessageBox(f"{self.spring_length}")
 
             self.spring_stiffness = 0
             self.spring_stiffness = float(self.stiffness_spring_single.GetValue())
-           
 
             s = objects.Spring(rest_length = self.spring_length,stiffness=self.spring_stiffness,index =(len(list_of_springs)+1),type = self.type)
             list_of_springs.append(s)
-            #wx.MessageBox(f"{list_of_springs}")
             
             self.length_spring_single.Clear()
             self.stiffness_spring_single.Clear()
@@ -916,17 +906,14 @@ class SingleSpring(wx.Panel):
             self.choose_element.Show()
             
         else:
-            wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
+            wx.MessageBox("No spring to submit.", "Warning", wx.OK | wx.ICON_WARNING)
 
 class ParallelSpring(wx.Panel):
     """
-    Class to create the panel, which contains the start menu. 
-    This panel is contained within the main frame.
-    It opens when the application is started.
-    It contains two logos, one header and the names of the authors. 
-    It contains 4 buttons ("Create Model","Open Model","Open Documentation","Close Application")
-    Here the positions and labels of the buttons are set.
-    The buttons are binded to events which allow to open the other panels. 
+    Class to create the panel, where the user can create several parallel springs
+    This panel is child to the create element frame
+    It has two input texts. One for the stiffness and one for the length.
+    It has three buttons: One to get back to the previous panel, one to add springs and one to submit the parallel springs
 
     :param parent: The Create Element Frame
     :type parent: wx.Frame
@@ -936,30 +923,33 @@ class ParallelSpring(wx.Panel):
         self.SetBackgroundColour(wx.Colour(255,255,255))
         self.spring_lengths_parallel = []
         self.spring_stiffness_parallel = []
+        panel_size = self.GetSize()
 
-        self.parallel_spring_text = wx.StaticText(self, label="Parallel Spring", pos=(50, 50))  # Add a static text to the panel
+        # Create the header for the panel 
+        self.parallel_spring_text = wx.StaticText(self, label="Parallel Spring", pos=(50, 50))  
         text_parallel_spring_font = wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         self.parallel_spring_text.SetFont(text_parallel_spring_font) 
         parallel_spring_size = self.parallel_spring_text.GetSize()
-        panel_size = self.GetSize()
         x_pos_parallel_spring = (panel_size[0]-1*parallel_spring_size[0])//2
         y_pos_parallel_spring = (panel_size[1]-15*parallel_spring_size[1])//1
         self.parallel_spring_text.SetPosition((x_pos_parallel_spring,y_pos_parallel_spring))
 
-        self.stiffness_label = wx.StaticText(self,label = "What is the stiffness of the Spring:")
+        # Create the input fields for the stiffness of the spring
+        self.stiffness_label = wx.StaticText(self,label = "What is the stiffness of the Spring: (N/m)")
         stiffness_label_size = self.stiffness_label.GetSize()
         x_pos_stiffness_label = (panel_size[0]-2*stiffness_label_size[0])//2
         y_pos_stiffness_label = (panel_size[1]-20*stiffness_label_size[1])//1
         self.stiffness_label.SetPosition((x_pos_stiffness_label,y_pos_stiffness_label))
         self.stiffness_spring_parallel = wx.TextCtrl(self, pos=(x_pos_stiffness_label, y_pos_stiffness_label+1*stiffness_label_size[1]), size=(200, -1))
 
-        self.length_label = wx.StaticText(self,label = "What is the length of the Spring:")
-        length_label_size = self.length_label.GetSize()
-        x_pos_length_label = (panel_size[0]-2*length_label_size[0])//2
-        y_pos_length_label = (panel_size[1]-16*length_label_size[1])//1
+        # Create the input field for the length of the spring 
+        self.length_label = wx.StaticText(self,label = "What is the length of the Spring: (m)")
+        x_pos_length_label = (panel_size[0]-2*stiffness_label_size[0])//2
+        y_pos_length_label = (panel_size[1]-16*stiffness_label_size[1])//1
         self.length_label.SetPosition((x_pos_length_label,y_pos_length_label))
-        self.length_spring_parallel = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
+        self.length_spring_parallel = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*stiffness_label_size[1]), size=(200, -1))
     
+        # Define a button size 
         button_size_element = (100,25)
 
         # Create add Button
@@ -977,6 +967,7 @@ class ParallelSpring(wx.Panel):
         self.Bind(wx.EVT_BUTTON,self.on_back,self.button_back)
         self.button_back.SetPosition((panel_size[0]-100,panel_size[1]-(75)))
 
+        # Passing the other child panels from the parent to this child panel
         self.choose_element = parent.choose_element
         self.spring_element = parent.spring_element
 
@@ -1003,7 +994,9 @@ class ParallelSpring(wx.Panel):
     
     def on_submit(self, event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to calculate the resulting stiffness and length of several parallel springs
+        With this method one spring is created which has this resulting siffness and length
+        By submitting this spring the list of springs from the add method is emptied. 
         """
         # Process the list of spring lengths
         if self.spring_lengths_parallel:
@@ -1011,12 +1004,10 @@ class ParallelSpring(wx.Panel):
             for length in self.spring_lengths_parallel:
                 self.spring_length +=length
             self.spring_length = self.spring_length/len(self.spring_lengths_parallel) 
-            #wx.MessageBox(f"{list_of_springs_length}")
 
             self.spring_stiffness = 0
             for stiffness in self.spring_stiffness_parallel:
                 self.spring_stiffness +=stiffness
-            #wx.MessageBox(f"{list_of_springs_stiffness}")
 
             s = objects.Spring(rest_length = self.spring_length,stiffness=self.spring_stiffness,index =(len(list_of_springs)+1))
             list_of_springs.append(s)
@@ -1028,18 +1019,14 @@ class ParallelSpring(wx.Panel):
             self.choose_element.Show()
             
         else:
-            wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
+            wx.MessageBox("No spring to submit.", "Warning", wx.OK | wx.ICON_WARNING)
 
 
 class SeriesSpring(wx.Panel):
     """
-    Class to create the panel, which contains the start menu. 
-    This panel is contained within the main frame.
-    It opens when the application is started.
-    It contains two logos, one header and the names of the authors. 
-    It contains 4 buttons ("Create Model","Open Model","Open Documentation","Close Application")
-    Here the positions and labels of the buttons are set.
-    The buttons are binded to events which allow to open the other panels. 
+    Class to create the panel, where the user can create several springs in series
+    It has two input texts. One for the stiffness and one for the length.
+    It has three buttons: One to get back to the previous panel, one to add springs and one to submit the series of springs.
 
     :param parent: The Create Element Frame
     :type parent: wx.Frame
@@ -1049,31 +1036,33 @@ class SeriesSpring(wx.Panel):
         self.SetBackgroundColour(wx.Colour(255,255,255))
         self.spring_lengths_series =[]
         self.spring_stiffness_series = []
+        panel_size = self.GetSize()
 
+        # Create the header for the panel 
         self.series_spring_text = wx.StaticText(self, label="Series of Springs", pos=(50, 50))  # Add a static text to the panel
         text_series_spring_font = wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         self.series_spring_text.SetFont(text_series_spring_font) 
         series_spring_size = self.series_spring_text.GetSize()
-        panel_size = self.GetSize()
         x_pos_series_spring = (panel_size[0]-1*series_spring_size[0])//2
         y_pos_series_spring = (panel_size[1]-15*series_spring_size[1])//1
         self.series_spring_text.SetPosition((x_pos_series_spring,y_pos_series_spring))
 
-        self.stiffness_label = wx.StaticText(self,label = "What is the stiffness of the Spring:")
+        # Create the input fields to set the stiffness of the spring
+        self.stiffness_label = wx.StaticText(self,label = "What is the stiffness of the Spring: (N/m)")
         stiffness_label_size = self.stiffness_label.GetSize()
         x_pos_stiffness_label = (panel_size[0]-2*stiffness_label_size[0])//2
         y_pos_stiffness_label = (panel_size[1]-20*stiffness_label_size[1])//1
         self.stiffness_label.SetPosition((x_pos_stiffness_label,y_pos_stiffness_label))
         self.stiffness_spring_series = wx.TextCtrl(self, pos=(x_pos_stiffness_label, y_pos_stiffness_label+1*stiffness_label_size[1]), size=(200, -1))
       
-
-        self.length_label = wx.StaticText(self,label = "What is the length of the Spring:")
-        length_label_size = self.length_label.GetSize()
-        x_pos_length_label = (panel_size[0]-2*length_label_size[0])//2
-        y_pos_length_label = (panel_size[1]-16*length_label_size[1])//1
+        # Create the input field to set the length of the spring 
+        self.length_label = wx.StaticText(self,label = "What is the length of the Spring: (m)")
+        x_pos_length_label = (panel_size[0]-2*stiffness_label_size[0])//2
+        y_pos_length_label = (panel_size[1]-16*stiffness_label_size[1])//1
         self.length_label.SetPosition((x_pos_length_label,y_pos_length_label))
-        self.length_spring_series = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*length_label_size[1]), size=(200, -1))
+        self.length_spring_series = wx.TextCtrl(self, pos=(x_pos_length_label, y_pos_length_label+1*stiffness_label_size[1]), size=(200, -1))
 
+        # Define a button size 
         button_size_element = (100,25)
 
         # Create add Button
@@ -1091,19 +1080,20 @@ class SeriesSpring(wx.Panel):
         self.Bind(wx.EVT_BUTTON,self.on_back,self.button_back)
         self.button_back.SetPosition((panel_size[0]-100,panel_size[1]-(75)))
 
+        # Passing the other child panels from the parent to this child panel
         self.choose_element = parent.choose_element
         self.spring_element = parent.spring_element
 
     def on_back(self,event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to switch back to the "spring element" panel
         """
         self.Hide()
         self.spring_element.Show()
 
     def on_add(self, event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to add a spring to a list so that the user can have several springs in series 
         """
         length = float(self.length_spring_series.GetValue())
         if length:
@@ -1116,7 +1106,9 @@ class SeriesSpring(wx.Panel):
     
     def on_submit(self, event):
         """
-        Method to switch between the start menu and the "create model" menu
+        Method to calculate the resulting stiffness and length of several springs in series.
+        With this method one spring is created which has this resulting siffness and length
+        By submitting this spring the list of springs from the add method is emptied. 
         """
         # Process the list of spring lengths
         if self.spring_lengths_series:
@@ -1138,33 +1130,33 @@ class SeriesSpring(wx.Panel):
             self.choose_element.Show()
             
         else:
-            wx.MessageBox("No spring lengths to submit.", "Warning", wx.OK | wx.ICON_WARNING)
+            wx.MessageBox("No spring to submit.", "Warning", wx.OK | wx.ICON_WARNING)
         
 
 class InitialCondition(wx.Frame):
     """
-    Class to create the panel, which contains the start menu. 
-    This panel is contained within the main frame.
-    It opens when the application is started.
-    It contains two logos, one header and the names of the authors. 
-    It contains 4 buttons ("Create Model","Open Model","Open Documentation","Close Application")
-    Here the positions and labels of the buttons are set.
-    The buttons are binded to events which allow to open the other panels. 
+    Class to create the Frame for the Initial Conditions
+    It is opened by pressing the button "Set initial Conditions" on the panel "Create Model"
+    This frame has no childs.
+    On the frame there are two inputs: one for the position and one for the velocity
+    There is also one submit button which saves the inputs
     """
     def __init__(self,parent):
         wx.Frame.__init__(self,parent,title="Initial Conditions", size =(600,400))
         self.SetBackgroundColour(wx.Colour(255,255,255))
         panel_size = self.GetSize()
         self.i = 0
-            
-        self.position_label = wx.StaticText(self,label = "What is inital Position of the mass:")
+
+        # Create the input field for the initial position   
+        self.position_label = wx.StaticText(self,label = "What is initial Position of the mass: (m)")
         position_label_size = self.position_label.GetSize()
         x_pos_position_label = (panel_size[0]-2*position_label_size[0])//2
         y_pos_position_label = (panel_size[1]-20*position_label_size[1])//1
         self.position_label.SetPosition((x_pos_position_label,y_pos_position_label))
         self.position_input = wx.TextCtrl(self, pos=(x_pos_position_label, y_pos_position_label+1*position_label_size[1]), size=(200, -1))
 
-        self.velocity_label = wx.StaticText(self,label = "What is inital Velocity of the mass:")
+        # Create the input field for the initial velocity
+        self.velocity_label = wx.StaticText(self,label = "What is initial Velocity of the mass: (m/s)")
         velocity_label_size = self.velocity_label.GetSize()
         x_pos_velocity_label = (panel_size[0]-2*velocity_label_size[0])//2
         y_pos_velocity_label = (panel_size[1]-16*velocity_label_size[1])//1
@@ -1180,7 +1172,8 @@ class InitialCondition(wx.Frame):
         """
         This method takes the input vlaues for position and velocity. 
         Then the initial values for the mass are set via the setInitialCondition function from objects
-        Then the initali values for the spring are set via the setInitialCondition function from objects. Here the first spring has to get (0,0) as its first start position 
+        Then the initali values for the spring are set via the setInitialCondition function from objects. Here the first spring has to get (0,0) as its first start position.
+        The last if loop closes the frame when there are no more elements which need initial conditions.
         """
         self.position = 0
         self.velocity = 0
@@ -1206,13 +1199,10 @@ class InitialCondition(wx.Frame):
 # Create The Frame for the Create Element 
 class CreateElement(wx.Frame):
     """
-    Class to create the panel, which contains the start menu. 
-    This panel is contained within the main frame.
-    It opens when the application is started.
-    It contains two logos, one header and the names of the authors. 
-    It contains 4 buttons ("Create Model","Open Model","Open Documentation","Close Application")
-    Here the positions and labels of the buttons are set.
-    The buttons are binded to events which allow to open the other panels. 
+    Class to create the frame for Create Element
+    This frame is opened with the button "Create Element" on the "Create Model" panel
+    The frame is a parent for choose element, mass element, spring element, mass point, steady body, sinlge spring, parallel spring and series spring.
+    The methods to switch between the child panels are defined here.
     """
     def __init__(self,parent):
         wx.Frame.__init__(self,parent,title="Create Element",size=(600,400))
@@ -1319,13 +1309,9 @@ class CreateElement(wx.Frame):
 # Create the Main Frame 
 class MainFrame(wx.Frame):
     """
-    Class to create the panel, which contains the start menu. 
-    This panel is contained within the main frame.
-    It opens when the application is started.
-    It contains two logos, one header and the names of the authors. 
-    It contains 4 buttons ("Create Model","Open Model","Open Documentation","Close Application")
-    Here the positions and labels of the buttons are set.
-    The buttons are binded to events which allow to open the other panels. 
+    Class to create the Main Frame
+    This frame is a parent for start menu, create model and open model.
+    It opens when the application is started. 
     """
     def __init__(self):
         wx.Frame.__init__(self,None,title="DynamicVision",size =(1200,800))
