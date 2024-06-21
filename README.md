@@ -33,7 +33,7 @@ The DynamicVision project addresses this issue. Users can use a GUI to create si
 * Execute (double click) GUI.py
 * Alternative: open a CMD promt and enter the following command:
 ```
-python "PATH_TO_YOUR_DIRECTORY\Dynamic Vision\DynamicVision\GUI\GUI.py"
+python "PATH_TO_YOUR_DIRECTORY\DynamicVision\GUI\GUI.py"
 ```
 
 ### How to use the program
